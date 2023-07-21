@@ -37,6 +37,7 @@ kotlin {
                 api(project(":core"))
 
                 implementation(project(":features:home"))
+                implementation(project(":features:details"))
             }
         }
         val androidMain by getting {
