@@ -1,4 +1,4 @@
-rootProject.name = "MyApplication"
+rootProject.name = "TokoBola"
 
 include(":androidApp")
 include(":shared")
@@ -33,3 +33,6 @@ dependencyResolutionManagement {
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
+include(":core")
+include(":network")
+include(":features:home")
