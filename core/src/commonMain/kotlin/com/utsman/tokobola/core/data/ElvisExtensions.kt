@@ -1,4 +1,4 @@
-package com.utsman.tokobola.core
+package com.utsman.tokobola.core.data
 
 fun Int?.orNol(): Int = this ?: 0
 fun Double?.orNol(): Double = this ?: 0.0

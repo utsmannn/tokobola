@@ -7,5 +7,6 @@ data class Product(
     val image: List<String> = emptyList(),
     val name: String = "",
     val price: Double = 0.0,
-    val promoted: Boolean = false
+    val isPromoted: Boolean = false,
+    val brand: String = ""
 )

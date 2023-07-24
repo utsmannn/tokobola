@@ -9,6 +9,6 @@ class DetailDataSources : NetworkSources("https://footballstore.fly.dev/api") {
         println("created detail data sources............")
     }
 
-    suspend fun getDetail(productId: String): BaseResponse<ProductDetailResponse> =
+    suspend fun getDetail(productId: Int): BaseResponse<ProductDetailResponse> =
         get("/product/$productId")
 }

@@ -23,6 +23,7 @@ pluginManagement {
         id("com.android.library").version(agpVersion)
 
         id("org.jetbrains.compose").version(composeVersion)
+        id("dev.icerock.mobile.multiplatform-resources").version("0.23.0")
     }
 }
 
@@ -37,3 +38,4 @@ include(":core")
 include(":network")
 include(":features:home")
 include(":features:details")
+include(":resources")

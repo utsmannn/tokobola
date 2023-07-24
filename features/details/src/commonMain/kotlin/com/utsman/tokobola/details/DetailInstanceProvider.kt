@@ -6,13 +6,17 @@ import com.utsman.tokobola.core.synchroniz
 import com.utsman.tokobola.details.domain.DetailDataSources
 import com.utsman.tokobola.details.domain.DetailRepository
 import com.utsman.tokobola.details.domain.DetailUseCase
+import kotlin.jvm.Volatile
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
 object DetailInstanceProvider : SynchronizObject() {
 
+    @Volatile
     private var dataSources: DetailDataSources? = null
+    @Volatile
     private var repository: DetailRepository? = null
+    @Volatile
     private var useCase: DetailUseCase? = null
 
     private fun getDataSource(): DetailDataSources {

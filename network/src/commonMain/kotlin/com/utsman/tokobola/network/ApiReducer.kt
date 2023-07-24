@@ -24,4 +24,8 @@ class ApiReducer<T> {
         }
         _dataFlow.value = resultEvent
     }
+
+    suspend fun clear() {
+        _dataFlow.value = State.Idle()
+    }
 }

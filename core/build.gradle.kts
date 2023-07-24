@@ -28,22 +28,28 @@ kotlin {
 
     sourceSets {
         val lifecycleVersion = "2.6.1"
+        val voyagerVersion = "1.0.0-rc05"
 
         val commonMain by getting {
             dependencies {
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material)
+                api(compose.runtime)
+                api(compose.foundation)
+                api(compose.material)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.components.resources)
+                api(compose.components.resources)
+                api(compose.animation)
+
+                api(project(":resources"))
 
                 api("io.github.qdsfdhvh:image-loader:1.6.0")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
+                api("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
+                api("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")
             }
         }
 
         getByName("androidMain") {
             dependencies {
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2")
                 api("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
                 api("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
 
@@ -58,6 +64,9 @@ kotlin {
 android {
     namespace = "com.utsman.tokobola.core"
     compileSdk = 33
+
+    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+
     defaultConfig {
         minSdk = 24
     }

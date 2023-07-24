@@ -9,12 +9,16 @@ class DetailUseCase(private val repository: DetailRepository) {
     private val productDetailReducer = ApiReducer<ProductDetail>()
     val productDetailFlow get() = productDetailReducer.dataFlow
 
-    suspend fun getDetail(id: String) {
+    suspend fun getDetail(id: Int) {
         productDetailReducer.transform(
             call = { repository.getDetailProduct(id) },
             mapper = {
                 it.data?.mapToProduct() ?: ProductDetail()
             }
         )
+    }
+
+    suspend fun clearDetail() {
+        productDetailReducer.clear()
     }
 }

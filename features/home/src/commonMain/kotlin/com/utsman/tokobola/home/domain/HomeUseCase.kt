@@ -1,7 +1,7 @@
 package com.utsman.tokobola.home.domain
 
 import com.utsman.tokobola.core.data.Paged
-import com.utsman.tokobola.core.orFalse
+import com.utsman.tokobola.core.data.orFalse
 import com.utsman.tokobola.home.entity.Product
 import com.utsman.tokobola.home.entity.mapToProduct
 import com.utsman.tokobola.network.ApiReducer

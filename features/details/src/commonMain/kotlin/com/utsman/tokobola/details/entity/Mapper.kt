@@ -1,7 +1,7 @@
 package com.utsman.tokobola.details.entity
 
-import com.utsman.tokobola.core.orFalse
-import com.utsman.tokobola.core.orNol
+import com.utsman.tokobola.core.data.orFalse
+import com.utsman.tokobola.core.data.orNol
 import com.utsman.tokobola.details.domain.ProductDetailResponse
 
 fun ProductDetailResponse.mapToProduct(): ProductDetail {

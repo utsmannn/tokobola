@@ -1,4 +1,4 @@
-package com.utsman.tokobola.home.view
+package com.utsman.tokobola.home.ui
 
 import com.utsman.tokobola.core.ViewModel
 import com.utsman.tokobola.home.domain.HomeUseCase
