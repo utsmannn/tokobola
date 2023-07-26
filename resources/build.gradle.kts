@@ -27,9 +27,11 @@ kotlin {
         framework {
             baseName = "shared"
             isStatic = true
+            export("dev.icerock.moko:resources:0.23.0")
+            export("dev.icerock.moko:graphics:0.9.0") // toUIColor here
         }
         extraSpecAttributes["resources"] = "['src/commonMain/resources/**', 'src/iosMain/resources/**']"
-        extraSpecAttributes["exclude_files"] = "['src/commonMain/resources/SharedRes/**']"
+        extraSpecAttributes["exclude_files"] = "['src/commonMain/resources/MR/**']"
     }
     
     listOf(
@@ -54,11 +56,12 @@ kotlin {
 multiplatformResources {
     multiplatformResourcesPackage = "com.utsman.tokobola.resources"
     multiplatformResourcesClassName = "SharedRes"
+
 }
 
 android {
     namespace = "com.utsman.tokobola.resources"
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources/SharedRes**")
+    sourceSets["main"].resources.srcDirs("src/commonMain/resources/MR/**")
 
     compileSdk = 33
     defaultConfig {

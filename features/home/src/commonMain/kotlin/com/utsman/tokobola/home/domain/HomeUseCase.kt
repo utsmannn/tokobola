@@ -1,9 +1,9 @@
 package com.utsman.tokobola.home.domain
 
+import com.utsman.tokobola.common.entity.ui.Product
 import com.utsman.tokobola.core.data.Paged
 import com.utsman.tokobola.core.data.orFalse
-import com.utsman.tokobola.home.entity.Product
-import com.utsman.tokobola.home.entity.mapToProduct
+import com.utsman.tokobola.common.mapToProduct
 import com.utsman.tokobola.network.ApiReducer
 
 class HomeUseCase(private val homeRepository: HomeRepository) {

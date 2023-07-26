@@ -32,6 +32,8 @@ kotlin {
             dependencies {
                 implementation(project(":core"))
                 implementation(project(":network"))
+
+                implementation(project(":features:common"))
             }
         }
     }

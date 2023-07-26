@@ -9,6 +9,9 @@ kotlin {
     sourceSets {
         val androidMain by getting {
             dependencies {
+                implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
+                implementation(compose.ui)
+
                 implementation(project(":shared"))
             }
         }

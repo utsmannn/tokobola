@@ -1,6 +1,5 @@
 package com.utsman.tokobola.details.ui
 
-import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.ViewModel
 import com.utsman.tokobola.details.domain.DetailUseCase
 import kotlinx.coroutines.launch

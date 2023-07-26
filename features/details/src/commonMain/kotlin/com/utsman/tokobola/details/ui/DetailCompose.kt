@@ -1,17 +1,24 @@
 package com.utsman.tokobola.details.ui
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.Typography
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
@@ -24,20 +31,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.seiko.imageloader.rememberImagePainter
+import com.utsman.tokobola.common.component.ProductPullRefreshIndicator
+import com.utsman.tokobola.common.component.ProductTopBar
+import com.utsman.tokobola.common.entity.ui.Product
 import com.utsman.tokobola.core.State
-import com.utsman.tokobola.core.composable.AppText
-import com.utsman.tokobola.core.composable.CoreAppBar
 import com.utsman.tokobola.core.onFailure
 import com.utsman.tokobola.core.onIdle
 import com.utsman.tokobola.core.onLoading
 import com.utsman.tokobola.core.onSuccess
 import com.utsman.tokobola.core.rememberViewModel
+import com.utsman.tokobola.core.utils.currency
 import com.utsman.tokobola.details.LocalDetailUseCase
-import com.utsman.tokobola.details.entity.ProductDetail
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -52,29 +65,33 @@ fun Detail(productId: Int) {
         detailState is State.Loading
     }
 
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = isLoading,
-        onRefresh = {
-            detailViewModel.getDetail(productId)
-        }
-    )
+    val pullRefreshState = rememberPullRefreshState(refreshing = isLoading, onRefresh = {
+        detailViewModel.getDetail(productId)
+    })
 
     var productName by remember { mutableStateOf("") }
 
     val navigator = LocalNavigator.currentOrThrow
 
     Scaffold(
-        topBar = {
-            CoreAppBar(title = productName, previousTitle = "Home") {
-                navigator.pop()
-            }
-        }
+        modifier = Modifier
     ) {
         Box(
-            modifier = Modifier.fillMaxSize()
-                .pullRefresh(pullRefreshState)
+            modifier = Modifier.fillMaxSize().pullRefresh(pullRefreshState)
         ) {
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            ProductTopBar(
+                modifier = Modifier.zIndex(2f),
+                title = productName,
+                hideTitle = true,
+                transparentBackground = true
+            ) {
+                navigator.pop()
+            }
+
+            Column(
+                modifier = Modifier.fillMaxWidth().zIndex(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 with(detailState) {
                     onIdle {
                         detailViewModel.getDetail(productId)
@@ -84,6 +101,7 @@ fun Detail(productId: Int) {
                     }
                     onSuccess { detail ->
                         productName = detail.name
+
                         DetailSuccess(detail) {
                             navigator.pop()
                         }
@@ -93,7 +111,7 @@ fun Detail(productId: Int) {
                     }
                 }
             }
-            PullRefreshIndicator(
+            ProductPullRefreshIndicator(
                 refreshing = isLoading,
                 state = pullRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter)
@@ -109,28 +127,64 @@ fun DetailLoading() {
 }
 
 @Composable
-fun DetailSuccess(productDetail: ProductDetail, action: () -> Unit) {
+fun DetailSuccess(product: Product, action: () -> Unit) {
     Column {
-        val painter = rememberImagePainter(productDetail.image[0])
+        val painter = rememberImagePainter(product.image[0])
         Image(
-            modifier = Modifier.fillMaxWidth().size(200.dp),
+            modifier = Modifier.fillMaxWidth().size(340.dp),
             painter = painter,
             contentDescription = null,
-            contentScale = ContentScale.FillHeight
+            contentScale = ContentScale.Crop
         )
 
-        Divider()
-        AppText(
-            modifier = Modifier.fillMaxWidth().clickable { action.invoke() },
-            text = productDetail.name
-        )
-        AppText(modifier = Modifier.fillMaxWidth(), text = productDetail.category)
-        Divider()
-        AppText(modifier = Modifier.fillMaxWidth(), text = productDetail.description)
+        val colorDot = MaterialTheme.colors.secondary
+
+        Column(
+            modifier = Modifier.padding(12.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = product.category,
+                    style = MaterialTheme.typography.subtitle2
+                )
+                Canvas(
+                    modifier = Modifier.padding(6.dp).size(6.dp)
+                ) {
+                    drawCircle(color = colorDot)
+                }
+                Text(
+                    text = product.brand,
+                    style = MaterialTheme.typography.subtitle2
+                )
+            }
+            Divider(modifier = Modifier.fillMaxWidth().padding(6.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = product.name,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.h6
+                )
+
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = product.price.currency(),
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.h5,
+                    textAlign = TextAlign.End
+                )
+            }
+            Divider(modifier = Modifier.fillMaxWidth().padding(6.dp))
+            Text(modifier = Modifier.fillMaxWidth(), text = product.description)
+        }
     }
 }
 
 @Composable
 fun DetailFailure(message: String) {
-    AppText(text = message)
+    Text(text = message)
 }

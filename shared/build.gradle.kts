@@ -30,6 +30,7 @@ kotlin {
             dependencies {
                 api(project(":core"))
 
+                implementation(project(":features:common"))
                 implementation(project(":features:home"))
                 implementation(project(":features:details"))
             }

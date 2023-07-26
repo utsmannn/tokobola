@@ -3,9 +3,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import com.seiko.imageloader.LocalImageLoader
+import com.utsman.tokobola.common.theme.CommonTheme
 import com.utsman.tokobola.core.appImageLoader
 import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.navigation.LocalScreenContainer
@@ -31,7 +33,7 @@ fun App() {
         LocalNavigation provides navigation
     ) {
 
-        MaterialTheme {
+        CommonTheme {
             Navigator(screenContainer.home()) {
                 navigation.initialize()
                 SlideTransition(it)
