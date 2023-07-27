@@ -22,4 +22,12 @@ actual object PlatformUtils {
             statusBarHeight
         }
     }
+
+
+    @Composable
+    actual fun rememberNavigationBarHeight(): Int {
+        return remember {
+            30
+        }
+    }
 }

@@ -23,32 +23,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.seiko.imageloader.rememberImagePainter
 import com.utsman.tokobola.common.entity.ui.Product
+import com.utsman.tokobola.common.entity.ui.ThumbnailProduct
 import com.utsman.tokobola.core.utils.currency
 
 @Composable
-fun ProductItemGrid(product: Product, clickAction: (Product) -> Unit) {
+fun ProductItemGrid(thumbProduct: ThumbnailProduct, clickAction: (ThumbnailProduct) -> Unit) {
     Column(
         modifier = Modifier.height(320.dp)
             .padding(6.dp)
             .background(color = MaterialTheme.colors.secondary.copy(alpha = 0.3f))
-            .clickable { clickAction.invoke(product) }
+            .clickable { clickAction.invoke(thumbProduct) }
     ) {
-        val painter = rememberImagePainter(product.image.first())
+        val painter = rememberImagePainter(thumbProduct.image)
         Image(
             modifier = Modifier.fillMaxWidth().aspectRatio(1.8f / 2f),
             painter = painter,
-            contentDescription = product.name,
+            contentDescription = thumbProduct.name,
             contentScale = ContentScale.Crop
         )
         Column(
             modifier = Modifier.padding(all = 6.dp)
         ) {
             Text(
-                text = product.brand,
+                text = thumbProduct.brand.name,
                 fontSize = 12.sp
             )
             Text(
-                text = product.name,
+                text = thumbProduct.name,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2
             )
@@ -58,13 +59,13 @@ fun ProductItemGrid(product: Product, clickAction: (Product) -> Unit) {
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = product.category,
+                    text = thumbProduct.category.name,
                     fontSize = 12.sp,
                     fontStyle = FontStyle.Italic
                 )
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = product.price.currency(),
+                    text = thumbProduct.price.currency(),
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.End
                 )

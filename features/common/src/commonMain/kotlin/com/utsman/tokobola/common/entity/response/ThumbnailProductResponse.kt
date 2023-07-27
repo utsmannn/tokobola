@@ -4,37 +4,38 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ProductResponse(
-    @SerialName("brand")
-    var brand: BrandResponse?,
-    @SerialName("category")
-    var category: CategoryResponse?,
-    @SerialName("description")
-    var description: String?,
+data class ThumbnailProductResponse(
     @SerialName("id")
-    var id: Int?,
-    @SerialName("images")
-    var images: List<String?>?,
+    val id: Int?,
     @SerialName("name")
-    var name: String?,
+    val name: String?,
     @SerialName("price")
-    var price: Double?,
+    val price: Double?,
+    @SerialName("brand")
+    val brand: BrandResponse?,
+    @SerialName("image")
+    val image: String?,
+    @SerialName("category")
+    val category: CategoryResponse?,
     @SerialName("promoted")
-    var promoted: Boolean?
+    val promoted: Boolean?
 ) {
     @Serializable
     data class BrandResponse(
         @SerialName("id")
-        var id: Int?,
+        val id: Int?,
         @SerialName("name")
-        var name: String?
+        val name: String?,
+        @SerialName("image")
+        val image: String?
     )
 
     @Serializable
     data class CategoryResponse(
         @SerialName("id")
-        var id: Int?,
+        val id: Int?,
         @SerialName("name")
-        var name: String?
+        val name: String?
     )
+
 }

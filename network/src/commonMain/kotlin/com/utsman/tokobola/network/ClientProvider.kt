@@ -21,6 +21,7 @@ internal object ClientProvider : SynchronizObject() {
                     json(Json {
                         prettyPrint = true
                         isLenient = true
+                        ignoreUnknownKeys = true
                     })
                 }
             }

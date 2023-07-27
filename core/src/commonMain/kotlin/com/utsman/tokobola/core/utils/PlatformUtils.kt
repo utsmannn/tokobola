@@ -6,4 +6,7 @@ expect object PlatformUtils {
 
     @Composable
     fun rememberStatusBarHeight(): Int
+
+    @Composable
+    fun rememberNavigationBarHeight(): Int
 }
