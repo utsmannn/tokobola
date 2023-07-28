@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -43,6 +44,9 @@ import com.utsman.tokobola.common.entity.ui.ThumbnailProduct
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.data.Paged
 import com.utsman.tokobola.core.navigation.LocalNavigation
+import com.utsman.tokobola.core.rememberViewModel
+import com.utsman.tokobola.core.utils.PlatformUtils
+import com.utsman.tokobola.core.utils.merge
 import com.utsman.tokobola.core.utils.onFailure
 import com.utsman.tokobola.core.utils.onFailureComposed
 import com.utsman.tokobola.core.utils.onIdle
@@ -51,9 +55,6 @@ import com.utsman.tokobola.core.utils.onLoading
 import com.utsman.tokobola.core.utils.onLoadingComposed
 import com.utsman.tokobola.core.utils.onSuccess
 import com.utsman.tokobola.core.utils.onSuccessComposed
-import com.utsman.tokobola.core.rememberViewModel
-import com.utsman.tokobola.core.utils.PlatformUtils
-import com.utsman.tokobola.core.utils.merge
 import com.utsman.tokobola.core.utils.parseString
 import com.utsman.tokobola.home.LocalHomeUseCase
 
@@ -68,23 +69,14 @@ fun Home() {
     val products by homeViewModel.homeProduct.collectAsState()
     val banners by homeViewModel.homeBanner.collectAsState()
 
-    val homeData by derivedStateOf {
-        products.merge(banners) { data1, data2 ->
-            Pair(data1, data2)
-        }
-    }
+    val isLoading by homeViewModel.isRestart.collectAsState()
 
-    val isLoading by derivedStateOf {
-        homeData is State.Loading
-    }
-
-    val statusBarHeight = PlatformUtils.rememberStatusBarHeight()
     val navigationBarHeight = PlatformUtils.rememberNavigationBarHeight()
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isLoading,
         onRefresh = {
-            homeViewModel.getHomeData()
+            homeViewModel.restartData()
         }
     )
 
@@ -100,8 +92,9 @@ fun Home() {
         if (products is State.Success && isReachBottom) {
             homeViewModel.getHomeProduct()
         }
-        println("asuuuuuuuuuuu is bottom -> $isReachBottom")
     }
+
+    val list by homeViewModel.homeListFlow.collectAsState()
 
     Scaffold {
         Box(
@@ -119,10 +112,12 @@ fun Home() {
                 ),
                 state = lazyGridState
             ) {
-                with(homeData) {
-                    onIdle { homeViewModel.getHomeData() }
-                    onLoading {  }
-                    onSuccess { (productPage, banners) ->
+
+                with(banners) {
+                    onIdle {
+                        homeViewModel.getHomeBanner()
+                    }
+                    onSuccess {
                         item(
                             span = { GridItemSpan(this.maxLineSpan) }
                         ) {
@@ -132,19 +127,33 @@ fun Home() {
                                     .ignoreHorizontalParentPadding(6.dp)
                                     .ignoreVerticalParentPadding(6.dp)
                             ) {
-                                BannerSuccess(banners)
-                            }
-                        }
-
-                        items(productPage.data) { product ->
-                            ProductItemGrid(product) {
-                                navigation.goToDetail(it.id)
+                                BannerSuccess(it)
                             }
                         }
                     }
-                    onFailure { throwable ->
+                }
+
+                items(list) {
+                    ProductItemGrid(it) {
+                        navigation.goToDetail(it.id)
+                    }
+                }
+
+                with(products) {
+                    onIdle {
+                        homeViewModel.getHomeProduct()
+                    }
+                    onLoading {
                         item {
-                            ProductListFailure(throwable.message.orEmpty())
+                            CircularProgressIndicator()
+                        }
+                    }
+                    onSuccess {
+                        homeViewModel.postPaged(it.data)
+                    }
+                    onFailure {
+                        item {
+                            ProductListFailure(it.message.orEmpty())
                         }
                     }
                 }

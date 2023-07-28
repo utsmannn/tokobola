@@ -15,9 +15,10 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
     val productBanner = ApiReducer<List<HomeBanner>>()
 
     private var currentPage: Int = 1
+    private var prevPage: Int = 1
     private var hasNextPage = true
 
-    private var prevList: List<ThumbnailProduct> = mutableListOf()
+    private val prevList: MutableList<ThumbnailProduct> = mutableListOf()
 
     suspend fun getProduct() {
         if (hasNextPage) {
@@ -25,6 +26,7 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
                 call = {
                     homeRepository.getProductPaged(currentPage).apply {
                         hasNextPage = this.data?.hasNextPage.orFalse()
+                        prevPage = currentPage
                     }
                 },
                 mapper = { pagedResponseProduct ->
@@ -34,16 +36,12 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
                             it.toHomeProduct()
                         }
 
-                    val newList = if (currentPage != dataPaged?.page.orNol()) {
-                        currentPage = dataPaged?.page.orNol()
-                        prevList+dataProduct
-                    } else {
-                        dataProduct
-                    }
-                    currentPage++
-                    prevList = newList
+                    currentPage = dataPaged?.page.orNol()+1
+
+                    prevList.addAll(dataProduct)
+                    println("asuuuuuu -> ${prevList.count()}")
                     Paged(
-                        data = newList,
+                        data = prevList,
                         hasNextPage = dataPaged?.hasNextPage.orFalse(),
                         page = dataPaged?.page ?: 1,
                         perPage = dataPaged?.perPage ?: 10
@@ -68,5 +66,6 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
 
     fun restartProductPage() {
         currentPage = 1
+        prevList.clear()
     }
 }

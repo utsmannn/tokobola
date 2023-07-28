@@ -45,7 +45,7 @@ fun ProductItemGrid(thumbProduct: ThumbnailProduct, clickAction: (ThumbnailProdu
             modifier = Modifier.padding(all = 6.dp)
         ) {
             Text(
-                text = thumbProduct.brand.name,
+                text = "${thumbProduct.id} - ${thumbProduct.brand.name}",
                 fontSize = 12.sp
             )
             Text(
