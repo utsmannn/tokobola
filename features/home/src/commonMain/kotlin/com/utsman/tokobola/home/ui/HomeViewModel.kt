@@ -11,6 +11,8 @@ class HomeViewModel(private val homeUseCase: HomeUseCase) : ViewModel() {
     val homeProduct get() = homeUseCase.productListReducer.dataFlow
     val homeBanner get() = homeUseCase.productBanner.dataFlow
 
+    var productItemCount = 10
+
     val homeListFlow: MutableStateFlow<List<ThumbnailProduct>> = MutableStateFlow(emptyList())
     val isRestart: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -30,5 +32,6 @@ class HomeViewModel(private val homeUseCase: HomeUseCase) : ViewModel() {
 
     fun postPaged(list: List<ThumbnailProduct>) {
         homeListFlow.value = list
+        productItemCount = list.size
     }
 }

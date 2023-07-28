@@ -30,7 +30,6 @@ kotlin {
     sourceSets {
         val lifecycleVersion = "2.6.1"
         val voyagerVersion = "1.0.0-rc05"
-        val ktorVersion = "2.3.2"
 
         val commonMain by getting {
             dependencies {

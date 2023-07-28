@@ -9,14 +9,14 @@ import androidx.compose.ui.graphics.Color
 import com.utsman.tokobola.core.utils.parseString
 
 private val DarkColorScheme = darkColors(
-    primary = Color.parseString("#616161"),
-    secondary = Color.parseString("#757575"),
+    primary = ColorPrimaryDark,
+    secondary = ColorSecondaryDark,
     secondaryVariant = Color.White
 )
 
 private val LightColorScheme = lightColors(
-    primary = Color.parseString("#607D8B"),
-    secondary = Color.parseString("#9E9E9E"),
+    primary = ColorPrimaryLight,
+    secondary = ColorSecondaryLight,
     secondaryVariant = Color.White
 
     /* Other default colors to override

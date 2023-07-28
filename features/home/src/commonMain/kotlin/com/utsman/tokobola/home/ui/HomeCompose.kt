@@ -1,19 +1,27 @@
 package com.utsman.tokobola.home.ui
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -27,16 +35,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.seiko.imageloader.rememberImagePainter
 import com.utsman.tokobola.common.component.ProductItemGrid
 import com.utsman.tokobola.common.component.ProductItemGridShimmer
 import com.utsman.tokobola.common.component.ProductPullRefreshIndicator
+import com.utsman.tokobola.common.component.SearchBarStatic
 import com.utsman.tokobola.common.component.ignoreHorizontalParentPadding
 import com.utsman.tokobola.common.component.ignoreVerticalParentPadding
 import com.utsman.tokobola.common.component.isScrolledToEnd
+import com.utsman.tokobola.common.component.isScrollingUp
 import com.utsman.tokobola.common.entity.ui.HomeBanner
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.navigation.LocalNavigation
@@ -48,6 +60,8 @@ import com.utsman.tokobola.core.utils.onLoading
 import com.utsman.tokobola.core.utils.onSuccess
 import com.utsman.tokobola.core.utils.parseString
 import com.utsman.tokobola.home.LocalHomeUseCase
+import com.utsman.tokobola.resources.SharedRes
+import dev.icerock.moko.resources.compose.painterResource
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -62,6 +76,7 @@ fun Home() {
 
     val isLoading by homeViewModel.isRestart.collectAsState()
 
+    val statusBarHeight = PlatformUtils.rememberStatusBarHeight()
     val navigationBarHeight = PlatformUtils.rememberNavigationBarHeight()
 
     val pullRefreshState = rememberPullRefreshState(
@@ -78,6 +93,16 @@ fun Home() {
             lazyGridState.isScrolledToEnd()
         }
     }
+
+    val valueIndex by remember {
+        derivedStateOf {
+            lazyGridState.firstVisibleItemIndex
+        }
+    }
+
+    val heightTopBar = animateDpAsState(
+        targetValue = if (lazyGridState.isScrollingUp()) 0.dp else (-110).dp
+    )
 
     LaunchedEffect(isReachBottom) {
         if (products is State.Success && isReachBottom) {
@@ -120,11 +145,11 @@ fun Home() {
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(280.dp)
+                                    .size(340.dp)
                                     .ignoreHorizontalParentPadding(6.dp)
                                     .ignoreVerticalParentPadding(6.dp)
                             ) {
-                                BannerSuccess(it)
+                                Banner(it)
                             }
                         }
                     }
@@ -173,6 +198,19 @@ fun Home() {
                 state = pullRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter)
             )
+
+            Row(
+                modifier = Modifier
+                    .offset(y = heightTopBar.value)
+                    .background(MaterialTheme.colors.primary)
+                    .fillMaxWidth()
+                    .height(110.dp)
+                    .padding(top = statusBarHeight.dp)
+            ) {
+                SearchBarStatic(modifier = Modifier.fillMaxSize()) {
+
+                }
+            }
         }
     }
 }
@@ -184,7 +222,7 @@ fun ProductListFailure(message: String) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BannerSuccess(banner: List<HomeBanner>) {
+fun Banner(banner: List<HomeBanner>) {
     AutoSlidingCarousel(
         itemsCount = banner.size
     ) {
@@ -207,15 +245,24 @@ fun BannerSuccess(banner: List<HomeBanner>) {
                     .fillMaxSize()
                     .padding(12.dp)
             ) {
-                Text(
-                    text = item.description,
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(end = 30.dp)
-                        .background(Color.parseString(item.colorAccent).copy(alpha = 0.3f))
-                        .align(Alignment.BottomStart),
-                    maxLines = 3,
-                    color = Color.White
-                )
+
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = Color.parseString(item.colorAccent).copy(alpha = 0.3f)
+                        ).align(Alignment.BottomStart)
+                        .wrapContentSize()
+                        .padding(12.dp)
+                ) {
+
+                    Text(
+                        text = item.description,
+                        fontSize = 23.sp,
+                        maxLines = 3,
+                        color = Color.White,
+                        fontWeight = FontWeight.Black
+                    )
+                }
             }
         }
     }
