@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -24,9 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,26 +32,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.seiko.imageloader.rememberImagePainter
 import com.utsman.tokobola.common.component.ProductItemGrid
+import com.utsman.tokobola.common.component.ProductItemGridShimmer
 import com.utsman.tokobola.common.component.ProductPullRefreshIndicator
 import com.utsman.tokobola.common.component.ignoreHorizontalParentPadding
 import com.utsman.tokobola.common.component.ignoreVerticalParentPadding
 import com.utsman.tokobola.common.component.isScrolledToEnd
 import com.utsman.tokobola.common.entity.ui.HomeBanner
-import com.utsman.tokobola.common.entity.ui.ThumbnailProduct
 import com.utsman.tokobola.core.State
-import com.utsman.tokobola.core.data.Paged
 import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.rememberViewModel
 import com.utsman.tokobola.core.utils.PlatformUtils
-import com.utsman.tokobola.core.utils.merge
 import com.utsman.tokobola.core.utils.onFailure
-import com.utsman.tokobola.core.utils.onFailureComposed
 import com.utsman.tokobola.core.utils.onIdle
-import com.utsman.tokobola.core.utils.onIdleComposed
 import com.utsman.tokobola.core.utils.onLoading
-import com.utsman.tokobola.core.utils.onLoadingComposed
 import com.utsman.tokobola.core.utils.onSuccess
-import com.utsman.tokobola.core.utils.onSuccessComposed
 import com.utsman.tokobola.core.utils.parseString
 import com.utsman.tokobola.home.LocalHomeUseCase
 
@@ -117,6 +108,13 @@ fun Home() {
                     onIdle {
                         homeViewModel.getHomeBanner()
                     }
+                    onLoading {
+                        item(
+                            span = { GridItemSpan(this.maxLineSpan) }
+                        ) {
+                            ProductItemGridShimmer()
+                        }
+                    }
                     onSuccess {
                         item(
                             span = { GridItemSpan(this.maxLineSpan) }
@@ -129,6 +127,13 @@ fun Home() {
                             ) {
                                 BannerSuccess(it)
                             }
+                        }
+                    }
+                    onFailure {
+                        item(
+                            span = { GridItemSpan(this.maxLineSpan) }
+                        ) {
+                            BannerFailure(it.message.orEmpty())
                         }
                     }
                 }
@@ -145,14 +150,19 @@ fun Home() {
                     }
                     onLoading {
                         item {
-                            CircularProgressIndicator()
+                            ProductItemGridShimmer()
+                        }
+                        item {
+                            ProductItemGridShimmer()
                         }
                     }
                     onSuccess {
                         homeViewModel.postPaged(it.data)
                     }
                     onFailure {
-                        item {
+                        item(
+                            span = { GridItemSpan(this.maxLineSpan) }
+                        ) {
                             ProductListFailure(it.message.orEmpty())
                         }
                     }
@@ -169,94 +179,8 @@ fun Home() {
 }
 
 @Composable
-fun ProductList(
-    products: State<Paged<ThumbnailProduct>>,
-    bannerContent: @Composable () -> Unit,
-    onIdle: () -> Unit
-) {
-    with(products) {
-        onIdleComposed { onIdle.invoke() }
-        onLoadingComposed { ProductListLoading() }
-        onSuccessComposed { ProductListSuccess(it, bannerContent) }
-        onFailureComposed { ProductListFailure(it.message.orEmpty()) }
-    }
-}
-
-@Composable
-fun ProductListLoading() {
-
-}
-
-@Composable
-fun ProductListSuccess(products: Paged<ThumbnailProduct>, bannerContent: @Composable () -> Unit) {
-    val navigation = LocalNavigation.current
-
-    val navigationBarHeight = PlatformUtils.rememberNavigationBarHeight()
-
-    val lazyGridState = rememberLazyGridState()
-
-    val isEndOfList by remember {
-        derivedStateOf {
-            lazyGridState.isScrolledToEnd()
-        }
-    }
-
-    var currentPage by mutableStateOf(1)
-
-    LaunchedEffect(isEndOfList) {
-        if (currentPage == products.page) {
-            currentPage = products.page+1
-            println("asuuuuuuuuuuuuuu -> $currentPage | ${products.page}")
-        }
-    }
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(
-            top = 6.dp,
-            bottom = (6 + navigationBarHeight).dp,
-            start = 6.dp,
-            end = 6.dp
-        ),
-        state = lazyGridState
-    ) {
-        item(
-            span = { GridItemSpan(this.maxLineSpan) }
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(280.dp)
-                    .ignoreHorizontalParentPadding(6.dp)
-                    .ignoreVerticalParentPadding(6.dp)
-            ) { bannerContent.invoke() }
-        }
-        items(products.data) { product ->
-            ProductItemGrid(product) {
-                navigation.goToDetail(it.id)
-            }
-        }
-    }
-}
-
-@Composable
 fun ProductListFailure(message: String) {
     Text(text = message)
-}
-
-
-@Composable
-fun Banner(banner: State<List<HomeBanner>>, onIdle: () -> Unit) {
-    with(banner) {
-        onIdleComposed { onIdle.invoke() }
-        onLoadingComposed { BannerLoading() }
-        onSuccessComposed { BannerSuccess(it) }
-        onFailureComposed { BannerFailure(it.message.orEmpty()) }
-    }
-}
-
-@Composable
-fun BannerLoading() {
-
 }
 
 @OptIn(ExperimentalFoundationApi::class)

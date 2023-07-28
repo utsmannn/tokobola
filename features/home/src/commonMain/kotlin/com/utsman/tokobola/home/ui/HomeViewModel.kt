@@ -22,11 +22,6 @@ class HomeViewModel(private val homeUseCase: HomeUseCase) : ViewModel() {
         homeUseCase.getBanner()
     }
 
-    fun getHomeData() {
-        viewModelScope.launch { homeUseCase.getBanner() }
-        viewModelScope.launch { homeUseCase.getProduct() }
-    }
-
     fun restartData() {
         homeUseCase.restartProductPage()
         viewModelScope.launch { homeUseCase.getBanner() }
@@ -37,8 +32,8 @@ class HomeViewModel(private val homeUseCase: HomeUseCase) : ViewModel() {
         homeListFlow.value = list
     }
 
-    override fun onCleared() {
+    /*override fun onCleared() {
         super.onCleared()
         homeUseCase.restartProductPage()
-    }
+    }*/
 }

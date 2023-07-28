@@ -6,6 +6,7 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.coroutines.delay
 
 abstract class NetworkSources(protected val baseUrl: String) {
 
@@ -15,6 +16,8 @@ abstract class NetworkSources(protected val baseUrl: String) {
         endPoint: String,
         contentType: ContentType = ContentType.Application.Json
     ): BaseResponse<T> {
+        // simulate loading
+        delay(2000)
         return client().get("$baseUrl$endPoint") {
             contentType(contentType)
         }.body()
@@ -24,6 +27,8 @@ abstract class NetworkSources(protected val baseUrl: String) {
         endPoint: String,
         contentType: ContentType = ContentType.Application.Json
     ): BasePagedResponse<T> {
+        // simulate loading
+        delay(2000)
         return client().get("$baseUrl$endPoint") {
             contentType(contentType)
         }.body()

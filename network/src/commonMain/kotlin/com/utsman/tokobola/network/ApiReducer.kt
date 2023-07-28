@@ -28,7 +28,6 @@ open class ApiReducer<T> {
         }
 
         dataFlow.value = State.Loading()
-
         val resultEvent: State<T> = try {
             val dataSuccess = call.invoke()
             val jsonString = Json.encodeToString(dataSuccess)
