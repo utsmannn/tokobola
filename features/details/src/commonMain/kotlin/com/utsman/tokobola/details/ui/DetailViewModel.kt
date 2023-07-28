@@ -13,7 +13,6 @@ class DetailViewModel(private val detailUseCase: DetailUseCase) : ViewModel() {
     }
 
     override fun onCleared() {
-        println("data clear....")
         viewModelScope.launch {
             detailUseCase.clearDetail()
         }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -37,12 +38,17 @@ import com.utsman.tokobola.common.component.ProductPullRefreshIndicator
 import com.utsman.tokobola.common.component.ProductTopBar
 import com.utsman.tokobola.common.entity.ui.Product
 import com.utsman.tokobola.core.State
+import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.utils.onFailureComposed
 import com.utsman.tokobola.core.utils.onIdleComposed
 import com.utsman.tokobola.core.utils.onLoadingComposed
 import com.utsman.tokobola.core.utils.onSuccessComposed
 import com.utsman.tokobola.core.rememberViewModel
 import com.utsman.tokobola.core.utils.currency
+import com.utsman.tokobola.core.utils.onFailure
+import com.utsman.tokobola.core.utils.onIdle
+import com.utsman.tokobola.core.utils.onLoading
+import com.utsman.tokobola.core.utils.onSuccess
 import com.utsman.tokobola.details.LocalDetailUseCase
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -62,48 +68,44 @@ fun Detail(productId: Int) {
         detailViewModel.getDetail(productId)
     })
 
-    var productName by remember { mutableStateOf("") }
+    val navigation = LocalNavigation.current
 
-    val navigator = LocalNavigator.currentOrThrow
-
-    Scaffold(
-        modifier = Modifier
-    ) {
+    Scaffold {
         Box(
             modifier = Modifier.fillMaxSize().pullRefresh(pullRefreshState)
         ) {
-            ProductTopBar(
-                modifier = Modifier.zIndex(2f),
-                title = productName,
-                hideTitle = true,
-                transparentBackground = true
-            ) {
-                navigator.pop()
-            }
 
-            Column(
-                modifier = Modifier.fillMaxWidth().zIndex(1f),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            LazyColumn {
                 with(detailState) {
-                    onIdleComposed {
+                    onIdle {
                         detailViewModel.getDetail(productId)
                     }
-                    onLoadingComposed {
-                        DetailLoading()
-                    }
-                    onSuccessComposed { detail ->
-                        productName = detail.name
-
-                        DetailSuccess(detail) {
-                            navigator.pop()
+                    onLoading {
+                        item {
+                            DetailLoading()
                         }
                     }
-                    onFailureComposed { throwable ->
-                        DetailFailure(throwable.message.orEmpty())
+                    onSuccess { detail ->
+                        item {
+                            DetailSuccess(detail)
+                        }
+                    }
+                    onFailure { throwable ->
+                        item {
+                            DetailFailure(throwable.message.orEmpty())
+                        }
                     }
                 }
             }
+
+            ProductTopBar(
+                modifier = Modifier,
+                hideTitle = true,
+                transparentBackground = true
+            ) {
+                navigation.back()
+            }
+
             ProductPullRefreshIndicator(
                 refreshing = isLoading,
                 state = pullRefreshState,
@@ -120,7 +122,7 @@ fun DetailLoading() {
 }
 
 @Composable
-fun DetailSuccess(product: Product, action: () -> Unit) {
+fun DetailSuccess(product: Product) {
     Column {
         val painter = rememberImagePainter(product.images[0])
         Image(

@@ -17,9 +17,19 @@ class NavigationProvider : Navigation {
         screenContainer.value = LocalScreenContainer.current
     }
 
+    override fun back(): Boolean {
+        return tryAction { it.pop() }
+    }
+
     override fun goToDetail(id: Int): Boolean {
+        return tryAction { nav ->
+            screenContainer.value?.detail(id)?.let { nav.push(it) }
+        }
+    }
+
+    private fun tryAction(action: (Navigator) -> Unit): Boolean {
         return try {
-            screenContainer.value?.detail(id)?.let { navigatorStack.value?.push(it) }
+            navigatorStack.value?.let(action)
             true
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()

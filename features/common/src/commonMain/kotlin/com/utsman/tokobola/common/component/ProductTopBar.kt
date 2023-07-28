@@ -32,7 +32,7 @@ import dev.icerock.moko.resources.compose.painterResource
 @Composable
 fun ProductTopBar(
     modifier: Modifier = Modifier,
-    title: String,
+    title: String = "",
     hideTitle: Boolean = false,
     transparentBackground: Boolean = false,
     backAction: () -> Unit = {}

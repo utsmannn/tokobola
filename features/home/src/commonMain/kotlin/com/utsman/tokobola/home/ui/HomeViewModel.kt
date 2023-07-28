@@ -31,9 +31,4 @@ class HomeViewModel(private val homeUseCase: HomeUseCase) : ViewModel() {
     fun postPaged(list: List<ThumbnailProduct>) {
         homeListFlow.value = list
     }
-
-    /*override fun onCleared() {
-        super.onCleared()
-        homeUseCase.restartProductPage()
-    }*/
 }

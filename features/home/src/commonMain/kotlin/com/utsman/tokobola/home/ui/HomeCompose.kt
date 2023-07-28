@@ -92,7 +92,6 @@ fun Home() {
             modifier = Modifier.fillMaxSize()
                 .pullRefresh(pullRefreshState)
         ) {
-
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(
