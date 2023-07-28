@@ -26,5 +26,8 @@ fun Modifier.ignoreVerticalParentPadding(vertical: Dp): Modifier {
     }
 }
 
-fun LazyGridState.isScrolledToEnd() =
-    layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
+// (lazyColumnListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -9) >= (lazyColumnListState.layoutInfo.totalItemsCount - 6)
+fun LazyGridState.isScrolledToEnd(): Boolean {
+    return (layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1)
+    //return (layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -9) >= (layoutInfo.totalItemsCount - 10)
+}

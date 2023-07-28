@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform")
     id("com.android.library")
     id("org.jetbrains.compose")
+    kotlin("plugin.serialization") version "1.8.21"
 }
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
@@ -29,6 +30,7 @@ kotlin {
     sourceSets {
         val lifecycleVersion = "2.6.1"
         val voyagerVersion = "1.0.0-rc05"
+        val ktorVersion = "2.3.2"
 
         val commonMain by getting {
             dependencies {
@@ -38,6 +40,8 @@ kotlin {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 api(compose.components.resources)
                 api(compose.animation)
+
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
                 api(project(":resources"))
 

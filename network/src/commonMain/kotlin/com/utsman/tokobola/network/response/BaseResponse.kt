@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package com.utsman.tokobola.network.response
 
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

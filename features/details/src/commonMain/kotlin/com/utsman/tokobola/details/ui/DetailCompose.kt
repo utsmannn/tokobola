@@ -37,10 +37,10 @@ import com.utsman.tokobola.common.component.ProductPullRefreshIndicator
 import com.utsman.tokobola.common.component.ProductTopBar
 import com.utsman.tokobola.common.entity.ui.Product
 import com.utsman.tokobola.core.State
-import com.utsman.tokobola.core.onFailure
-import com.utsman.tokobola.core.onIdle
-import com.utsman.tokobola.core.onLoading
-import com.utsman.tokobola.core.onSuccess
+import com.utsman.tokobola.core.utils.onFailureComposed
+import com.utsman.tokobola.core.utils.onIdleComposed
+import com.utsman.tokobola.core.utils.onLoadingComposed
+import com.utsman.tokobola.core.utils.onSuccessComposed
 import com.utsman.tokobola.core.rememberViewModel
 import com.utsman.tokobola.core.utils.currency
 import com.utsman.tokobola.details.LocalDetailUseCase
@@ -86,20 +86,20 @@ fun Detail(productId: Int) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 with(detailState) {
-                    onIdle {
+                    onIdleComposed {
                         detailViewModel.getDetail(productId)
                     }
-                    onLoading {
+                    onLoadingComposed {
                         DetailLoading()
                     }
-                    onSuccess { detail ->
+                    onSuccessComposed { detail ->
                         productName = detail.name
 
                         DetailSuccess(detail) {
                             navigator.pop()
                         }
                     }
-                    onFailure { throwable ->
+                    onFailureComposed { throwable ->
                         DetailFailure(throwable.message.orEmpty())
                     }
                 }

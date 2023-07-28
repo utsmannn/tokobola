@@ -8,8 +8,8 @@ import com.utsman.tokobola.network.response.BaseResponse
 
 class HomeDataSources : NetworkSources("https://footballstore.fly.dev/api") {
 
-    suspend fun getProductPaged(): BasePagedResponse<ThumbnailProductResponse> {
-        return getPaged("/v2/product")
+    suspend fun getProductPaged(page: Int): BasePagedResponse<ThumbnailProductResponse> {
+        return getPaged("/v2/product?page=$page")
     }
 
     suspend fun getBanner(): BaseResponse<List<HomeBannerResponse>> {
