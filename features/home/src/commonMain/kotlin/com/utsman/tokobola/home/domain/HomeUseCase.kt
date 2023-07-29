@@ -39,7 +39,6 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
                     currentPage = dataPaged?.page.orNol()+1
 
                     prevList.addAll(dataProduct)
-                    println("asuuuuuu -> ${prevList.count()}")
                     Paged(
                         data = prevList,
                         hasNextPage = dataPaged?.hasNextPage.orFalse(),
@@ -65,6 +64,7 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
     }
 
     fun restartProductPage() {
+        hasNextPage = true
         currentPage = 1
         prevList.clear()
     }

@@ -3,13 +3,13 @@ package tab
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import cafe.adriel.voyager.navigator.tab.Tab
+import androidx.compose.ui.graphics.painter.Painter
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.utsman.tokobola.core.navigation.LocalScreenContainer
 import com.utsman.tokobola.resources.SharedRes
 import dev.icerock.moko.resources.compose.painterResource
 
-object WishlistTab : Tab {
+internal object WishlistTab : CustomTab {
     @Composable
     override fun Content() {
         val screenContainer = LocalScreenContainer.current
@@ -20,7 +20,7 @@ object WishlistTab : Tab {
         @Composable
         get() {
             val title = "Wishlist"
-            val painter = painterResource(SharedRes.images.icon_bookmark_fill)
+            val painter = painterResource(SharedRes.images.icon_bookmark_outline)
             return remember {
                 TabOptions(
                     index = 2u,
@@ -28,5 +28,11 @@ object WishlistTab : Tab {
                     icon = painter
                 )
             }
+        }
+
+    override val iconSelected: Painter?
+        @Composable
+        get() {
+            return painterResource(SharedRes.images.icon_bookmark_fill)
         }
 }

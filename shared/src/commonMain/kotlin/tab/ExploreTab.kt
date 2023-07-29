@@ -6,6 +6,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
@@ -14,7 +15,7 @@ import com.utsman.tokobola.core.navigation.LocalScreenContainer
 import com.utsman.tokobola.resources.SharedRes
 import dev.icerock.moko.resources.compose.painterResource
 
-object ExploreTab : Tab {
+internal object ExploreTab : CustomTab {
 
     @Composable
     override fun Content() {
@@ -37,5 +38,11 @@ object ExploreTab : Tab {
                     icon = painter
                 )
             }
+        }
+
+    override val iconSelected: Painter?
+        @Composable
+        get() {
+            return painterResource(SharedRes.images.icon_explore_fill)
         }
 }

@@ -26,8 +26,6 @@ kotlin {
     }
 
     sourceSets {
-        val voyagerVersion = "1.0.0-rc05"
-
         val commonMain by getting {
             dependencies {
                 api(project(":core"))
@@ -36,7 +34,6 @@ kotlin {
                 implementation(project(":features:home"))
                 implementation(project(":features:details"))
 
-                implementation("cafe.adriel.voyager:voyager-tab-navigator:$voyagerVersion")
             }
         }
         val androidMain by getting {

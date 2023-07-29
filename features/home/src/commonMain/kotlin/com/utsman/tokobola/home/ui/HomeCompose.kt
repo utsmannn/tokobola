@@ -49,6 +49,7 @@ import com.utsman.tokobola.common.component.ignoreHorizontalParentPadding
 import com.utsman.tokobola.common.component.ignoreVerticalParentPadding
 import com.utsman.tokobola.common.component.isScrolledToEnd
 import com.utsman.tokobola.common.component.isScrollingUp
+import com.utsman.tokobola.common.component.rememberForeverLazyListState
 import com.utsman.tokobola.common.entity.ui.HomeBanner
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.navigation.LocalNavigation
@@ -86,17 +87,12 @@ fun Home() {
         }
     )
 
-    val lazyGridState = rememberLazyGridState()
+    //val lazyGridState = rememberLazyGridState()
+    val lazyGridState = rememberForeverLazyListState("home_grid")
 
     val isReachBottom by remember {
         derivedStateOf {
             lazyGridState.isScrolledToEnd()
-        }
-    }
-
-    val valueIndex by remember {
-        derivedStateOf {
-            lazyGridState.firstVisibleItemIndex
         }
     }
 
@@ -121,7 +117,7 @@ fun Home() {
                 columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(
                     top = 6.dp,
-                    bottom = (6 + navigationBarHeight).dp,
+                    bottom = (6 + (navigationBarHeight*2)).dp,
                     start = 6.dp,
                     end = 6.dp
                 ),
