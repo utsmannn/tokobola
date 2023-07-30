@@ -32,6 +32,7 @@ kotlin {
             dependencies {
                 implementation(project(":core"))
                 implementation(project(":network"))
+                api(project(":api"))
             }
         }
     }

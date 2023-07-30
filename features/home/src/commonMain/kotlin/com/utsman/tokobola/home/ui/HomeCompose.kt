@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -39,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.seiko.imageloader.rememberImagePainter
 import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductItemGrid
-import com.utsman.tokobola.common.component.ProductItemGridShimmer
+import com.utsman.tokobola.common.component.ShimmerH320
 import com.utsman.tokobola.common.component.ProductPullRefreshIndicator
 import com.utsman.tokobola.common.component.SearchBarStatic
 import com.utsman.tokobola.common.component.SimpleErrorScreen
@@ -134,7 +133,15 @@ fun Home() {
                         item(
                             span = { GridItemSpan(this.maxLineSpan) }
                         ) {
-                            ProductItemGridShimmer()
+                            Box(
+                                modifier = Modifier
+                                    .height(340.dp)
+                                    .fillMaxWidth()
+                                    .ignoreHorizontalParentPadding(6.dp)
+                                    .ignoreVerticalParentPadding(6.dp)
+                            ) {
+                                ShimmerH320()
+                            }
                         }
                     }
                     onSuccess {
@@ -143,7 +150,8 @@ fun Home() {
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(340.dp)
+                                    .height(340.dp)
+                                    .fillMaxWidth()
                                     .ignoreHorizontalParentPadding(6.dp)
                                     .ignoreVerticalParentPadding(6.dp)
                             ) {
@@ -234,7 +242,7 @@ fun Home() {
                             items = listOf(1, 2),
                             span = { GridItemSpan(this.maxLineSpan / 2) }
                         ) {
-                            ProductItemGridShimmer()
+                            ShimmerH320()
                         }
                     }
                     onSuccess {
@@ -278,7 +286,7 @@ fun Banner(banner: List<HomeBanner>) {
         val painter = rememberImagePainter(item.productImage)
 
         Box(
-            modifier = Modifier.fillMaxSize().padding(bottom = 12.dp)
+            modifier = Modifier.padding(bottom = 12.dp)
         ) {
             Image(
                 painter = painter,

@@ -1,7 +1,6 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
-    id("org.jetbrains.compose")
     kotlin("plugin.serialization") version "1.8.21"
 }
 
@@ -23,24 +22,23 @@ kotlin {
         iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
-            baseName = "explore"
+            baseName = "api"
         }
     }
 
     sourceSets {
+
         val commonMain by getting {
             dependencies {
                 implementation(project(":core"))
                 implementation(project(":network"))
-
-                implementation(project(":features:common"))
             }
         }
     }
 }
 
 android {
-    namespace = "com.utsman.tokobola.explore"
+    namespace = "com.utsman.tokobola.api"
     compileSdk = 33
     defaultConfig {
         minSdk = 24

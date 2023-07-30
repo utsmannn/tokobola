@@ -1,15 +1,15 @@
 package com.utsman.tokobola.common
 
-import com.utsman.tokobola.common.entity.response.BrandResponse
-import com.utsman.tokobola.common.entity.response.HomeBannerResponse
-import com.utsman.tokobola.common.entity.response.ProductResponse
-import com.utsman.tokobola.common.entity.response.ThumbnailProductResponse
 import com.utsman.tokobola.common.entity.ui.Brand
 import com.utsman.tokobola.common.entity.ui.HomeBanner
 import com.utsman.tokobola.common.entity.ui.Product
 import com.utsman.tokobola.common.entity.ui.ThumbnailProduct
 import com.utsman.tokobola.core.data.orFalse
 import com.utsman.tokobola.core.data.orNol
+import com.utsman.tokocot.api.response.BrandResponse
+import com.utsman.tokocot.api.response.HomeBannerResponse
+import com.utsman.tokocot.api.response.ProductResponse
+import com.utsman.tokocot.api.response.ThumbnailProductResponse
 
 fun ProductResponse.mapToProduct(): Product {
     return Product(

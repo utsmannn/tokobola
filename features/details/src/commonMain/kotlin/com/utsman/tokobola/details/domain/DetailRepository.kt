@@ -1,6 +1,10 @@
 package com.utsman.tokobola.details.domain
 
-class DetailRepository(private val dataSources: DetailDataSources) {
+import com.utsman.tokocot.api.productWebApi
 
-    suspend fun getDetailProduct(productId: Int) = dataSources.getDetail(productId)
+class DetailRepository {
+
+    private val productApi by productWebApi()
+
+    suspend fun getDetailProduct(productId: Int) = productApi.getDetail(productId)
 }

@@ -1,8 +1,12 @@
 package com.utsman.tokobola.home.domain
 
-class HomeRepository(private val homeDataSources: HomeDataSources) {
+import com.utsman.tokocot.api.productWebApi
 
-    suspend fun getProductPaged(page: Int) = homeDataSources.getFeaturedProductPaged(page)
-    suspend fun getBanner() = homeDataSources.getBanner()
-    suspend fun getBrand() = homeDataSources.getBrand()
+class HomeRepository {
+
+    private val productApi by productWebApi()
+
+    suspend fun getProductPaged(page: Int) = productApi.getFeaturedPaged(page)
+    suspend fun getBanner() = productApi.getHomeBanner()
+    suspend fun getBrand() = productApi.getBrand()
 }
