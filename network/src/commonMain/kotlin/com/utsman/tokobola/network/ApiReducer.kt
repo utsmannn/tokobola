@@ -10,14 +10,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 
-@Serializable
-data class ApiResponse(
-    val data: String,
-    val message: String?,
-    @SerialName("status")
-    val status: Boolean
-)
-
 open class ApiReducer<T> {
 
     val dataFlow: MutableStateFlow<State<T>> = MutableStateFlow(State.Idle())
@@ -37,8 +29,6 @@ open class ApiReducer<T> {
 
             val status = jsonData["status"].toString().toBooleanStrict()
             val message = jsonData["message"].toString()
-            val data = jsonData["data"]
-            val isPaging = data?.toString()?.contains("\"has_next_page\":").orFalse()
 
             if (status) {
                 val dataResult = mapper.invoke(dataSuccess)

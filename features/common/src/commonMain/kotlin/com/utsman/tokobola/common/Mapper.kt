@@ -1,8 +1,10 @@
 package com.utsman.tokobola.common
 
+import com.utsman.tokobola.common.entity.response.BrandResponse
 import com.utsman.tokobola.common.entity.response.HomeBannerResponse
 import com.utsman.tokobola.common.entity.response.ProductResponse
 import com.utsman.tokobola.common.entity.response.ThumbnailProductResponse
+import com.utsman.tokobola.common.entity.ui.Brand
 import com.utsman.tokobola.common.entity.ui.HomeBanner
 import com.utsman.tokobola.common.entity.ui.Product
 import com.utsman.tokobola.common.entity.ui.ThumbnailProduct
@@ -18,7 +20,11 @@ fun ProductResponse.mapToProduct(): Product {
         description = this.description.orEmpty(),
         price = this.price.orNol(),
         isPromoted = this.promoted.orFalse(),
-        brand = this.brand?.name.orEmpty()
+        brand = ThumbnailProduct.ThumbnailBrand(
+            id = brand?.id.orNol(),
+            name = brand?.name.orEmpty(),
+            logo = brand?.logo.orEmpty()
+        )
     )
 }
 
@@ -34,7 +40,7 @@ fun ThumbnailProductResponse.toHomeProduct(): ThumbnailProduct {
         brand = ThumbnailProduct.ThumbnailBrand(
             id = brand?.id.orNol(),
             name = brand?.name.orEmpty(),
-            image = brand?.image.orEmpty()
+            logo = brand?.logo.orEmpty()
         ),
         image = image.orEmpty(),
         promoted = promoted.orFalse()
@@ -49,5 +55,15 @@ fun HomeBannerResponse.toHomeBanner(): HomeBanner {
         colorAccent = colorAccent ?: "#000000",
         productImage = productImage.orEmpty(),
         description = description.orEmpty()
+    )
+}
+
+fun BrandResponse.toBrand(): Brand {
+    return Brand(
+        id = id.orNol(),
+        name = name.orEmpty(),
+        description = description.orEmpty(),
+        image = image.orEmpty(),
+        logo = logo.orEmpty()
     )
 }

@@ -27,7 +27,9 @@ data class ProductResponse(
         @SerialName("id")
         var id: Int?,
         @SerialName("name")
-        var name: String?
+        var name: String?,
+        @SerialName("logo")
+        var logo: String?
     )
 
     @Serializable

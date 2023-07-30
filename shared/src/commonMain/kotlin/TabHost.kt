@@ -99,15 +99,6 @@ object TabHost : Screen {
                         )
                     }
                 }
-
-                /*val iconPainter = if (isSelected) selectedPainter else defaultPainter
-                iconPainter?.let {
-                    Icon(
-                        painter = it,
-                        contentDescription = tab.options.title,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }*/
             }
         )
     }

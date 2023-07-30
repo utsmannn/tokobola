@@ -56,37 +56,15 @@ fun Modifier.shimmerBackground(shape: Shape = RectangleShape): Modifier = compos
         ),
     )
     val shimmerColors = listOf(
-        Color.LightGray.copy(alpha = 0.4f),
-        Color.LightGray.copy(alpha = 0.3f),
-        Color.LightGray.copy(alpha = 0.3f),
+        Color.LightGray.copy(alpha = 0.8f),
+        Color.LightGray.copy(alpha = 0.5f),
+        Color.LightGray.copy(alpha = 0.2f),
     )
     val brush = Brush.linearGradient(
         colors = shimmerColors,
         start = Offset(translateAnimation, translateAnimation),
-        end = Offset(translateAnimation + 100f, translateAnimation + 100f),
+        end = Offset(translateAnimation + 600f, translateAnimation + 600f),
         tileMode = TileMode.Mirror,
     )
     return@composed this.then(background(brush, shape))
-}
-
-fun LazyGridState.isScrolledToEnd(): Boolean {
-    return (layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1)
-}
-
-@Composable
-fun LazyGridState.isScrollingUp(): Boolean {
-    var previousIndex by remember(this) { mutableStateOf(firstVisibleItemIndex) }
-    var previousScrollOffset by remember(this) { mutableStateOf(firstVisibleItemScrollOffset) }
-    return remember(this) {
-        derivedStateOf {
-            if (previousIndex != firstVisibleItemIndex) {
-                previousIndex > firstVisibleItemIndex
-            } else {
-                previousScrollOffset >= firstVisibleItemScrollOffset
-            }.also {
-                previousIndex = firstVisibleItemIndex
-                previousScrollOffset = firstVisibleItemScrollOffset
-            }
-        }
-    }.value
 }

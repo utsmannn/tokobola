@@ -8,5 +8,5 @@ data class Product(
     val name: String = "",
     val price: Double = 0.0,
     val isPromoted: Boolean = false,
-    val brand: String = ""
+    val brand: ThumbnailProduct.ThumbnailBrand = ThumbnailProduct.ThumbnailBrand()
 )

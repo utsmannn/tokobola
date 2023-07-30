@@ -150,7 +150,7 @@ fun DetailSuccess(product: Product) {
                     drawCircle(color = colorDot)
                 }
                 Text(
-                    text = product.brand,
+                    text = product.brand.name,
                     style = MaterialTheme.typography.subtitle2
                 )
             }

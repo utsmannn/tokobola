@@ -32,6 +32,7 @@ kotlin {
 
                 implementation(project(":features:common"))
                 implementation(project(":features:home"))
+                implementation(project(":features:explore"))
                 implementation(project(":features:details"))
 
             }

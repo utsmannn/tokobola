@@ -26,8 +26,8 @@ data class ThumbnailProductResponse(
         val id: Int?,
         @SerialName("name")
         val name: String?,
-        @SerialName("image")
-        val image: String?
+        @SerialName("logo")
+        val logo: String?
     )
 
     @Serializable

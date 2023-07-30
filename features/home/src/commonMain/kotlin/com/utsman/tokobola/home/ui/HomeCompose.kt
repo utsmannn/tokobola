@@ -4,10 +4,8 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,7 +17,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -35,21 +32,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.seiko.imageloader.rememberImagePainter
+import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductItemGrid
 import com.utsman.tokobola.common.component.ProductItemGridShimmer
 import com.utsman.tokobola.common.component.ProductPullRefreshIndicator
 import com.utsman.tokobola.common.component.SearchBarStatic
+import com.utsman.tokobola.common.component.SimpleErrorScreen
 import com.utsman.tokobola.common.component.ignoreHorizontalParentPadding
 import com.utsman.tokobola.common.component.ignoreVerticalParentPadding
 import com.utsman.tokobola.common.component.isScrolledToEnd
 import com.utsman.tokobola.common.component.isScrollingUp
 import com.utsman.tokobola.common.component.rememberForeverLazyListState
+import com.utsman.tokobola.common.component.shimmerBackground
 import com.utsman.tokobola.common.entity.ui.HomeBanner
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.navigation.LocalNavigation
@@ -61,8 +60,6 @@ import com.utsman.tokobola.core.utils.onLoading
 import com.utsman.tokobola.core.utils.onSuccess
 import com.utsman.tokobola.core.utils.parseString
 import com.utsman.tokobola.home.LocalHomeUseCase
-import com.utsman.tokobola.resources.SharedRes
-import dev.icerock.moko.resources.compose.painterResource
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -74,10 +71,12 @@ fun Home() {
 
     val products by homeViewModel.homeProduct.collectAsState()
     val banners by homeViewModel.homeBanner.collectAsState()
+    val brands by homeViewModel.brand.collectAsState()
 
-    val isLoading by homeViewModel.isRestart.collectAsState()
+    val isLoading by derivedStateOf {
+        banners is State.Loading
+    }
 
-    val statusBarHeight = PlatformUtils.rememberStatusBarHeight()
     val navigationBarHeight = PlatformUtils.rememberNavigationBarHeight()
 
     val pullRefreshState = rememberPullRefreshState(
@@ -87,7 +86,6 @@ fun Home() {
         }
     )
 
-    //val lazyGridState = rememberLazyGridState()
     val lazyGridState = rememberForeverLazyListState("home_grid")
 
     val isReachBottom by remember {
@@ -106,24 +104,28 @@ fun Home() {
         }
     }
 
-    val list by homeViewModel.homeListFlow.collectAsState()
+    val productList by homeViewModel.homeListFlow.collectAsState()
+    val brandList by homeViewModel.brandListFlow.collectAsState()
 
     Scaffold {
         Box(
             modifier = Modifier.fillMaxSize()
                 .pullRefresh(pullRefreshState)
         ) {
+
+            // main list
             LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
+                columns = GridCells.Fixed(64),
                 contentPadding = PaddingValues(
                     top = 6.dp,
-                    bottom = (6 + (navigationBarHeight*2)).dp,
+                    bottom = (6 + (navigationBarHeight * 2)).dp,
                     start = 6.dp,
                     end = 6.dp
                 ),
                 state = lazyGridState
             ) {
 
+                // banner state and item
                 with(banners) {
                     onIdle {
                         homeViewModel.getHomeBanner()
@@ -153,37 +155,96 @@ fun Home() {
                         item(
                             span = { GridItemSpan(this.maxLineSpan) }
                         ) {
-                            BannerFailure(it.message.orEmpty())
+                            SimpleErrorScreen(it)
                         }
                     }
                 }
 
-                items(list) {
-                    ProductItemGrid(it) {
-                        navigation.goToDetail(it.id)
+                // brand item
+                items(
+                    items = brandList,
+                    span = { GridItemSpan((this.maxLineSpan / 3)) }
+                ) {
+                    HomeBrandItem(it) {
+
                     }
                 }
 
-                with(products) {
+                // brand state
+                with(brands) {
                     onIdle {
-                        homeViewModel.getHomeProduct()
+                        homeViewModel.getBrand()
                     }
                     onLoading {
-                        item {
-                            ProductItemGridShimmer()
-                        }
-                        item {
-                            ProductItemGridShimmer()
+                        items(
+                            items = listOf(1, 2, 3, 4, 5, 6),
+                            span = { GridItemSpan((this.maxLineSpan / 3)) }
+                        ) {
+                            HomeBrandShimmer()
                         }
                     }
                     onSuccess {
-                        homeViewModel.postPaged(it.data)
+                        homeViewModel.postBrandList(it)
                     }
                     onFailure {
                         item(
                             span = { GridItemSpan(this.maxLineSpan) }
                         ) {
-                            ProductListFailure(it.message.orEmpty())
+                            ErrorScreen(it)
+                        }
+                    }
+                }
+
+                // divider title featured product
+                item(
+                    span = { GridItemSpan((this.maxLineSpan)) }
+                ) {
+                    if (isLoading) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth()
+                                .height(30.dp)
+                                .padding(6.dp)
+                                .shimmerBackground()
+                        )
+                    } else {
+                        Text(
+                            text = "Featured Product",
+                            modifier = Modifier.padding(6.dp)
+                        )
+                    }
+                }
+
+                // product item paging
+                items(
+                    items = productList,
+                    span = { GridItemSpan(this.maxLineSpan / 2) }
+                ) {
+                    ProductItemGrid(it) { product ->
+                        navigation.goToDetail(product.id)
+                    }
+                }
+
+                // product state with paging
+                with(products) {
+                    onIdle {
+                        homeViewModel.getHomeProduct()
+                    }
+                    onLoading {
+                        items(
+                            items = listOf(1, 2),
+                            span = { GridItemSpan(this.maxLineSpan / 2) }
+                        ) {
+                            ProductItemGridShimmer()
+                        }
+                    }
+                    onSuccess {
+                        homeViewModel.postProduct(it.data)
+                    }
+                    onFailure {
+                        item(
+                            span = { GridItemSpan(this.maxLineSpan) }
+                        ) {
+                            ErrorScreen(it)
                         }
                     }
                 }
@@ -195,25 +256,16 @@ fun Home() {
                 modifier = Modifier.align(Alignment.TopCenter)
             )
 
-            Row(
+            // search bar
+            SearchBarStatic(
                 modifier = Modifier
                     .offset(y = heightTopBar.value)
                     .background(MaterialTheme.colors.primary)
-                    .fillMaxWidth()
-                    .height(110.dp)
-                    .padding(top = statusBarHeight.dp)
             ) {
-                SearchBarStatic(modifier = Modifier.fillMaxSize()) {
 
-                }
             }
         }
     }
-}
-
-@Composable
-fun ProductListFailure(message: String) {
-    Text(text = message)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -262,9 +314,4 @@ fun Banner(banner: List<HomeBanner>) {
             }
         }
     }
-}
-
-@Composable
-fun BannerFailure(message: String) {
-    Text(text = message)
 }

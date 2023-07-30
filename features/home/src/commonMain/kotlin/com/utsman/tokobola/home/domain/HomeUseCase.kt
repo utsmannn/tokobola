@@ -1,7 +1,9 @@
 package com.utsman.tokobola.home.domain
 
+import com.utsman.tokobola.common.entity.ui.Brand
 import com.utsman.tokobola.common.entity.ui.HomeBanner
 import com.utsman.tokobola.common.entity.ui.ThumbnailProduct
+import com.utsman.tokobola.common.toBrand
 import com.utsman.tokobola.common.toHomeBanner
 import com.utsman.tokobola.common.toHomeProduct
 import com.utsman.tokobola.core.data.Paged
@@ -12,21 +14,22 @@ import com.utsman.tokobola.network.ApiReducer
 class HomeUseCase(private val homeRepository: HomeRepository) {
 
     val productListReducer = ApiReducer<Paged<ThumbnailProduct>>()
-    val productBanner = ApiReducer<List<HomeBanner>>()
+    val productBannerReducer = ApiReducer<List<HomeBanner>>()
+    val brandReducer = ApiReducer<List<Brand>>()
 
-    private var currentPage: Int = 1
-    private var prevPage: Int = 1
-    private var hasNextPage = true
+    private var currentPageProduct: Int = 1
+    private var prevPageProduct: Int = 1
+    private var hasNextPageProduct = true
 
-    private val prevList: MutableList<ThumbnailProduct> = mutableListOf()
+    private val prevListProduct: MutableList<ThumbnailProduct> = mutableListOf()
 
     suspend fun getProduct() {
-        if (hasNextPage) {
+        if (hasNextPageProduct) {
             productListReducer.transform(
                 call = {
-                    homeRepository.getProductPaged(currentPage).apply {
-                        hasNextPage = this.data?.hasNextPage.orFalse()
-                        prevPage = currentPage
+                    homeRepository.getProductPaged(currentPageProduct).apply {
+                        hasNextPageProduct = this.data?.hasNextPage.orFalse()
+                        prevPageProduct = currentPageProduct
                     }
                 },
                 mapper = { pagedResponseProduct ->
@@ -36,11 +39,11 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
                             it.toHomeProduct()
                         }
 
-                    currentPage = dataPaged?.page.orNol()+1
+                    currentPageProduct = dataPaged?.page.orNol()+1
 
-                    prevList.addAll(dataProduct)
+                    prevListProduct.addAll(dataProduct)
                     Paged(
-                        data = prevList,
+                        data = prevListProduct,
                         hasNextPage = dataPaged?.hasNextPage.orFalse(),
                         page = dataPaged?.page ?: 1,
                         perPage = dataPaged?.perPage ?: 10
@@ -53,7 +56,7 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
     }
 
     suspend fun getBanner() {
-        productBanner.transform(
+        productBannerReducer.transform(
             call = {
                 homeRepository.getBanner()
             },
@@ -63,9 +66,25 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
         )
     }
 
+    suspend fun getBrand() {
+        brandReducer.transform(
+            call = {
+                homeRepository.getBrand()
+            },
+            mapper = { brandResponse ->
+                brandResponse.data?.map { it.toBrand() }.orEmpty()
+                    .filter {
+                        // filter "other" brand
+                        it.id != 40
+                    }
+            }
+        )
+    }
+
     fun restartProductPage() {
-        hasNextPage = true
-        currentPage = 1
-        prevList.clear()
+        hasNextPageProduct = true
+        currentPageProduct = 1
+        prevListProduct.clear()
+        brandReducer.clear()
     }
 }

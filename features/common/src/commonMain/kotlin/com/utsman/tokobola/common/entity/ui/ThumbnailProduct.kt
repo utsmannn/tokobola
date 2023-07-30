@@ -12,7 +12,7 @@ data class ThumbnailProduct(
     data class ThumbnailBrand(
         val id: Int = 0,
         val name: String = "",
-        val image: String = ""
+        val logo: String = ""
     )
 
     data class ThumbnailCategory(
