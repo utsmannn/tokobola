@@ -1,4 +1,4 @@
-package com.utsman.tokocot.api
+package com.utsman.tokobola.api
 
 object WebEndPoint {
 

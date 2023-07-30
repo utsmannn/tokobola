@@ -1,13 +1,13 @@
-package com.utsman.tokocot.api
+package com.utsman.tokobola.api
 
 import com.utsman.tokobola.core.SynchronizObject
 import com.utsman.tokobola.core.synchroniz
 import com.utsman.tokobola.network.response.BasePagedResponse
 import com.utsman.tokobola.network.response.BaseResponse
-import com.utsman.tokocot.api.response.BrandResponse
-import com.utsman.tokocot.api.response.HomeBannerResponse
-import com.utsman.tokocot.api.response.ProductResponse
-import com.utsman.tokocot.api.response.ThumbnailProductResponse
+import com.utsman.tokobola.api.response.BrandResponse
+import com.utsman.tokobola.api.response.HomeBannerResponse
+import com.utsman.tokobola.api.response.ProductResponse
+import com.utsman.tokobola.api.response.ThumbnailProductResponse
 import kotlin.jvm.Volatile
 import kotlin.native.concurrent.ThreadLocal
 

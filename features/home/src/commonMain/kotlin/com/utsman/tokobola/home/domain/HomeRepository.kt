@@ -1,6 +1,6 @@
 package com.utsman.tokobola.home.domain
 
-import com.utsman.tokocot.api.productWebApi
+import com.utsman.tokobola.api.productWebApi
 
 class HomeRepository {
 

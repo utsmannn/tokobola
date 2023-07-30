@@ -1,6 +1,6 @@
 package com.utsman.tokobola.details.domain
 
-import com.utsman.tokocot.api.productWebApi
+import com.utsman.tokobola.api.productWebApi
 
 class DetailRepository {
 

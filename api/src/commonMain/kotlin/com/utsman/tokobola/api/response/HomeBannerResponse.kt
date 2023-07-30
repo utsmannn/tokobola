@@ -1,4 +1,4 @@
-package com.utsman.tokocot.api.response
+package com.utsman.tokobola.api.response
 
 
 import kotlinx.serialization.SerialName

@@ -1,4 +1,4 @@
-package com.utsman.tokocot.api
+package com.utsman.tokobola.api
 
 fun productWebApi(): Lazy<ProductWebApi> {
     return lazy(
