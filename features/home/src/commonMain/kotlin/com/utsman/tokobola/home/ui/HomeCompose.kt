@@ -38,8 +38,8 @@ import androidx.compose.ui.unit.sp
 import com.seiko.imageloader.rememberImagePainter
 import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductItemGrid
-import com.utsman.tokobola.common.component.ShimmerH320
-import com.utsman.tokobola.common.component.ProductPullRefreshIndicator
+import com.utsman.tokobola.common.component.Shimmer
+import com.utsman.tokobola.common.component.PullRefreshIndicatorOffset
 import com.utsman.tokobola.common.component.SearchBarStatic
 import com.utsman.tokobola.common.component.SimpleErrorScreen
 import com.utsman.tokobola.common.component.ignoreHorizontalParentPadding
@@ -48,7 +48,7 @@ import com.utsman.tokobola.common.component.isScrolledToEnd
 import com.utsman.tokobola.common.component.isScrollingUp
 import com.utsman.tokobola.common.component.rememberForeverLazyListState
 import com.utsman.tokobola.common.component.shimmerBackground
-import com.utsman.tokobola.common.entity.ui.HomeBanner
+import com.utsman.tokobola.common.entity.HomeBanner
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.rememberViewModel
@@ -68,12 +68,12 @@ fun Home() {
 
     val homeViewModel = rememberViewModel { HomeViewModel(homeUseCase) }
 
-    val products by homeViewModel.homeProduct.collectAsState()
-    val banners by homeViewModel.homeBanner.collectAsState()
-    val brands by homeViewModel.brand.collectAsState()
+    val productsFeaturedState by homeViewModel.productsFeaturedState.collectAsState()
+    val bannerState by homeViewModel.homeBannerState.collectAsState()
+    val brandState by homeViewModel.brandState.collectAsState()
 
     val isLoading by derivedStateOf {
-        banners is State.Loading
+        bannerState is State.Loading
     }
 
     val navigationBarHeight = PlatformUtils.rememberNavigationBarHeight()
@@ -97,13 +97,14 @@ fun Home() {
         targetValue = if (lazyGridState.isScrollingUp()) 0.dp else (-110).dp
     )
 
+    // paging works
     LaunchedEffect(isReachBottom) {
-        if (products is State.Success && isReachBottom) {
+        if (productsFeaturedState is State.Success && isReachBottom) {
             homeViewModel.getHomeProduct()
         }
     }
 
-    val productList by homeViewModel.homeListFlow.collectAsState()
+    val productList by homeViewModel.productsFeaturedFlow.collectAsState()
     val brandList by homeViewModel.brandListFlow.collectAsState()
 
     Scaffold {
@@ -114,7 +115,7 @@ fun Home() {
 
             // main list
             LazyVerticalGrid(
-                columns = GridCells.Fixed(64),
+                columns = GridCells.Fixed(6),
                 contentPadding = PaddingValues(
                     top = 6.dp,
                     bottom = (6 + (navigationBarHeight * 2)).dp,
@@ -125,7 +126,7 @@ fun Home() {
             ) {
 
                 // banner state and item
-                with(banners) {
+                with(bannerState) {
                     onIdle {
                         homeViewModel.getHomeBanner()
                     }
@@ -140,7 +141,7 @@ fun Home() {
                                     .ignoreHorizontalParentPadding(6.dp)
                                     .ignoreVerticalParentPadding(6.dp)
                             ) {
-                                ShimmerH320()
+                                Shimmer()
                             }
                         }
                     }
@@ -179,7 +180,7 @@ fun Home() {
                 }
 
                 // brand state
-                with(brands) {
+                with(brandState) {
                     onIdle {
                         homeViewModel.getBrand()
                     }
@@ -233,7 +234,7 @@ fun Home() {
                 }
 
                 // product state with paging
-                with(products) {
+                with(productsFeaturedState) {
                     onIdle {
                         homeViewModel.getHomeProduct()
                     }
@@ -242,7 +243,7 @@ fun Home() {
                             items = listOf(1, 2),
                             span = { GridItemSpan(this.maxLineSpan / 2) }
                         ) {
-                            ShimmerH320()
+                            Shimmer()
                         }
                     }
                     onSuccess {
@@ -258,7 +259,7 @@ fun Home() {
                 }
             }
 
-            ProductPullRefreshIndicator(
+            PullRefreshIndicatorOffset(
                 refreshing = isLoading,
                 state = pullRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter)

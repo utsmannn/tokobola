@@ -1,15 +1,17 @@
 package com.utsman.tokobola.common
 
-import com.utsman.tokobola.common.entity.ui.Brand
-import com.utsman.tokobola.common.entity.ui.HomeBanner
-import com.utsman.tokobola.common.entity.ui.Product
-import com.utsman.tokobola.common.entity.ui.ThumbnailProduct
+import com.utsman.tokobola.common.entity.Brand
+import com.utsman.tokobola.common.entity.HomeBanner
+import com.utsman.tokobola.common.entity.Product
+import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.core.data.orFalse
 import com.utsman.tokobola.core.data.orNol
 import com.utsman.tokobola.api.response.BrandResponse
+import com.utsman.tokobola.api.response.CategoryResponse
 import com.utsman.tokobola.api.response.HomeBannerResponse
 import com.utsman.tokobola.api.response.ProductResponse
 import com.utsman.tokobola.api.response.ThumbnailProductResponse
+import com.utsman.tokobola.common.entity.Category
 
 fun ProductResponse.mapToProduct(): Product {
     return Product(
@@ -65,5 +67,14 @@ fun BrandResponse.toBrand(): Brand {
         description = description.orEmpty(),
         image = image.orEmpty(),
         logo = logo.orEmpty()
+    )
+}
+
+fun CategoryResponse.toCategory(): Category {
+    return Category(
+        id = id.orNol(),
+        name = name.orEmpty(),
+        description = description.orEmpty(),
+        image = image.orEmpty()
     )
 }

@@ -5,6 +5,7 @@ import com.utsman.tokobola.core.synchroniz
 import com.utsman.tokobola.network.response.BasePagedResponse
 import com.utsman.tokobola.network.response.BaseResponse
 import com.utsman.tokobola.api.response.BrandResponse
+import com.utsman.tokobola.api.response.CategoryResponse
 import com.utsman.tokobola.api.response.HomeBannerResponse
 import com.utsman.tokobola.api.response.ProductResponse
 import com.utsman.tokobola.api.response.ThumbnailProductResponse
@@ -13,7 +14,7 @@ import kotlin.native.concurrent.ThreadLocal
 
 class ProductWebApi : WebDataSource() {
 
-    suspend fun getFeaturedPaged(page: Int): BasePagedResponse<ThumbnailProductResponse> {
+    suspend fun getByFeaturedPaged(page: Int): BasePagedResponse<ThumbnailProductResponse> {
         return getPaged(WebEndPoint.PRODUCT_FEATURED.withParam("page", page))
     }
 
@@ -31,6 +32,10 @@ class ProductWebApi : WebDataSource() {
 
     suspend fun getBrand(): BaseResponse<List<BrandResponse>> {
         return get(WebEndPoint.BRAND)
+    }
+
+    suspend fun getCategory() : BaseResponse<List<CategoryResponse>> {
+        return get(WebEndPoint.CATEGORY)
     }
 
     @ThreadLocal

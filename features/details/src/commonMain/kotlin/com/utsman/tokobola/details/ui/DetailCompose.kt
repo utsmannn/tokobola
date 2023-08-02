@@ -21,28 +21,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import com.seiko.imageloader.rememberImagePainter
-import com.utsman.tokobola.common.component.ProductPullRefreshIndicator
+import com.utsman.tokobola.common.component.PullRefreshIndicatorOffset
 import com.utsman.tokobola.common.component.ProductTopBar
-import com.utsman.tokobola.common.entity.ui.Product
+import com.utsman.tokobola.common.entity.Product
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.navigation.LocalNavigation
-import com.utsman.tokobola.core.utils.onFailureComposed
-import com.utsman.tokobola.core.utils.onIdleComposed
-import com.utsman.tokobola.core.utils.onLoadingComposed
-import com.utsman.tokobola.core.utils.onSuccessComposed
 import com.utsman.tokobola.core.rememberViewModel
 import com.utsman.tokobola.core.utils.currency
 import com.utsman.tokobola.core.utils.onFailure
@@ -106,7 +96,7 @@ fun Detail(productId: Int) {
                 navigation.back()
             }
 
-            ProductPullRefreshIndicator(
+            PullRefreshIndicatorOffset(
                 refreshing = isLoading,
                 state = pullRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter)

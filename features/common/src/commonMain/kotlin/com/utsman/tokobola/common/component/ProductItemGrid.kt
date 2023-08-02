@@ -22,8 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.seiko.imageloader.rememberImagePainter
-import com.utsman.tokobola.common.entity.ui.Product
-import com.utsman.tokobola.common.entity.ui.ThumbnailProduct
+import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.core.utils.currency
 
 @Composable

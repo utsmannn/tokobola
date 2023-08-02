@@ -20,10 +20,7 @@ internal object ExploreTab : CustomTab {
     @Composable
     override fun Content() {
         val screenContainer = LocalScreenContainer.current
-        val navigation = LocalNavigation.current
-        Text("explorer", modifier = Modifier.padding(100.dp).clickable {
-            navigation.goToDetail(3)
-        })
+        screenContainer.explore().Content()
     }
 
     override val options: TabOptions

@@ -1,8 +1,8 @@
 package com.utsman.tokobola.home.domain
 
-import com.utsman.tokobola.common.entity.ui.Brand
-import com.utsman.tokobola.common.entity.ui.HomeBanner
-import com.utsman.tokobola.common.entity.ui.ThumbnailProduct
+import com.utsman.tokobola.common.entity.Brand
+import com.utsman.tokobola.common.entity.HomeBanner
+import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.common.toBrand
 import com.utsman.tokobola.common.toHomeBanner
 import com.utsman.tokobola.common.toHomeProduct
@@ -13,7 +13,7 @@ import com.utsman.tokobola.network.ApiReducer
 
 class HomeUseCase(private val homeRepository: HomeRepository) {
 
-    val productListReducer = ApiReducer<Paged<ThumbnailProduct>>()
+    val productsFeaturedReducer = ApiReducer<Paged<ThumbnailProduct>>()
     val productBannerReducer = ApiReducer<List<HomeBanner>>()
     val brandReducer = ApiReducer<List<Brand>>()
 
@@ -25,9 +25,9 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
 
     suspend fun getProduct() {
         if (hasNextPageProduct) {
-            productListReducer.transform(
+            productsFeaturedReducer.transform(
                 call = {
-                    homeRepository.getProductPaged(currentPageProduct).apply {
+                    homeRepository.getFeaturedProductPaged(currentPageProduct).apply {
                         hasNextPageProduct = this.data?.hasNextPage.orFalse()
                         prevPageProduct = currentPageProduct
                     }
@@ -81,7 +81,7 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
         )
     }
 
-    fun restartProductPage() {
+    fun clearProductPage() {
         hasNextPageProduct = true
         currentPageProduct = 1
         prevListProduct.clear()

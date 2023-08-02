@@ -1,5 +1,7 @@
 package com.utsman.tokobola.common.component
 
+import androidx.compose.foundation.lazy.grid.LazyGridItemScope
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
@@ -77,4 +79,17 @@ fun LazyGridState.isScrollingUp(): Boolean {
             }
         }
     }.value
+}
+
+
+private var headersIndexes: MutableList<Int>? = null
+    private set
+
+fun LazyGridScope.stickyHeader(totalSize: Int, content: @Composable LazyGridItemScope.() -> Unit) {
+    val headersIndexes = headersIndexes ?: mutableListOf<Int>().also {
+        headersIndexes = it
+    }
+    headersIndexes.add(totalSize)
+
+    item(content = content)
 }

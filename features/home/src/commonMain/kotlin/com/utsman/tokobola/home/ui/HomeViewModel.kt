@@ -1,7 +1,7 @@
 package com.utsman.tokobola.home.ui
 
-import com.utsman.tokobola.common.entity.ui.Brand
-import com.utsman.tokobola.common.entity.ui.ThumbnailProduct
+import com.utsman.tokobola.common.entity.Brand
+import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.core.ViewModel
 import com.utsman.tokobola.home.domain.HomeUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,11 +9,11 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(private val homeUseCase: HomeUseCase) : ViewModel() {
 
-    val homeProduct get() = homeUseCase.productListReducer.dataFlow
-    val homeBanner get() = homeUseCase.productBannerReducer.dataFlow
-    val brand get() = homeUseCase.brandReducer.dataFlow
+    val productsFeaturedState get() = homeUseCase.productsFeaturedReducer.dataFlow
+    val homeBannerState get() = homeUseCase.productBannerReducer.dataFlow
+    val brandState get() = homeUseCase.brandReducer.dataFlow
 
-    val homeListFlow: MutableStateFlow<List<ThumbnailProduct>> = MutableStateFlow(emptyList())
+    val productsFeaturedFlow: MutableStateFlow<List<ThumbnailProduct>> = MutableStateFlow(emptyList())
     val brandListFlow: MutableStateFlow<List<Brand>> = MutableStateFlow(emptyList())
 
     val isRestart: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -33,9 +33,9 @@ class HomeViewModel(private val homeUseCase: HomeUseCase) : ViewModel() {
 
     fun restartData() {
         isRestart.value = true
-        homeListFlow.value = emptyList()
+        productsFeaturedFlow.value = emptyList()
         brandListFlow.value = emptyList()
-        homeUseCase.restartProductPage()
+        homeUseCase.clearProductPage()
         getHomeBanner()
         getHomeProduct()
         getBrand()
@@ -43,7 +43,7 @@ class HomeViewModel(private val homeUseCase: HomeUseCase) : ViewModel() {
 
     fun postProduct(list: List<ThumbnailProduct>) {
         isRestart.value = false
-        homeListFlow.value = list
+        productsFeaturedFlow.value = list
     }
 
     fun postBrandList(list: List<Brand>) {

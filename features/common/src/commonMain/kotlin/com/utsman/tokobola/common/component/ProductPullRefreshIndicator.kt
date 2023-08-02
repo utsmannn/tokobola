@@ -11,7 +11,7 @@ import com.utsman.tokobola.core.utils.PlatformUtils
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ProductPullRefreshIndicator(
+fun PullRefreshIndicatorOffset(
     refreshing: Boolean,
     state: PullRefreshState,
     modifier: Modifier = Modifier

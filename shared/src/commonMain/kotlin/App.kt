@@ -11,6 +11,8 @@ import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.navigation.LocalScreenContainer
 import com.utsman.tokobola.details.DetailInstanceProvider
 import com.utsman.tokobola.details.LocalDetailUseCase
+import com.utsman.tokobola.explore.ExploreInstanceProvider
+import com.utsman.tokobola.explore.LocalExploreUseCase
 import com.utsman.tokobola.home.HomeInstanceProvider
 import com.utsman.tokobola.home.LocalHomeUseCase
 
@@ -18,17 +20,23 @@ import com.utsman.tokobola.home.LocalHomeUseCase
 @Composable
 fun App() {
 
-    val homeUseCase = remember { HomeInstanceProvider.providedUseCase() }
-    val detailUseCase = remember { DetailInstanceProvider.providedUseCase() }
     val screenContainer = remember { ScreenContainerProvider() }
     val navigation = remember { NavigationProvider() }
 
+    val homeUseCase = remember { HomeInstanceProvider.providedUseCase() }
+    val detailUseCase = remember { DetailInstanceProvider.providedUseCase() }
+    val exploreUseCase = remember { ExploreInstanceProvider.providedUseCase() }
+
     CompositionLocalProvider(
-        LocalHomeUseCase provides homeUseCase,
-        LocalDetailUseCase provides detailUseCase,
+        // core
         LocalImageLoader provides appImageLoader(),
         LocalScreenContainer provides screenContainer,
-        LocalNavigation provides navigation
+        LocalNavigation provides navigation,
+
+        // use case
+        LocalDetailUseCase provides detailUseCase,
+        LocalHomeUseCase provides homeUseCase,
+        LocalExploreUseCase provides exploreUseCase
     ) {
 
         CommonTheme {

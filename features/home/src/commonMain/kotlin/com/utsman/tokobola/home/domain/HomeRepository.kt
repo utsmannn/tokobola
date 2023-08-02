@@ -6,7 +6,7 @@ class HomeRepository {
 
     private val productApi by productWebApi()
 
-    suspend fun getProductPaged(page: Int) = productApi.getFeaturedPaged(page)
+    suspend fun getFeaturedProductPaged(page: Int) = productApi.getByFeaturedPaged(page)
     suspend fun getBanner() = productApi.getHomeBanner()
     suspend fun getBrand() = productApi.getBrand()
 }

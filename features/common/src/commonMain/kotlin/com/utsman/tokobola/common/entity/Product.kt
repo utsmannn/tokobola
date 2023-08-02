@@ -1,4 +1,4 @@
-package com.utsman.tokobola.common.entity.ui
+package com.utsman.tokobola.common.entity
 
 data class Product(
     val category: String = "",

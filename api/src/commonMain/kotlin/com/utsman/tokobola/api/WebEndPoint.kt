@@ -7,6 +7,7 @@ object WebEndPoint {
     const val PRODUCT_BRAND = "/v2/product/brand/{brand_id}?page={page}"
     const val BANNER = "/v2/product/banner"
     const val BRAND = "/brand"
+    const val CATEGORY = "/category"
 }
 
 internal fun String.withParam(key: String, value: Any): String {

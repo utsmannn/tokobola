@@ -9,6 +9,7 @@ interface ScreenContainer {
 
     fun home(): Screen
     fun detail(productId: Int): Screen
+    fun explore(): Screen
 }
 
 val LocalScreenContainer = compositionLocalOf<ScreenContainer> { error("screen container not found") }

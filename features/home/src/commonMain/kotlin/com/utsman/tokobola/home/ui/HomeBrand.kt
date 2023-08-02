@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.seiko.imageloader.rememberImagePainter
 import com.utsman.tokobola.common.component.shimmerBackground
-import com.utsman.tokobola.common.entity.ui.Brand
+import com.utsman.tokobola.common.entity.Brand
 
 @Composable
 fun HomeBrandItem(brand: Brand, clickAction: (Brand) -> Unit) {
