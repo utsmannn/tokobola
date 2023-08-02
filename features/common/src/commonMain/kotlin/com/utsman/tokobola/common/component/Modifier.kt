@@ -17,8 +17,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TileMode
@@ -67,4 +69,10 @@ fun Modifier.shimmerBackground(shape: Shape = RectangleShape): Modifier = compos
         tileMode = TileMode.Mirror,
     )
     return@composed this.then(background(brush, shape))
+}
+
+fun ColorFilter.Companion.tintDark(): ColorFilter {
+    return tint(
+        color = Color.Black.copy(0.2f), blendMode = BlendMode.Multiply
+    )
 }

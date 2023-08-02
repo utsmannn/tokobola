@@ -30,7 +30,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,6 +50,7 @@ import com.utsman.tokobola.common.component.isScrolledToEnd
 import com.utsman.tokobola.common.component.isScrollingUp
 import com.utsman.tokobola.common.component.rememberForeverLazyListState
 import com.utsman.tokobola.common.component.shimmerBackground
+import com.utsman.tokobola.common.component.tintDark
 import com.utsman.tokobola.common.entity.HomeBanner
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.navigation.LocalNavigation
@@ -287,39 +290,30 @@ fun Banner(banner: List<HomeBanner>) {
         val painter = rememberImagePainter(item.productImage)
 
         Box(
-            modifier = Modifier.padding(bottom = 12.dp)
-        ) {
-            Image(
-                painter = painter,
-                contentDescription = item.description,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-            Box(
-                modifier = Modifier.background(
-                    color = Color.parseString(item.colorPrimary).copy(alpha = 0.2f)
+            modifier = Modifier.fillMaxSize()
+                .paint(
+                    painter = painter,
+                    colorFilter = ColorFilter.tintDark(),
+                    contentScale = ContentScale.Crop
                 )
-                    .fillMaxSize()
+                .padding(bottom = 12.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(
+                        color = Color.parseString(item.colorAccent).copy(alpha = 0.3f)
+                    ).align(Alignment.BottomStart)
+                    .wrapContentSize()
                     .padding(12.dp)
             ) {
 
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = Color.parseString(item.colorAccent).copy(alpha = 0.3f)
-                        ).align(Alignment.BottomStart)
-                        .wrapContentSize()
-                        .padding(12.dp)
-                ) {
-
-                    Text(
-                        text = item.description,
-                        fontSize = 23.sp,
-                        maxLines = 3,
-                        color = Color.White,
-                        fontWeight = FontWeight.Black
-                    )
-                }
+                Text(
+                    text = item.description,
+                    fontSize = 23.sp,
+                    maxLines = 3,
+                    color = Color.White,
+                    fontWeight = FontWeight.Black
+                )
             }
         }
     }

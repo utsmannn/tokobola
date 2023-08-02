@@ -14,6 +14,7 @@ class ExploreViewModel(private val useCase: ExploreUseCase) : ViewModel() {
 
     val brandState get() = useCase.brandReducer.dataFlow
     val categoryState get() = useCase.categoryReducer.dataFlow
+    val productCategoryState get() = useCase.productCategory.dataFlow
 
     val uiConfig: MutableStateFlow<ExploreUiConfig> = MutableStateFlow(ExploreUiConfig())
 
@@ -25,6 +26,10 @@ class ExploreViewModel(private val useCase: ExploreUseCase) : ViewModel() {
 
     fun getCategory() = viewModelScope.launch {
         useCase.getCategory()
+    }
+
+    fun getProductCategory(categoryId: Int) = viewModelScope.launch {
+        useCase.getProductCategory(categoryId)
     }
 
     fun pushCategories(categories: List<Category>) {
