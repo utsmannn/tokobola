@@ -94,19 +94,17 @@ fun Explore() {
         }
     )
 
-    var selectedCategoryIndexed by mutableStateOf(0)
-
-    val offsetYTop by exploreViewModel.offsetTabCategory.collectAsState()
-    val heightTabCategory by exploreViewModel.heightTabCategory.collectAsState()
+    val uiConfig by exploreViewModel.uiConfig.collectAsState()
 
     val offsetTabCategory = animateDpAsState(
-        targetValue = if (offsetYTop < 0) 0.dp else (-(heightTabCategory)).dp
+        targetValue = if (uiConfig.offsetTabCategory <= 0) (-12).dp else (-(uiConfig.heightTabCategory)).dp
     )
 
     LaunchedEffect(offsetTabCategory) {
-        exploreViewModel.pushOffsetCategory(120f, 120)
+        exploreViewModel.updateUiConfig {
+            uiConfig.copy(offsetTabCategory = 120f, heightTabCategory = 120)
+        }
     }
-
 
     Scaffold(
         // do not add top bar here
@@ -163,16 +161,16 @@ fun Explore() {
                         modifier = Modifier,
                         categories = categories,
                         exploreViewModel = exploreViewModel,
-                        selectedCategoryIndexed = selectedCategoryIndexed,
                         onFirstItemOffset = {
                             //offsetSticky = it
                         },
-                        onGlobalOffset = {
-                            exploreViewModel.pushOffsetCategory(it, 120)
+                        onGlobalOffset = { offset, height ->
+                            exploreViewModel.updateUiConfig {
+                                uiConfig.copy(offsetTabCategory = offset, heightTabCategory = height)
+                            }
                         }
                     )
                 }
-
 
 
                 with(categoryState) {
@@ -220,15 +218,13 @@ fun Explore() {
                 TabCategory(
                     categories = categories,
                     exploreViewModel = exploreViewModel,
-                    selectedCategoryIndexed = selectedCategoryIndexed,
                     onFirstItemOffset = {},
-                    onGlobalOffset = {}
+                    onGlobalOffset = { _, _ ->}
                 )
             }
 
             SearchBarStatic(
                 modifier = Modifier
-                    //.offset(y = heightTopBar.value)
                     .background(MaterialTheme.colors.primary)
             ) {
                 // action click search
@@ -307,13 +303,13 @@ fun TabCategory(
     modifier: Modifier = Modifier,
     categories: List<Category>,
     exploreViewModel: ExploreViewModel,
-    selectedCategoryIndexed: Int,
     onFirstItemOffset: (Float) -> Unit,
-    onGlobalOffset: (Float) -> Unit
+    onGlobalOffset: (Float, Int) -> Unit
 ) {
+    val uiConfig by exploreViewModel.uiConfig.collectAsState()
     if (categories.isNotEmpty()) {
         ScrollableTabRow(
-            selectedTabIndex = selectedCategoryIndexed,
+            selectedTabIndex = uiConfig.selectedTabCategory,
             modifier = Modifier.fillMaxWidth()
                 .then(modifier)
                 .ignoreHorizontalParentPadding(12.dp)
@@ -321,17 +317,18 @@ fun TabCategory(
                     val size = layoutCoordinates.size
                     val offsetY =
                         layoutCoordinates.localToWindow(Offset(0f, 0f)).y
-                    //exploreViewModel.pushOffsetCategory(offsetY, size.height)
-                    onGlobalOffset.invoke(offsetY)
+                    onGlobalOffset.invoke(offsetY, size.height)
                 },
             backgroundColor = Color.Transparent,
             edgePadding = 0.dp
         ) {
             categories.forEachIndexed { index, category ->
                 Tab(
-                    selected = index == selectedCategoryIndexed,
+                    selected = index == uiConfig.selectedTabCategory,
                     onClick = {
-                        //selectedCategoryIndexed = index
+                        exploreViewModel.updateUiConfig {
+                            uiConfig.copy(selectedTabCategory = index)
+                        }
                     },
                     modifier = Modifier.wrapContentSize()
                 ) {
@@ -346,10 +343,7 @@ fun TabCategory(
                                 .onGloballyPositioned {
                                     if (index == 0) {
                                         val itemY = it.positionInRoot().y
-                                        // offset.value = clamp(itemY, 0f, screenHeight - itemHeight)
-
                                         val offsetSticky = itemY.coerceAtLeast(screenHeight - 30)
-
                                         onFirstItemOffset.invoke(offsetSticky)
                                     }
                                 }
