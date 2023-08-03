@@ -45,7 +45,7 @@ kotlin {
                 api(project(":resources"))
 
                 api("io.github.qdsfdhvh:image-loader:1.6.0")
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
                 api("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
                 api("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")

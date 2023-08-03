@@ -6,8 +6,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +22,9 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -67,14 +72,19 @@ import com.utsman.tokobola.common.entity.Category
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.rememberViewModel
 import com.utsman.tokobola.core.utils.PlatformUtils
+import com.utsman.tokobola.core.utils.getOrNull
 import com.utsman.tokobola.core.utils.onFailure
+import com.utsman.tokobola.core.utils.onFailureComposed
 import com.utsman.tokobola.core.utils.onIdle
 import com.utsman.tokobola.core.utils.onLoading
+import com.utsman.tokobola.core.utils.onLoadingComposed
 import com.utsman.tokobola.core.utils.onSuccess
+import com.utsman.tokobola.core.utils.onSuccessComposed
 import com.utsman.tokobola.explore.LocalExploreUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun Explore() {
     val exploreUseCase = LocalExploreUseCase.current
@@ -82,17 +92,17 @@ fun Explore() {
     val exploreViewModel = rememberViewModel { ExploreViewModel(exploreUseCase) }
 
     val brandState by exploreViewModel.brandState.collectAsState()
-    val categoryState by exploreViewModel.categoryState.collectAsState()
-    val productCategoryState by exploreViewModel.productCategoryState.collectAsState()
 
-    val categories by exploreViewModel.categories.collectAsState()
+    val scope = rememberCoroutineScope()
+
+    val categoriesAndProductState by exploreViewModel.categoriesAndProduct.collectAsState()
 
     val navigationBarHeight = PlatformUtils.rememberNavigationBarHeight()
 
     val lazyGridState = rememberForeverLazyListState("explore_grid")
 
     val isLoading by derivedStateOf {
-        categoryState is State.Loading
+        categoriesAndProductState is State.Loading
     }
 
     val pullRefreshState = rememberPullRefreshState(
@@ -160,96 +170,63 @@ fun Explore() {
                     }
                 }
 
-                item(
-                    key = "tab",
-                    span = { GridItemSpan(this.maxLineSpan) }
-                ) {
-                    // tab
-                    TabCategory(
-                        modifier = Modifier,
-                        categories = categories,
-                        exploreViewModel = exploreViewModel,
-                        lazyGridState = lazyGridState,
-                        onFirstItemOffset = {
-                            //offsetSticky = it
-                        },
-                        onGlobalOffset = { offset, height ->
-                            exploreViewModel.updateUiConfig {
-                                uiConfig.copy(offsetTabCategory = offset, heightTabCategory = height)
-                            }
-                        }
-                    )
-                }
-
-                with(categoryState) {
-                    onIdle { exploreViewModel.getCategory() }
+                with(categoriesAndProductState) {
+                    onIdle { exploreViewModel.getCategoriesAndProduct() }
                     onLoading {
                         items(listOf(1, 2)) {
                             Shimmer(modifier = Modifier.height(120.dp))
                         }
                     }
-                    onSuccess { categories ->
-                        exploreViewModel.pushCategories(categories)
-                        exploreViewModel.updateUiConfig {
-                            // first category
-                            uiConfig.copy(selectedCategory = categories[uiConfig.selectedTabCategory])
-                        }
-                    }
-                    onFailure {
+                    onSuccess { data ->
                         item(
                             span = { GridItemSpan(this.maxLineSpan) }
                         ) {
-                            SimpleErrorScreen(it)
+
+                            val categories = remember { data.map { it.category } }
+                            val products = remember { data.map { it.products } }
+
+                            TabCategory(
+                                modifier = Modifier,
+                                categories = categories,
+                                exploreViewModel = exploreViewModel,
+                                onFirstItemOffset = {
+                                    //offsetSticky = it
+                                },
+                                onGlobalOffset = { offset, height ->
+                                    exploreViewModel.updateUiConfig {
+                                        uiConfig.copy(offsetTabCategory = offset, heightTabCategory = height)
+                                    }
+                                }
+                            )
+
+                            scope.launch {
+                                delay(100)
+                                if (uiConfig.selectedProductCategory is State.Idle) {
+                                    exploreViewModel.updateUiConfig {
+                                        // first load
+                                        uiConfig.copy(selectedProductCategory = State.Success(products[0]))
+                                    }
+                                }
+                            }
+
                         }
+                    }
+                    onFailure {
+
                     }
                 }
 
-                with(productCategoryState) {
-                    onIdle { exploreViewModel.getProductCategory(1) }
+                with(uiConfig.selectedProductCategory) {
                     onLoading {
-                        items(listOf(1, 2)) {
-                            Shimmer(modifier = Modifier.height(120.dp))
+                        items(listOf(1,2)) {
+                            Shimmer()
                         }
                     }
-                    onSuccess { products ->
-                        items(products) {
-                            ProductItemGrid(it) {
+                    onSuccess {
+                        items(it) { product ->
+                            ProductItemGrid(product) {
 
                             }
-                        }
-
-                        item(
-                            span = { GridItemSpan(this.maxLineSpan) }
-                        ) {
-                            val painterCurrentCategory = rememberImagePainter(uiConfig.selectedCategory.image)
-
-                            Box(
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(6.dp)
-                                    .height(80.dp)
-                                    .clickable {  }
-                            ) {
-                                Image(
-                                    painter = painterCurrentCategory,
-                                    contentDescription = "",
-                                    contentScale = ContentScale.Crop,
-                                    colorFilter = ColorFilter.tintDark(),
-                                    modifier = Modifier.fillMaxSize()
-                                )
-
-                                Text(
-                                    text = "More on '${uiConfig.selectedCategory.name}'",
-                                    modifier = Modifier.padding(12.dp),
-                                    color = Color.White
-                                )
-                            }
-                        }
-                    }
-                    onFailure {
-                        item(
-                            span = { GridItemSpan(this.maxLineSpan) }
-                        ) {
-                            SimpleErrorScreen(it)
                         }
                     }
                 }
@@ -268,9 +245,8 @@ fun Explore() {
                     .background(color = Color.White)
             ) {
                 TabCategory(
-                    categories = categories,
+                    categories = categoriesAndProductState.getOrNull().orEmpty().map { it.category },
                     exploreViewModel = exploreViewModel,
-                    lazyGridState = lazyGridState,
                     onFirstItemOffset = {},
                     onGlobalOffset = { _, _ ->}
                 )
@@ -354,7 +330,6 @@ fun TabCategory(
     modifier: Modifier = Modifier,
     categories: List<Category>,
     exploreViewModel: ExploreViewModel,
-    lazyGridState: LazyGridState,
     onFirstItemOffset: (Float) -> Unit,
     onGlobalOffset: (Float, Int) -> Unit
 ) {
@@ -380,13 +355,23 @@ fun TabCategory(
                 Tab(
                     selected = index == uiConfig.selectedTabCategory,
                     onClick = {
-                        /*scope.launch {
-                            lazyGridState.scrollToItem(8)
-                        }*/
-                        exploreViewModel.updateUiConfig {
-                            uiConfig.copy(selectedTabCategory = index, selectedCategory = category)
+                        scope.launch {
+                            val product = exploreViewModel.categoriesAndProduct
+                                .value
+                                .getOrNull()
+                                ?.map { it.products }
+                                ?.get(index)
+                                .orEmpty()
+
+                            exploreViewModel.updateUiConfig {
+                                uiConfig.copy(selectedTabCategory = index, selectedCategory = category, selectedProductCategory = State.Loading())
+                            }
+
+                            delay(200)
+                            exploreViewModel.updateUiConfig {
+                                uiConfig.copy(selectedProductCategory = State.Success(product))
+                            }
                         }
-                        exploreViewModel.getProductCategory(category.id)
                     },
                     modifier = Modifier.wrapContentSize()
                 ) {

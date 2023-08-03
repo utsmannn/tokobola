@@ -3,6 +3,8 @@ package com.utsman.tokobola.explore.ui
 import com.utsman.tokobola.common.entity.Category
 import com.utsman.tokobola.core.ViewModel
 import com.utsman.tokobola.explore.domain.ExploreUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,6 +17,7 @@ class ExploreViewModel(private val useCase: ExploreUseCase) : ViewModel() {
     val brandState get() = useCase.brandReducer.dataFlow
     val categoryState get() = useCase.categoryReducer.dataFlow
     val productCategoryState get() = useCase.productCategory.dataFlow
+    val categoriesAndProduct get() = useCase.categoryAndProductReducer.dataFlow
 
     val uiConfig: MutableStateFlow<ExploreUiConfig> = MutableStateFlow(ExploreUiConfig())
 
@@ -26,6 +29,10 @@ class ExploreViewModel(private val useCase: ExploreUseCase) : ViewModel() {
 
     fun getCategory() = viewModelScope.launch {
         useCase.getCategory()
+    }
+
+    fun getCategoriesAndProduct() = viewModelScope.launch {
+        useCase.getAllCategoryAndProduct()
     }
 
     fun getProductCategory(categoryId: Int) = viewModelScope.launch {

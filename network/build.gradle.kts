@@ -40,7 +40,7 @@ kotlin {
             }
         }
         getByName("androidMain").dependencies {
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
             implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
         }
 
