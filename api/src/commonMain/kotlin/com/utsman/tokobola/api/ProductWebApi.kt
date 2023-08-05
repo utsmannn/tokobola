@@ -26,6 +26,14 @@ class ProductWebApi : WebDataSource() {
         return getPaged(WebEndPoint.PRODUCT_CATEGORY.withParam("page", page).withParam("category_id", categoryId))
     }
 
+    suspend fun getTop(): BaseResponse<List<ThumbnailProductResponse>> {
+        return get(WebEndPoint.PRODUCT_TOP)
+    }
+
+    suspend fun getCurated(): BaseResponse<List<ThumbnailProductResponse>> {
+        return get(WebEndPoint.PRODUCT_CURATED)
+    }
+
     suspend fun getDetail(productId: Int): BaseResponse<ProductResponse> {
         return get(WebEndPoint.PRODUCT_DETAIL.withParam("product_id", productId))
     }

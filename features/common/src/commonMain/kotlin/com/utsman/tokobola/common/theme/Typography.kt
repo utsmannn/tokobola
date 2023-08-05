@@ -8,9 +8,9 @@ import dev.icerock.moko.resources.compose.asFont
 
 @Composable
 fun Type(): Typography {
-    val regularRes = SharedRes.fonts.NotoSerif.regular
-    val italicRes = SharedRes.fonts.NotoSerif.italic
-    val boldRes = SharedRes.fonts.NotoSerif.bold
+    val regularRes = SharedRes.fonts.PTSans.regular
+    val italicRes = SharedRes.fonts.PTSans.italic
+    val boldRes = SharedRes.fonts.PTSans.bold
 
     val regularFont = regularRes.asFont()
     val italicFont = italicRes.asFont()

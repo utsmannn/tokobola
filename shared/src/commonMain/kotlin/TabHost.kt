@@ -1,11 +1,7 @@
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.animateValueAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideIn
-import androidx.compose.animation.slideOut
 import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
@@ -28,7 +24,6 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
-import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.utsman.tokobola.core.utils.PlatformUtils
 import tab.AboutTab
@@ -75,10 +70,10 @@ object TabHost : Screen {
             selected = isSelected,
             onClick = { tabNavigator.current = tab },
             label = {
-                    Text(
-                        text = tab.options.title,
-                        fontSize = 12.sp
-                    )
+                Text(
+                    text = tab.options.title,
+                    fontSize = 12.sp
+                )
             },
             alwaysShowLabel = true,
             icon = {

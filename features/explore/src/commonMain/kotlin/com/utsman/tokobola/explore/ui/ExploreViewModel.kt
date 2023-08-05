@@ -3,21 +3,23 @@ package com.utsman.tokobola.explore.ui
 import com.utsman.tokobola.common.entity.Category
 import com.utsman.tokobola.core.ViewModel
 import com.utsman.tokobola.explore.domain.ExploreUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ExploreViewModel(private val useCase: ExploreUseCase) : ViewModel() {
 
     val brandState get() = useCase.brandReducer.dataFlow
     val categoryState get() = useCase.categoryReducer.dataFlow
-    val productCategoryState get() = useCase.productCategory.dataFlow
-    val categoriesAndProduct get() = useCase.categoryAndProductReducer.dataFlow
+
+    val productBrandState get() = useCase.productBrandReducer.dataFlow
+    val productCategoryState get() = useCase.productCategoryReducer.dataFlow
+
+    val brandAndProductState get() = useCase.brandAndProductReducer.dataFlow
+    val categoriesAndProductState get() = useCase.categoryAndProductReducer.dataFlow
+
+
+    val topProductState get() = useCase.topProductReducer.dataFlow
+    val curatedProductState get() = useCase.curatedProductReducer.dataFlow
 
     val uiConfig: MutableStateFlow<ExploreUiConfig> = MutableStateFlow(ExploreUiConfig())
 
@@ -31,12 +33,28 @@ class ExploreViewModel(private val useCase: ExploreUseCase) : ViewModel() {
         useCase.getCategory()
     }
 
-    fun getCategoriesAndProduct() = viewModelScope.launch {
-        useCase.getAllCategoryAndProduct()
+    fun getBrandAndProduct() = viewModelScope.launch {
+        useCase.getFirstBrandAndProduct()
     }
 
+    fun getCategoriesAndProduct() = viewModelScope.launch {
+        useCase.getFirstCategoryAndProduct()
+    }
+
+
+    fun getProductBrand(brandId: Int) = viewModelScope.launch {
+        useCase.getProductBrand(brandId)
+    }
     fun getProductCategory(categoryId: Int) = viewModelScope.launch {
         useCase.getProductCategory(categoryId)
+    }
+
+    fun getTopProduct() = viewModelScope.launch {
+        useCase.getTopProduct()
+    }
+
+    fun getCuratedProduct() = viewModelScope.launch {
+        useCase.getCuratedProduct()
     }
 
     fun pushCategories(categories: List<Category>) {

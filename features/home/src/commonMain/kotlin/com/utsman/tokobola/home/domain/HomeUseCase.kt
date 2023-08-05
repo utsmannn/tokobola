@@ -5,7 +5,7 @@ import com.utsman.tokobola.common.entity.HomeBanner
 import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.common.toBrand
 import com.utsman.tokobola.common.toHomeBanner
-import com.utsman.tokobola.common.toHomeProduct
+import com.utsman.tokobola.common.toThumbnailProduct
 import com.utsman.tokobola.core.data.Paged
 import com.utsman.tokobola.core.data.orFalse
 import com.utsman.tokobola.core.data.orNol
@@ -36,7 +36,7 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
                     val dataPaged = pagedResponseProduct.data
                     val dataProduct = dataPaged?.data.orEmpty()
                         .map {
-                            it.toHomeProduct()
+                            it.toThumbnailProduct()
                         }
 
                     currentPageProduct = dataPaged?.page.orNol()+1

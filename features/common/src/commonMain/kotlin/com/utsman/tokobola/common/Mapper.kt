@@ -30,7 +30,7 @@ fun ProductResponse.mapToProduct(): Product {
     )
 }
 
-fun ThumbnailProductResponse.toHomeProduct(): ThumbnailProduct {
+fun ThumbnailProductResponse.toThumbnailProduct(): ThumbnailProduct {
     return ThumbnailProduct(
         id = id.orNol(),
         name = name.orEmpty(),
