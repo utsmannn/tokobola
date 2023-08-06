@@ -5,6 +5,11 @@ plugins {
     id("org.jetbrains.compose")
 }
 
+repositories {
+    google()
+    mavenCentral()
+}
+
 kotlin {
     android()
 
@@ -29,6 +34,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(project(":core"))
+                api(project(":database"))
 
                 implementation(project(":features:common"))
                 implementation(project(":features:home"))
@@ -37,11 +43,7 @@ kotlin {
 
             }
         }
-        val androidMain by getting {
-            dependencies {
-
-            }
-        }
+        val androidMain by getting {}
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting

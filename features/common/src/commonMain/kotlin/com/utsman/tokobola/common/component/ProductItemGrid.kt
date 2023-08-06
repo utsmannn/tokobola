@@ -45,7 +45,7 @@ fun ProductItemGrid(thumbProduct: ThumbnailProduct, clickAction: (ThumbnailProdu
 
 
     Column(
-        modifier = Modifier.height(280.dp)
+        modifier = Modifier.height(Dimens.HeightProductItemGrid)
             .padding(6.dp)
     ) {
 
@@ -105,7 +105,7 @@ fun ProductItemGridRectangle(
     Column(
         modifier = Modifier
             .width(100.dp)
-            .height(180.dp)
+            .height(Dimens.HeightProductItemGridRectangle)
             .padding(6.dp)
     ) {
 

@@ -1,7 +1,12 @@
 package com.utsman.tokobola.network
 
 import com.utsman.tokobola.core.State
+import com.utsman.tokobola.core.utils.asyncAwait
 import io.ktor.client.plugins.ClientRequestException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
@@ -45,6 +50,42 @@ interface StateTransformation<U, T> {
                     }
 
                     return resultEvent
+                }
+
+            }
+        }
+
+        @Suppress("FunctionName")
+        inline fun <reified U, T>SimpleResponseTransform(): StateTransformation<U, T> {
+            return object : StateTransformation<U, T> {
+                override suspend fun transform(call: suspend () -> U, mapper: (U) -> T): State<T> {
+                    val data = call.invoke()
+                    return State.Success(mapper.invoke(data))
+                }
+
+            }
+        }
+    }
+}
+
+interface StateFlowTransformation<U, T> {
+    suspend fun transform(call: suspend () -> Flow<U>, mapper: (U) -> T): State<T>
+
+    companion object {
+        @Suppress("FunctionName")
+        inline fun <reified U, T>DefaultFlowTransform(): StateFlowTransformation<U, T> {
+            return object : StateFlowTransformation<U, T> {
+                override suspend fun transform(
+                    call: suspend () -> Flow<U>,
+                    mapper: (U) -> T
+                ): State<T> {
+                    val dataFlow = call.invoke()
+                    val newFlow = dataFlow.map {
+                        mapper.invoke(it)
+                    }
+                    return asyncAwait {
+                        State.Success(newFlow.first())
+                    }
                 }
 
             }

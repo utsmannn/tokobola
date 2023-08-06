@@ -27,6 +27,7 @@ fun App() {
     val detailUseCase = remember { DetailInstanceProvider.providedUseCase() }
     val exploreUseCase = remember { ExploreInstanceProvider.providedUseCase() }
 
+
     CompositionLocalProvider(
         // core
         LocalImageLoader provides appImageLoader(),

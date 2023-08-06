@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -68,6 +69,7 @@ import com.seiko.imageloader.rememberImagePainter
 import com.utsman.tokobola.common.component.Dimens
 import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductItemGrid
+import com.utsman.tokobola.common.component.ProductItemGridRectangle
 import com.utsman.tokobola.common.component.Shimmer
 import com.utsman.tokobola.common.component.PullRefreshIndicatorOffset
 import com.utsman.tokobola.common.component.SearchBarStatic
@@ -103,6 +105,7 @@ fun Home() {
     val productsFeaturedState by homeViewModel.productsFeaturedState.collectAsState()
     val bannerState by homeViewModel.homeBannerState.collectAsState()
     val brandState by homeViewModel.brandState.collectAsState()
+    val productViewedState by homeViewModel.productViewed.collectAsState()
 
     val isLoading by derivedStateOf {
         bannerState is State.Loading
@@ -112,7 +115,7 @@ fun Home() {
     val navigationBarHeight = PlatformUtils.rememberNavigationBarHeight()
 
     val pullRefreshState = rememberPullRefreshState(
-        refreshing = isLoading,
+        refreshing = false,
         onRefresh = {
             homeViewModel.restartData()
         }
@@ -178,10 +181,8 @@ fun Home() {
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .height(Dimens.HeightHomeBanner)
                                     .fillMaxWidth()
-                                    .ignoreHorizontalParentPadding(6.dp)
-                                    .ignoreVerticalParentPadding(6.dp)
+                                    .aspectRatio(3f / 1.5f)
                             ) {
                                 Shimmer()
                             }
@@ -196,6 +197,7 @@ fun Home() {
                                     .aspectRatio(3f / 1.5f)
                                     .ignoreHorizontalParentPadding(6.dp)
                                     .ignoreVerticalParentPadding(6.dp)
+                                    .padding(bottom = 12.dp)
                             ) {
                                 Banner(it)
                             }
@@ -206,6 +208,48 @@ fun Home() {
                             span = { GridItemSpan(this.maxLineSpan) }
                         ) {
                             SimpleErrorScreen(it)
+                        }
+                    }
+                }
+
+                // product viewed
+                with(productViewedState) {
+                    onIdle { homeViewModel.getProductViewed() }
+                    onLoading {
+                        item(
+                            span = { GridItemSpan(this.maxLineSpan) }
+                        ) {
+                            Shimmer(
+                                modifier = Modifier.fillMaxWidth()
+                                    .height(Dimens.HeightProductItemGridRectangle)
+                            )
+                        }
+                    }
+                    onSuccess { products ->
+                        item(
+                            span = { GridItemSpan(this.maxLineSpan) }
+                        ) {
+                            Text(
+                                text = "Recently Viewed",
+                                modifier = Modifier.padding(6.dp),
+                                fontWeight = FontWeight.Black
+                            )
+                        }
+                        item(
+                            span = { GridItemSpan(this.maxLineSpan) }
+                        ) {
+                            LazyRow(
+                                contentPadding = PaddingValues(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .ignoreHorizontalParentPadding(12.dp)
+                            ) {
+                                items(products) { product ->
+                                    ProductItemGridRectangle(product) {
+
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -291,6 +335,7 @@ fun Home() {
                     span = { GridItemSpan(this.maxLineSpan / 2) }
                 ) {
                     ProductItemGrid(it) { product ->
+                        homeViewModel.postProductViewed(product)
                         navigation.goToDetail(product.id)
                     }
                 }
@@ -353,7 +398,7 @@ fun Banner(banner: List<HomeBanner>) {
                 delay(5000L)
                 val nextPage = (pagerState.currentPage + 1) % banner.count()
                 pagerState.animateScrollToPage(
-                    if (nextPage == banner.count() -1) 0 else nextPage
+                    if (nextPage == banner.count() - 1) 0 else nextPage
                 )
             }
         }
@@ -364,7 +409,7 @@ fun Banner(banner: List<HomeBanner>) {
                     availableSpace: Int,
                     pageSpacing: Int
                 ): Int {
-                    return availableSpace - (availableSpace/6)
+                    return availableSpace - (availableSpace / 6)
                 }
             }
         }

@@ -4,12 +4,22 @@ import com.utsman.tokobola.common.entity.Brand
 import com.utsman.tokobola.common.entity.HomeBanner
 import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.common.toBrand
+import com.utsman.tokobola.common.toEntity
 import com.utsman.tokobola.common.toHomeBanner
+import com.utsman.tokobola.common.toRealm
 import com.utsman.tokobola.common.toThumbnailProduct
 import com.utsman.tokobola.core.data.Paged
 import com.utsman.tokobola.core.data.orFalse
 import com.utsman.tokobola.core.data.orNol
+import com.utsman.tokobola.core.utils.IoScope
 import com.utsman.tokobola.network.ApiReducer
+import com.utsman.tokobola.network.StateTransformation
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.launch
 
 class HomeUseCase(private val homeRepository: HomeRepository) {
 
@@ -17,11 +27,26 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
     val productBannerReducer = ApiReducer<List<HomeBanner>>()
     val brandReducer = ApiReducer<List<Brand>>()
 
+    val productViewedReducer = ApiReducer<List<ThumbnailProduct>>()
+
     private var currentPageProduct: Int = 1
     private var prevPageProduct: Int = 1
     private var hasNextPageProduct = true
 
     private val prevListProduct: MutableList<ThumbnailProduct> = mutableListOf()
+
+    init {
+        IoScope().launch {
+            /*productViewedReducer.transformFlow(
+                call = {
+                    homeRepository.getAllViewedFlow()
+                },
+                mapper = { thumbnailProductRealm ->
+                    thumbnailProductRealm.map { it.toEntity() }
+                }
+            )*/
+        }
+    }
 
     suspend fun getProduct() {
         if (hasNextPageProduct) {
@@ -81,10 +106,30 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
         )
     }
 
+    suspend fun getAllProductViewed() {
+        homeRepository.getAllViewedFlow()
+            .collect {
+                productViewedReducer.transform(
+                    transformation = StateTransformation.SimpleResponseTransform(),
+                    call = {
+                        it
+                    },
+                    mapper = { thumbnailProductTables ->
+                        thumbnailProductTables.map { it.toEntity() }
+                    }
+                )
+            }
+    }
+
+    suspend fun markProductViewed(thumbnailProduct: ThumbnailProduct) {
+        homeRepository.markAsViewed(thumbnailProduct.toRealm())
+    }
+
     fun clearProductPage() {
         hasNextPageProduct = true
         currentPageProduct = 1
         prevListProduct.clear()
         brandReducer.clear()
+        productViewedReducer.clear()
     }
 }

@@ -98,8 +98,6 @@ fun Explore() {
         animationSpec = tween(durationMillis = 300)
     )
 
-    // val isAllowClick = productCategoryState is State.Success
-
     val isCategoryTabAllowClick by remember {
         derivedStateOf {
             productCategoryState is State.Success

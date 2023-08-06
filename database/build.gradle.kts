@@ -3,6 +3,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.compose")
     kotlin("plugin.serialization") version "1.8.21"
+    id("io.realm.kotlin") version "1.10.0"
 }
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
@@ -23,7 +24,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
-            baseName = "common"
+            baseName = "database"
         }
     }
 
@@ -31,16 +32,14 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":core"))
-                implementation(project(":network"))
-                implementation(project(":database"))
-                api(project(":api"))
+                api("io.realm.kotlin:library-base:1.10.0")
             }
         }
     }
 }
 
 android {
-    namespace = "com.utsman.tokobola.feature.common"
+    namespace = "com.utsman.tokobola.database"
     compileSdk = 33
     defaultConfig {
         minSdk = 24

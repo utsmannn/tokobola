@@ -13,6 +13,8 @@ class HomeViewModel(private val homeUseCase: HomeUseCase) : ViewModel() {
     val homeBannerState get() = homeUseCase.productBannerReducer.dataFlow
     val brandState get() = homeUseCase.brandReducer.dataFlow
 
+    val productViewed get() = homeUseCase.productViewedReducer.dataFlow
+
     val productsFeaturedFlow: MutableStateFlow<List<ThumbnailProduct>> = MutableStateFlow(emptyList())
     val brandListFlow: MutableStateFlow<List<Brand>> = MutableStateFlow(emptyList())
 
@@ -27,6 +29,10 @@ class HomeViewModel(private val homeUseCase: HomeUseCase) : ViewModel() {
         homeUseCase.getBanner()
     }
 
+    fun getProductViewed() = viewModelScope.launch {
+        homeUseCase.getAllProductViewed()
+    }
+
     fun getBrand() = viewModelScope.launch {
         homeUseCase.getBrand()
     }
@@ -39,6 +45,7 @@ class HomeViewModel(private val homeUseCase: HomeUseCase) : ViewModel() {
         getHomeBanner()
         getHomeProduct()
         getBrand()
+        getProductViewed()
     }
 
     fun postProduct(list: List<ThumbnailProduct>) {
@@ -48,5 +55,9 @@ class HomeViewModel(private val homeUseCase: HomeUseCase) : ViewModel() {
 
     fun postBrandList(list: List<Brand>) {
         brandListFlow.value = list
+    }
+
+    fun postProductViewed(thumbnailProduct: ThumbnailProduct) = viewModelScope.launch {
+        homeUseCase.markProductViewed(thumbnailProduct)
     }
 }
