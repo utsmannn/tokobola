@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -33,26 +34,35 @@ fun SearchBarStatic(modifier: Modifier = Modifier, action: () -> Unit) {
         modifier = modifier
             .fillMaxWidth()
             .height(Dimens.HeightTopBarSearch)
-            .padding(top = statusBarHeight.dp)
-            .shadow(
-                elevation = 528.dp,
-                shape = RoundedCornerShape(16.dp)
+            .padding(
+                top = 12.dp + statusBarHeight.dp,
+                bottom = 6.dp,
+                start = 12.dp,
+                end = 12.dp
             )
+            .shadow(
+                elevation = 128.dp,
+                shape = RoundedCornerShape(18.dp)
+            ),
+        verticalAlignment = Alignment.CenterVertically
+
     ) {
         Row(
             modifier = Modifier.fillMaxWidth()
-                .fillMaxHeight()
-                .padding(12.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .wrapContentHeight()
+                .clip(RoundedCornerShape(18.dp))
                 .clickable { action.invoke() }
                 .background(color = Color.White)
-                .padding(12.dp)
+                .padding(
+                    horizontal = 12.dp,
+                    vertical = 6.dp
+                )
         ) {
             Text(
                 "Search..",
                 modifier = Modifier.align(Alignment.CenterVertically).weight(1f),
                 color = MaterialTheme.colors.primary,
-                fontSize = 12.sp
+                fontSize = 14.sp
             )
 
             val painter = painterResource(SharedRes.images.icon_search)

@@ -12,6 +12,7 @@ import com.utsman.tokobola.core.data.Paged
 import com.utsman.tokobola.core.data.orFalse
 import com.utsman.tokobola.core.data.orNol
 import com.utsman.tokobola.core.utils.IoScope
+import com.utsman.tokobola.core.utils.pmap
 import com.utsman.tokobola.network.ApiReducer
 import com.utsman.tokobola.network.StateTransformation
 import kotlinx.coroutines.flow.collect
@@ -35,19 +36,6 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
 
     private val prevListProduct: MutableList<ThumbnailProduct> = mutableListOf()
 
-    init {
-        IoScope().launch {
-            /*productViewedReducer.transformFlow(
-                call = {
-                    homeRepository.getAllViewedFlow()
-                },
-                mapper = { thumbnailProductRealm ->
-                    thumbnailProductRealm.map { it.toEntity() }
-                }
-            )*/
-        }
-    }
-
     suspend fun getProduct() {
         if (hasNextPageProduct) {
             productsFeaturedReducer.transform(
@@ -64,7 +52,7 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
                             it.toThumbnailProduct()
                         }
 
-                    currentPageProduct = dataPaged?.page.orNol()+1
+                    currentPageProduct = dataPaged?.page.orNol() + 1
 
                     prevListProduct.addAll(dataProduct)
                     Paged(
@@ -107,22 +95,21 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
     }
 
     suspend fun getAllProductViewed() {
-        homeRepository.getAllViewedFlow()
-            .collect {
+        homeRepository.getAllRecentlyViewedFlow()
+            .collect { realms ->
                 productViewedReducer.transform(
                     transformation = StateTransformation.SimpleResponseTransform(),
                     call = {
-                        it
+                        val ids = realms.map { it.productId }
+                        homeRepository.getThumbnailByIds(ids)
                     },
-                    mapper = { thumbnailProductTables ->
-                        thumbnailProductTables.map { it.toEntity() }
+                    mapper = { thumbnailProductResponse ->
+                        thumbnailProductResponse.data
+                            ?.map { it.toThumbnailProduct() }
+                            .orEmpty()
                     }
                 )
             }
-    }
-
-    suspend fun markProductViewed(thumbnailProduct: ThumbnailProduct) {
-        homeRepository.markAsViewed(thumbnailProduct.toRealm())
     }
 
     fun clearProductPage() {

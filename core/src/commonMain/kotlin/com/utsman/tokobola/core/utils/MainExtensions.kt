@@ -1,6 +1,8 @@
 package com.utsman.tokobola.core.utils
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import com.utsman.tokobola.resources.MokoColor
 import dev.icerock.moko.graphics.parseColor
 import kotlinx.coroutines.CoroutineScope
@@ -39,4 +41,15 @@ suspend fun <T>asyncAwait(action: suspend () -> T): T {
     return withContext(Dispatchers.IO) {
         action.invoke()
     }
+}
+
+
+// @Composable
+//fun Int.pxToDp() = with(LocalDensity.current) {
+//    this@pxToDp.toDp()
+//}
+
+@Composable
+fun Int.pxToDp() = with(LocalDensity.current) {
+    this@pxToDp.toDp()
 }

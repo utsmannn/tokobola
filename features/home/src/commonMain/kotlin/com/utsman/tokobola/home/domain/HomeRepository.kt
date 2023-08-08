@@ -1,8 +1,10 @@
 package com.utsman.tokobola.home.domain
 
 import com.utsman.tokobola.api.productWebApi
+import com.utsman.tokobola.database.data.RecentlyViewedRealm
 import com.utsman.tokobola.database.data.ThumbnailProductRealm
 import com.utsman.tokobola.database.localRepository
+import io.realm.kotlin.ext.copyFromRealm
 import kotlinx.coroutines.flow.Flow
 
 class HomeRepository {
@@ -14,15 +16,13 @@ class HomeRepository {
     suspend fun getBanner() = productApi.getHomeBanner()
     suspend fun getBrand() = productApi.getBrand()
 
-    suspend fun markAsViewed(thumbnailProductRealm: ThumbnailProductRealm) {
-        localRepository.insertThumbnailProduct(thumbnailProductRealm)
+    suspend fun getThumbnailByIds(ids: List<Int>) = productApi.getThumbnailByIds(ids)
+
+    suspend fun markAsViewed(productId: Int) {
+        localRepository.insertRecentlyViewed(RecentlyViewedRealm().apply { this.productId = productId })
     }
 
-    suspend fun getAllViewed(): List<ThumbnailProductRealm> {
-        return localRepository.selectAllThumbnailProduct()
-    }
-
-    suspend fun getAllViewedFlow(): Flow<List<ThumbnailProductRealm>> {
-        return localRepository.selectAllThumbnailProductFlow()
+    suspend fun getAllRecentlyViewedFlow(): Flow<List<RecentlyViewedRealm>> {
+        return localRepository.selectAllRecentlyViewed()
     }
 }

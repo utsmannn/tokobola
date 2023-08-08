@@ -16,8 +16,3 @@ data class ExploreUiConfig(
     val selectedBrand: Brand = Brand(id = 1),
     val selectedProductCategory: State<List<ThumbnailProduct>> = State.Idle()
 )
-
-@Composable
-fun rememberUiConfig(): ExploreUiConfig {
-    return remember { ExploreUiConfig() }
-}

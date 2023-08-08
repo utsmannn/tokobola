@@ -38,10 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.seiko.imageloader.rememberImagePainter
 import com.utsman.tokobola.common.entity.ThumbnailProduct
+import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.utils.currency
 
 @Composable
-fun ProductItemGrid(thumbProduct: ThumbnailProduct, clickAction: (ThumbnailProduct) -> Unit) {
+fun ProductItemGrid(thumbProduct: ThumbnailProduct, clickAction: (ThumbnailProduct) -> Unit = {}) {
+    val navigation = LocalNavigation.current
 
 
     Column(
@@ -59,8 +61,10 @@ fun ProductItemGrid(thumbProduct: ThumbnailProduct, clickAction: (ThumbnailProdu
                 modifier = Modifier.fillMaxWidth().aspectRatio(2f / 1.6f)
                     .background(color = Color.White, shape = RoundedCornerShape(Dimens.CornerSize))
                     .clip(RoundedCornerShape(Dimens.CornerSize))
-                    .clickable { clickAction.invoke(thumbProduct) }
-                ,
+                    .clickable {
+                        clickAction.invoke(thumbProduct)
+                        navigation.goToDetail(thumbProduct.id)
+                    },
                 painter = painter,
                 contentDescription = thumbProduct.name,
                 contentScale = ContentScale.Crop
@@ -100,8 +104,10 @@ fun ProductItemGrid(thumbProduct: ThumbnailProduct, clickAction: (ThumbnailProdu
 @Composable
 fun ProductItemGridRectangle(
     thumbProduct: ThumbnailProduct,
-    clickAction: (ThumbnailProduct) -> Unit
+    clickAction: (ThumbnailProduct) -> Unit = {}
 ) {
+    val navigation = LocalNavigation.current
+
     Column(
         modifier = Modifier
             .width(100.dp)
@@ -119,8 +125,10 @@ fun ProductItemGridRectangle(
                 modifier = Modifier.fillMaxWidth().aspectRatio(2f / 1.6f)
                     .background(color = Color.White, shape = RoundedCornerShape(Dimens.CornerSize))
                     .clip(RoundedCornerShape(Dimens.CornerSize))
-                    .clickable { clickAction.invoke(thumbProduct) }
-                ,
+                    .clickable {
+                        clickAction.invoke(thumbProduct)
+                        navigation.goToDetail(thumbProduct.id)
+                    },
                 painter = painter,
                 contentDescription = thumbProduct.name,
                 contentScale = ContentScale.Crop

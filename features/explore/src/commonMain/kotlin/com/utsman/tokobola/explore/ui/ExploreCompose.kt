@@ -286,9 +286,7 @@ fun Explore() {
                                     ) {
                                         products.forEach {
                                             item {
-                                                ProductItemGridRectangle(it) {
-
-                                                }
+                                                ProductItemGridRectangle(it)
                                             }
                                         }
                                     }
@@ -409,9 +407,7 @@ fun Explore() {
                                     ) {
                                         products.forEach {
                                             item {
-                                                ProductItemGridRectangle(it) {
-
-                                                }
+                                                ProductItemGridRectangle(it)
                                             }
                                         }
                                     }

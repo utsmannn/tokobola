@@ -56,8 +56,4 @@ class HomeViewModel(private val homeUseCase: HomeUseCase) : ViewModel() {
     fun postBrandList(list: List<Brand>) {
         brandListFlow.value = list
     }
-
-    fun postProductViewed(thumbnailProduct: ThumbnailProduct) = viewModelScope.launch {
-        homeUseCase.markProductViewed(thumbnailProduct)
-    }
 }

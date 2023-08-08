@@ -3,11 +3,14 @@ package com.utsman.tokobola.database
 import com.utsman.tokobola.core.SynchronizObject
 import com.utsman.tokobola.core.synchroniz
 import com.utsman.tokobola.core.utils.asyncAwait
+import com.utsman.tokobola.core.utils.nowMillis
+import com.utsman.tokobola.database.data.RecentlyViewedRealm
 import com.utsman.tokobola.database.data.ThumbnailProductRealm
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.query.find
+import io.realm.kotlin.types.RealmObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlin.jvm.Volatile
@@ -20,7 +23,10 @@ class LocalRepository(private val realm: Realm) {
             val isProductExist = isExistingThumbnailProduct(thumbnailProductRealm.productId)
             if (isProductExist) {
                 realm.write {
-                    query(ThumbnailProductRealm::class, "productId == ${thumbnailProductRealm.productId}")
+                    query(
+                        ThumbnailProductRealm::class,
+                        "productId == ${thumbnailProductRealm.productId}"
+                    )
                         .find {
                             delete(it.first())
                         }
@@ -62,6 +68,34 @@ class LocalRepository(private val realm: Realm) {
         }
     }
 
+    suspend fun insertRecentlyViewed(recentlyViewedRealm: RecentlyViewedRealm) {
+        asyncAwait {
+            val isExist = realm.query(RecentlyViewedRealm::class, "productId == ${recentlyViewedRealm.productId}")
+                .first()
+                .find() != null
+
+            if (isExist) {
+                realm.write {
+                    query(RecentlyViewedRealm::class, "productId == ${recentlyViewedRealm.productId}")
+                        .find {
+                            delete(it.first())
+                        }
+                }
+            }
+
+            realm.write {
+                copyToRealm(recentlyViewedRealm, updatePolicy = UpdatePolicy.ALL)
+            }
+        }
+    }
+
+    suspend fun selectAllRecentlyViewed(): Flow<List<RecentlyViewedRealm>> {
+        return asyncAwait {
+            realm.query(RecentlyViewedRealm::class).asFlow()
+                .map { it.list.asReversed() }
+        }
+    }
+
     @ThreadLocal
     companion object : SynchronizObject() {
 
@@ -73,7 +107,12 @@ class LocalRepository(private val realm: Realm) {
 
         private fun providedRealmProduct(): Realm {
             if (realm == null) {
-                val config = RealmConfiguration.create(schema = setOf(ThumbnailProductRealm::class)) // add others if needed
+                val config = RealmConfiguration.create(
+                    schema = setOf(
+                        ThumbnailProductRealm::class,
+                        RecentlyViewedRealm::class
+                    )
+                ) // add others if needed
                 realm = Realm.open(config)
             }
 

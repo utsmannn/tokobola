@@ -98,7 +98,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun Home() {
     val homeUseCase = LocalHomeUseCase.current
-    val navigation = LocalNavigation.current
+    /*val navigation = LocalNavigation.current*/
 
     val homeViewModel = rememberViewModel { HomeViewModel(homeUseCase) }
 
@@ -226,14 +226,16 @@ fun Home() {
                         }
                     }
                     onSuccess { products ->
-                        item(
-                            span = { GridItemSpan(this.maxLineSpan) }
-                        ) {
-                            Text(
-                                text = "Recently Viewed",
-                                modifier = Modifier.padding(6.dp),
-                                fontWeight = FontWeight.Black
-                            )
+                        if (products.isNotEmpty()) {
+                            item(
+                                span = { GridItemSpan(this.maxLineSpan) }
+                            ) {
+                                Text(
+                                    text = "Recently Viewed",
+                                    modifier = Modifier.padding(6.dp),
+                                    fontWeight = FontWeight.Black
+                                )
+                            }
                         }
                         item(
                             span = { GridItemSpan(this.maxLineSpan) }
@@ -245,9 +247,7 @@ fun Home() {
                                     .ignoreHorizontalParentPadding(12.dp)
                             ) {
                                 items(products) { product ->
-                                    ProductItemGridRectangle(product) {
-
-                                    }
+                                    ProductItemGridRectangle(product)
                                 }
                             }
                         }
@@ -334,10 +334,7 @@ fun Home() {
                     items = productList,
                     span = { GridItemSpan(this.maxLineSpan / 2) }
                 ) {
-                    ProductItemGrid(it) { product ->
-                        homeViewModel.postProductViewed(product)
-                        navigation.goToDetail(product.id)
-                    }
+                    ProductItemGrid(it)
                 }
 
                 // product state with paging

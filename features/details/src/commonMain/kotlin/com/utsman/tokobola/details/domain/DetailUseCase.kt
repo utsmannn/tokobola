@@ -3,12 +3,13 @@ package com.utsman.tokobola.details.domain
 import com.utsman.tokobola.common.mapToProduct
 import com.utsman.tokobola.common.entity.Product
 import com.utsman.tokobola.common.entity.ThumbnailProduct
+import com.utsman.tokobola.common.toThumbnailProduct
 import com.utsman.tokobola.network.ApiReducer
+import com.utsman.tokobola.network.StateTransformation
 
 class DetailUseCase(private val repository: DetailRepository) {
 
-    private val productDetailReducer = ApiReducer<Product>()
-    val productDetailFlow get() = productDetailReducer.dataFlow
+    val productDetailReducer = ApiReducer<Product>()
 
     suspend fun getDetail(id: Int) {
         productDetailReducer.transform(
@@ -19,6 +20,9 @@ class DetailUseCase(private val repository: DetailRepository) {
         )
     }
 
+    suspend fun markProductViewed(productId: Int) {
+        repository.markAsViewed(productId)
+    }
     suspend fun clearDetail() {
         productDetailReducer.clear()
     }
