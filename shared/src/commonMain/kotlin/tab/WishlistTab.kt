@@ -1,5 +1,6 @@
 package tab
 
+import MapView
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -13,7 +14,8 @@ internal object WishlistTab : CustomTab {
     @Composable
     override fun Content() {
         val screenContainer = LocalScreenContainer.current
-        Text("wishlist")
+        //Text("wishlist")
+        MapView()
     }
 
     override val options: TabOptions
