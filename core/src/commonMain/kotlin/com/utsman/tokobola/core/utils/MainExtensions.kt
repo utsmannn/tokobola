@@ -43,12 +43,6 @@ suspend fun <T>asyncAwait(action: suspend () -> T): T {
     }
 }
 
-
-// @Composable
-//fun Int.pxToDp() = with(LocalDensity.current) {
-//    this@pxToDp.toDp()
-//}
-
 @Composable
 fun Int.pxToDp() = with(LocalDensity.current) {
     this@pxToDp.toDp()

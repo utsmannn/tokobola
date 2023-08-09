@@ -5,9 +5,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,8 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -25,7 +21,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.PagerDefaults
@@ -35,7 +30,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -45,21 +39,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
@@ -71,7 +57,6 @@ import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductItemGrid
 import com.utsman.tokobola.common.component.ProductItemGridRectangle
 import com.utsman.tokobola.common.component.Shimmer
-import com.utsman.tokobola.common.component.PullRefreshIndicatorOffset
 import com.utsman.tokobola.common.component.SearchBarStatic
 import com.utsman.tokobola.common.component.SimpleErrorScreen
 import com.utsman.tokobola.common.component.ignoreHorizontalParentPadding
@@ -83,7 +68,6 @@ import com.utsman.tokobola.common.component.shimmerBackground
 import com.utsman.tokobola.common.component.tintDark
 import com.utsman.tokobola.common.entity.HomeBanner
 import com.utsman.tokobola.core.State
-import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.rememberViewModel
 import com.utsman.tokobola.core.utils.PlatformUtils
 import com.utsman.tokobola.core.utils.onFailure
@@ -91,6 +75,7 @@ import com.utsman.tokobola.core.utils.onIdle
 import com.utsman.tokobola.core.utils.onLoading
 import com.utsman.tokobola.core.utils.onSuccess
 import com.utsman.tokobola.core.utils.parseString
+import com.utsman.tokobola.core.utils.pxToDp
 import com.utsman.tokobola.home.LocalHomeUseCase
 import kotlinx.coroutines.delay
 
@@ -111,8 +96,8 @@ fun Home() {
         bannerState is State.Loading
     }
 
-    val statusBarHeight = PlatformUtils.rememberStatusBarHeight()
-    val navigationBarHeight = PlatformUtils.rememberNavigationBarHeight()
+    val statusBarHeight = PlatformUtils.rememberStatusBarHeightDp()
+    val navigationBarHeight = PlatformUtils.rememberNavigationBarHeightDp()
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = false,
@@ -163,7 +148,7 @@ fun Home() {
                 columns = GridCells.Fixed(6),
                 contentPadding = PaddingValues(
                     top = (Dimens.HeightTopBarSearch.value).dp,
-                    bottom = (6 + (navigationBarHeight * 2)).dp,
+                    bottom = (6 + (navigationBarHeight.value * 2)).dp,
                     start = 6.dp,
                     end = 6.dp
                 ),
@@ -374,7 +359,7 @@ fun Home() {
                 refreshing = isLoading,
                 state = pullRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter)
-                    .offset(y = statusBarHeight.dp)
+                    .offset(y = statusBarHeight)
             )
 
         }

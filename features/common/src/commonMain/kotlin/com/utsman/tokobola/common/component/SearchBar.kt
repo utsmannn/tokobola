@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,14 +27,14 @@ import dev.icerock.moko.resources.compose.painterResource
 
 @Composable
 fun SearchBarStatic(modifier: Modifier = Modifier, action: () -> Unit) {
-    val statusBarHeight = PlatformUtils.rememberStatusBarHeight()
+    val statusBarHeight = PlatformUtils.rememberStatusBarHeightDp()
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(Dimens.HeightTopBarSearch)
             .padding(
-                top = 12.dp + statusBarHeight.dp,
+                top = 12.dp + statusBarHeight,
                 bottom = 6.dp,
                 start = 12.dp,
                 end = 12.dp

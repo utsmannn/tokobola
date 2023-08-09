@@ -43,7 +43,7 @@ object TabHost : Screen {
             Scaffold(
                 modifier = Modifier
                     .background(color = MaterialTheme.colors.primarySurface)
-                    .padding(bottom = PlatformUtils.rememberNavigationBarHeight().dp),
+                    .padding(bottom = PlatformUtils.rememberNavigationBarHeightDp()),
                 bottomBar = {
                     BottomNavigation {
                         TabNavigationItem(HomeTab)

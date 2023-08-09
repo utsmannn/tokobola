@@ -2,9 +2,7 @@ package com.utsman.tokobola.home.domain
 
 import com.utsman.tokobola.api.productWebApi
 import com.utsman.tokobola.database.data.RecentlyViewedRealm
-import com.utsman.tokobola.database.data.ThumbnailProductRealm
 import com.utsman.tokobola.database.localRepository
-import io.realm.kotlin.ext.copyFromRealm
 import kotlinx.coroutines.flow.Flow
 
 class HomeRepository {

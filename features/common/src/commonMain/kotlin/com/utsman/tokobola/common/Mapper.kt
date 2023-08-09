@@ -6,13 +6,14 @@ import com.utsman.tokobola.api.response.HomeBannerResponse
 import com.utsman.tokobola.api.response.ProductResponse
 import com.utsman.tokobola.api.response.ThumbnailProductResponse
 import com.utsman.tokobola.common.entity.Brand
+import com.utsman.tokobola.common.entity.CartProduct
 import com.utsman.tokobola.common.entity.Category
 import com.utsman.tokobola.common.entity.HomeBanner
 import com.utsman.tokobola.common.entity.Product
 import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.core.data.orFalse
 import com.utsman.tokobola.core.data.orNol
-import com.utsman.tokobola.database.data.ThumbnailProductRealm
+import com.utsman.tokobola.database.data.CartProductRealm
 
 fun ProductResponse.mapToProduct(): Product {
     return Product(
@@ -80,41 +81,15 @@ fun CategoryResponse.toCategory(): Category {
     )
 }
 
-
-fun ThumbnailProduct.toRealm(): ThumbnailProductRealm {
-    return ThumbnailProductRealm().apply {
-        productId = this@toRealm.id
-        name = this@toRealm.name
-        price = this@toRealm.price
-        categoryId = this@toRealm.category.id
-        categoryName = this@toRealm.category.name
-        brandId = this@toRealm.brand.id
-        brandName = this@toRealm.brand.name
-        brandLogo = this@toRealm.brand.logo
-        image = this@toRealm.image
-        promoted = this@toRealm.promoted
-    }
+fun CartProductRealm.toEntity(): CartProduct {
+    return CartProduct(
+        productId, quantity
+    )
 }
 
-fun ThumbnailProductRealm.toEntity(): ThumbnailProduct {
-    val category = ThumbnailProduct.ThumbnailCategory(
-        id = categoryId,
-        name = categoryName
-    )
-
-    val brand = ThumbnailProduct.ThumbnailBrand(
-        id = brandId,
-        name = brandName,
-        logo = brandLogo
-    )
-
-    return ThumbnailProduct(
-        id = productId,
-        name = name,
-        price = price,
-        category = category,
-        brand = brand,
-        image = image,
-        promoted = promoted
-    )
+fun CartProduct.toRealm(): CartProductRealm {
+    return CartProductRealm().also {
+        it.productId = productId
+        it.quantity = quantity
+    }
 }

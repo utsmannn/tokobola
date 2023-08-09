@@ -3,80 +3,36 @@ package com.utsman.tokobola.database
 import com.utsman.tokobola.core.SynchronizObject
 import com.utsman.tokobola.core.synchroniz
 import com.utsman.tokobola.core.utils.asyncAwait
-import com.utsman.tokobola.core.utils.nowMillis
+import com.utsman.tokobola.database.data.CartProductRealm
 import com.utsman.tokobola.database.data.RecentlyViewedRealm
-import com.utsman.tokobola.database.data.ThumbnailProductRealm
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.query.find
-import io.realm.kotlin.types.RealmObject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlin.jvm.Volatile
 import kotlin.native.concurrent.ThreadLocal
 
 class LocalRepository(private val realm: Realm) {
 
-    suspend fun insertThumbnailProduct(thumbnailProductRealm: ThumbnailProductRealm) {
-        asyncAwait {
-            val isProductExist = isExistingThumbnailProduct(thumbnailProductRealm.productId)
-            if (isProductExist) {
-                realm.write {
-                    query(
-                        ThumbnailProductRealm::class,
-                        "productId == ${thumbnailProductRealm.productId}"
-                    )
-                        .find {
-                            delete(it.first())
-                        }
-                }
-            }
-
-            realm.write {
-                copyToRealm(thumbnailProductRealm, updatePolicy = UpdatePolicy.ALL)
-            }
-        }
-    }
-
-    suspend fun selectAllThumbnailProduct(): List<ThumbnailProductRealm> {
-        return asyncAwait {
-            realm.query(ThumbnailProductRealm::class).find().reversed()
-        }
-    }
-
-    suspend fun selectAllThumbnailProductFlow(): Flow<List<ThumbnailProductRealm>> {
-        return asyncAwait {
-            realm.query(ThumbnailProductRealm::class).asFlow()
-                .map { it.list.reversed() }
-        }
-    }
-
-    suspend fun selectByIdThumbnailProduct(id: Int): ThumbnailProductRealm? {
-        return asyncAwait {
-            realm.query(ThumbnailProductRealm::class, "productId == $id")
-                .first()
-                .find()
-        }
-    }
-
-    suspend fun isExistingThumbnailProduct(id: Int): Boolean {
-        return asyncAwait {
-            realm.query(ThumbnailProductRealm::class, "productId == $id")
-                .first()
-                .find() != null
-        }
-    }
-
     suspend fun insertRecentlyViewed(recentlyViewedRealm: RecentlyViewedRealm) {
         asyncAwait {
-            val isExist = realm.query(RecentlyViewedRealm::class, "productId == ${recentlyViewedRealm.productId}")
+            val isExist = realm.query(
+                RecentlyViewedRealm::class,
+                "productId == ${recentlyViewedRealm.productId}"
+            )
                 .first()
                 .find() != null
 
             if (isExist) {
                 realm.write {
-                    query(RecentlyViewedRealm::class, "productId == ${recentlyViewedRealm.productId}")
+                    query(
+                        RecentlyViewedRealm::class,
+                        "productId == ${recentlyViewedRealm.productId}"
+                    )
                         .find {
                             delete(it.first())
                         }
@@ -96,6 +52,49 @@ class LocalRepository(private val realm: Realm) {
         }
     }
 
+    suspend fun insertOrUpdateProductCart(productId: Int, operationQuantity: (Int) -> Int) {
+        println("updated.....")
+        asyncAwait {
+            val productFound = realm.query(CartProductRealm::class, "productId == $productId")
+                .first()
+                .find()
+
+            val quantity = if (productFound != null) {
+                println("not null..... $productFound")
+                val currentQuantity = productFound.quantity
+                val newQuantity = operationQuantity.invoke(currentQuantity)
+
+                realm.write {
+                    query(CartProductRealm::class, "productId == $productId")
+                        .find {
+                            delete(it.first())
+                        }
+                }
+
+                newQuantity
+            } else {
+                operationQuantity.invoke(0)
+            }
+
+            println("inserted.....")
+            realm.write {
+                val newCartProductRealm = CartProductRealm().also {
+                    it.productId = productId
+                    it.quantity = quantity
+                }
+                copyToRealm(newCartProductRealm)
+            }
+        }
+    }
+
+    suspend fun getProductCart(productId: Int): Flow<CartProductRealm?> {
+        return asyncAwait {
+            val anu = realm.query(CartProductRealm::class, "productId == $productId")
+                .asFlow().mapLatest { it.list.firstOrNull() }
+            anu
+        }
+    }
+
     @ThreadLocal
     companion object : SynchronizObject() {
 
@@ -109,8 +108,8 @@ class LocalRepository(private val realm: Realm) {
             if (realm == null) {
                 val config = RealmConfiguration.create(
                     schema = setOf(
-                        ThumbnailProductRealm::class,
-                        RecentlyViewedRealm::class
+                        RecentlyViewedRealm::class,
+                        CartProductRealm::class
                     )
                 ) // add others if needed
                 realm = Realm.open(config)

@@ -1,6 +1,7 @@
 package com.utsman.tokobola.details.domain
 
 import com.utsman.tokobola.api.productWebApi
+import com.utsman.tokobola.common.entity.CartProduct
 import com.utsman.tokobola.database.data.RecentlyViewedRealm
 import com.utsman.tokobola.database.localRepository
 import kotlinx.coroutines.flow.Flow
@@ -12,13 +13,13 @@ class DetailRepository {
 
     suspend fun getDetailProduct(productId: Int) = productApi.getDetail(productId)
 
-    suspend fun getThumbnailByIds(ids: List<Int>) = productApi.getThumbnailByIds(ids)
-
     suspend fun markAsViewed(productId: Int) {
         localRepository.insertRecentlyViewed(RecentlyViewedRealm().apply { this.productId = productId })
     }
 
-    suspend fun getAllRecentlyViewedFlow(): Flow<List<RecentlyViewedRealm>> {
-        return localRepository.selectAllRecentlyViewed()
+    suspend fun getCartProduct(productId: Int) = localRepository.getProductCart(productId)
+
+    suspend fun insertOrUpdateCart(productId: Int, operationQuantity: (Int) -> Int) {
+        localRepository.insertOrUpdateProductCart(productId, operationQuantity)
     }
 }

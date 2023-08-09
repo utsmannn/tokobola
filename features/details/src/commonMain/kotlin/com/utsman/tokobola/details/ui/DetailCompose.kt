@@ -9,6 +9,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,12 +20,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -41,7 +45,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -49,8 +52,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.seiko.imageloader.rememberImagePainter
+import com.utsman.tokobola.common.component.DefaultAnimatedVisibility
 import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductTopBar
 import com.utsman.tokobola.common.component.PullRefreshIndicatorOffset
@@ -59,13 +62,16 @@ import com.utsman.tokobola.common.entity.Product
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.rememberViewModel
+import com.utsman.tokobola.core.utils.PlatformUtils
 import com.utsman.tokobola.core.utils.currency
-import com.utsman.tokobola.core.utils.onFailure
+import com.utsman.tokobola.core.utils.onFailureComposed
 import com.utsman.tokobola.core.utils.onIdle
-import com.utsman.tokobola.core.utils.onLoading
-import com.utsman.tokobola.core.utils.onSuccess
+import com.utsman.tokobola.core.utils.onLoadingComposed
+import com.utsman.tokobola.core.utils.onSuccessComposed
 import com.utsman.tokobola.core.utils.pxToDp
 import com.utsman.tokobola.details.LocalDetailUseCase
+import com.utsman.tokobola.resources.SharedRes
+import dev.icerock.moko.resources.compose.painterResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -84,11 +90,9 @@ fun Detail(productId: Int) {
 
     val uiConfig by detailViewModel.uiConfig.collectAsState()
 
-
     val pullRefreshState = rememberPullRefreshState(refreshing = isLoading, onRefresh = {
-        if (!uiConfig.isShowImageDialog) {
-            detailViewModel.getDetail(productId)
-        }
+        detailViewModel.getDetail(productId)
+        detailViewModel.getCart(productId)
     })
 
     val navigation = LocalNavigation.current
@@ -102,29 +106,30 @@ fun Detail(productId: Int) {
             }
     ) {
         Box(
-            modifier = Modifier.fillMaxSize().pullRefresh(pullRefreshState)
+            modifier = Modifier.fillMaxSize()
+                .pullRefresh(pullRefreshState)
+                .verticalScroll(rememberScrollState())
         ) {
 
-            LazyColumn {
-                with(detailState) {
-                    onIdle {
-                        detailViewModel.getDetail(productId)
+            with(detailState) {
+                onIdle {
+                    detailViewModel.getDetail(productId)
+                    detailViewModel.getCart(productId)
+                }
+                onLoadingComposed {
+                    DetailLoading()
+                }
+                onSuccessComposed { detail ->
+                    Surface(
+                        modifier = Modifier.fillMaxWidth()
+                            .height(uiConfig.globalSize.height.pxToDp())
+                    ) {
+                        DetailSuccess(detail, detailViewModel)
                     }
-                    onLoading {
-                        item {
-                            DetailLoading()
-                        }
-                    }
-                    onSuccess { detail ->
-                        item {
-                            DetailSuccess(detail, detailViewModel)
-                        }
-                    }
-                    onFailure { throwable ->
-                        item {
-                            ErrorScreen(throwable)
-                        }
-                    }
+
+                }
+                onFailureComposed { throwable ->
+                    ErrorScreen(throwable)
                 }
             }
 
@@ -161,6 +166,12 @@ fun DetailLoading() {
 @Composable
 fun DetailSuccess(product: Product, viewModel: DetailViewModel) {
 
+    val cart by viewModel.productCart.collectAsState()
+
+    val isCartEmpty by derivedStateOf {
+        cart.isEmpty()
+    }
+
     LaunchedEffect(Unit) {
         viewModel.postProductViewed(product.id)
     }
@@ -179,13 +190,12 @@ fun DetailSuccess(product: Product, viewModel: DetailViewModel) {
             ) {
                 val brandPainter = rememberImagePainter(product.brand.logo)
 
-                this@Column.AnimatedVisibility(
-                    visible = isImageNeedDisplaying,
-                    enter = fadeIn(animationSpec = tween(100)),
-                    exit = fadeOut(animationSpec = tween(100))
+                DefaultAnimatedVisibility(
+                    isVisible = isImageNeedDisplaying,
+                    duration = 100
                 ) {
                     Image(
-                        modifier = Modifier.fillMaxSize().zIndex(1f).clickable {
+                        modifier = Modifier.fillMaxSize().clickable {
                             viewModel.updateUiConfig {
                                 uiConfig.copy(isShowImageDialog = true)
                             }
@@ -199,13 +209,13 @@ fun DetailSuccess(product: Product, viewModel: DetailViewModel) {
                 Image(
                     painter = brandPainter,
                     contentDescription = null,
-                    modifier = Modifier.size(54.dp).padding(12.dp).zIndex(2f)
+                    modifier = Modifier.size(54.dp).padding(12.dp)
                         .align(Alignment.BottomStart),
                     colorFilter = ColorFilter.tint(color = MaterialTheme.colors.primary)
                 )
 
                 Column(
-                    modifier = Modifier.align(Alignment.BottomEnd).padding(12.dp).zIndex(2f)
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(12.dp)
                         .background(
                             color = Color.White.copy(alpha = 0.5f),
                             shape = RoundedCornerShape(8.dp)
@@ -213,6 +223,8 @@ fun DetailSuccess(product: Product, viewModel: DetailViewModel) {
                 ) {
                     product.images.forEachIndexed { index, s ->
                         val eachPainter = rememberImagePainter(product.images[index])
+
+
                         val colorFilterAlpha by derivedStateOf {
                             if (index == uiConfig.selectedImageIndex) {
                                 0.4f
@@ -237,13 +249,11 @@ fun DetailSuccess(product: Product, viewModel: DetailViewModel) {
                             painter = eachPainter,
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
-                            colorFilter = ColorFilter.tint(color = Color.Black.copy(alpha = colorFilterAlpha), blendMode = BlendMode.SrcAtop)
+//                            colorFilter = ColorFilter.tint(color = Color.Black.copy(alpha = colorFilterAlpha), blendMode = BlendMode.SrcAtop) // blend mode not work in ios
                         )
                     }
                 }
             }
-
-            val colorDot = MaterialTheme.colors.secondary
 
             Column(
                 modifier = Modifier.padding(12.dp)
@@ -257,7 +267,7 @@ fun DetailSuccess(product: Product, viewModel: DetailViewModel) {
                     Canvas(
                         modifier = Modifier.padding(6.dp).size(6.dp)
                     ) {
-                        drawCircle(color = colorDot)
+                        drawCircle(color = Color.Black)
                     }
 
                     Text(
@@ -288,23 +298,180 @@ fun DetailSuccess(product: Product, viewModel: DetailViewModel) {
             }
         }
 
-        AnimatedVisibility(
-            visible = uiConfig.isShowImageDialog,
-            enter = fadeIn(animationSpec = tween(200)),
-            exit = fadeOut(animationSpec = tween(200)),
-            modifier = Modifier.height(uiConfig.globalSize.height.pxToDp())
-                .width(uiConfig.globalSize.width.pxToDp())
+        DefaultAnimatedVisibility(
+            isVisible = isCartEmpty,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            ButtonEmptyCart(product, viewModel)
+        }
+
+        DefaultAnimatedVisibility(
+            isVisible = !isCartEmpty,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            ButtonFoundCart(product, viewModel)
+        }
+
+        DefaultAnimatedVisibility(
+            isVisible = uiConfig.isShowImageDialog,
+            modifier = Modifier.fillMaxSize()
                 .background(color = Color.Black.copy(alpha = 0.8f))
         ) {
-
             ZoomableImage(
                 painter = rememberImagePainter(product.images[uiConfig.selectedImageIndex]),
                 modifier = Modifier
-                    .fillMaxWidth()
                     .fillMaxSize()
             )
         }
     }
+}
 
+@Composable
+fun ButtonEmptyCart(product: Product, viewModel: DetailViewModel) {
+    val navigationBarHeight = PlatformUtils.rememberNavigationBarHeightDp()
 
+    Column(
+        modifier = Modifier.fillMaxWidth()
+            .wrapContentHeight()
+            .shadow(elevation = 12.dp)
+            .background(color = Color.White)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    top = 12.dp,
+                    bottom = 12.dp + navigationBarHeight,
+                    end = 12.dp,
+                    start = 12.dp
+                )
+                .clip(RoundedCornerShape(12.dp))
+                .background(color = MaterialTheme.colors.primary)
+                .clickable {
+                    viewModel.incrementCart(product.id)
+                },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "Add to cart",
+                modifier = Modifier.padding(12.dp),
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+
+            Image(
+                painter = painterResource(SharedRes.images.icon_cart),
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                colorFilter = ColorFilter.tint(color = Color.White)
+            )
+        }
+    }
+}
+
+@Composable
+fun ButtonFoundCart(product: Product, viewModel: DetailViewModel) {
+    val navigationBarHeight = PlatformUtils.rememberNavigationBarHeightDp()
+    val cart by viewModel.productCart.collectAsState()
+
+    Row(
+        modifier = Modifier.fillMaxWidth()
+            .wrapContentHeight()
+            .shadow(elevation = 12.dp)
+            .background(color = Color.White),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .padding(
+                    top = 12.dp,
+                    bottom = 12.dp + navigationBarHeight,
+                    end = 12.dp,
+                    start = 12.dp
+                )
+                .clip(RoundedCornerShape(12.dp))
+                .background(color = MaterialTheme.colors.primary)
+                .clickable {
+
+                },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "Continue to cart",
+                modifier = Modifier.padding(12.dp),
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+
+            Image(
+                painter = painterResource(SharedRes.images.icon_cart),
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                colorFilter = ColorFilter.tint(color = Color.White)
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .padding(
+                    top = 12.dp,
+                    bottom = 12.dp + navigationBarHeight,
+                    end = 12.dp
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .size(34.dp).clip(CircleShape)
+                    .background(color = MaterialTheme.colors.primary)
+                    .clickable {
+                        viewModel.decrementCart(product.id)
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "-",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Text(
+                text = "${cart.quantity}",
+                modifier = Modifier
+                    .width(50.dp)
+                    .padding(
+                    end = 6.dp,
+                    start = 6.dp
+                ),
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colors.primary,
+                textAlign = TextAlign.Center
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(34.dp).clip(CircleShape)
+                    .background(color = MaterialTheme.colors.primary)
+                    .clickable {
+                        viewModel.incrementCart(product.id)
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "+",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
 }

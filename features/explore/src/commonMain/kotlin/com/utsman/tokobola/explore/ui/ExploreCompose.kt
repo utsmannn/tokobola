@@ -74,7 +74,7 @@ fun Explore() {
 
     val exploreViewModel = rememberViewModel { ExploreViewModel(exploreUseCase) }
 
-    val navigationBarHeight = PlatformUtils.rememberNavigationBarHeight()
+    val navigationBarHeight = PlatformUtils.rememberNavigationBarHeightDp()
 
     val topProductState by exploreViewModel.topProductState.collectAsState()
     val curatedProductState by exploreViewModel.curatedProductState.collectAsState()
@@ -118,7 +118,7 @@ fun Explore() {
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(
                     top = (Dimens.HeightTopBarSearch.value).dp,
-                    bottom = (6 + (navigationBarHeight * 2)).dp,
+                    bottom = (6 + (navigationBarHeight.value * 2)).dp,
                     start = 6.dp,
                     end = 6.dp
                 ),

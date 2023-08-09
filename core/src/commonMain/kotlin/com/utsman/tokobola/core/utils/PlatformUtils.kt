@@ -1,12 +1,13 @@
 package com.utsman.tokobola.core.utils
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.Dp
 
 expect object PlatformUtils {
 
     @Composable
-    fun rememberStatusBarHeight(): Int
+    fun rememberStatusBarHeightDp(): Dp
 
     @Composable
-    fun rememberNavigationBarHeight(): Int
+    fun rememberNavigationBarHeightDp(): Dp
 }

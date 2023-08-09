@@ -38,7 +38,7 @@ fun ProductTopBar(
     backAction: () -> Unit = {}
 ) {
 
-    val statusBarHeight = PlatformUtils.rememberStatusBarHeight()
+    val statusBarHeight = PlatformUtils.rememberStatusBarHeightDp()
 
     Row(
         modifier = modifier
@@ -48,7 +48,7 @@ fun ProductTopBar(
                     .copy(alpha = 0.6f)
             )
             .fillMaxWidth().padding(
-                top = statusBarHeight.dp,
+                top = statusBarHeight + 12.dp,
                 bottom = 12.dp,
                 start = 12.dp,
                 end = 12.dp
@@ -60,15 +60,16 @@ fun ProductTopBar(
         val painter = painterResource(backResources)
         Image(
             modifier = Modifier.size(34.dp)
-                .background(
-                    color = MaterialTheme.colors.secondary.copy(alpha = 0.6f),
-                    shape = CircleShape
-                )
-                .padding(6.dp)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = rememberRipple(false),
-                    onClick = { backAction.invoke() }),
+                    onClick = { backAction.invoke() })
+                .clip(CircleShape)
+                .background(
+                    color = MaterialTheme.colors.secondary.copy(alpha = 0.6f)
+                )
+                .padding(6.dp)
+            ,
             painter = painter,
             contentDescription = "",
             colorFilter = ColorFilter.tint(MaterialTheme.colors.secondaryVariant)

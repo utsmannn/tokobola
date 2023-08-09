@@ -2,14 +2,15 @@ package com.utsman.tokobola.core.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import kotlinx.cinterop.useContents
 import platform.UIKit.UIApplication
-import platform.UIKit.UIScreen
 
 actual object PlatformUtils {
 
     @Composable
-    actual fun rememberStatusBarHeight(): Int {
+    actual fun rememberStatusBarHeightDp(): Dp {
         return remember {
             val currentHeight = UIApplication.sharedApplication.statusBarFrame.useContents {
                 this.size.height
@@ -20,14 +21,14 @@ actual object PlatformUtils {
                 0
             }
             statusBarHeight
-        }
+        }.dp
     }
 
 
     @Composable
-    actual fun rememberNavigationBarHeight(): Int {
+    actual fun rememberNavigationBarHeightDp(): Dp {
         return remember {
             30
-        }
+        }.dp
     }
 }

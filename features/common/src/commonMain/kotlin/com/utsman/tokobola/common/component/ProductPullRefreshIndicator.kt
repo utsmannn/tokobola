@@ -16,8 +16,8 @@ fun PullRefreshIndicatorOffset(
     state: PullRefreshState,
     modifier: Modifier = Modifier
 ) {
-    val offset = PlatformUtils.rememberStatusBarHeight()
+    val offset = PlatformUtils.rememberStatusBarHeightDp()
     PullRefreshIndicator(
-        refreshing, state, modifier.offset(y = offset.dp)
+        refreshing, state, modifier.offset(y = offset)
     )
 }

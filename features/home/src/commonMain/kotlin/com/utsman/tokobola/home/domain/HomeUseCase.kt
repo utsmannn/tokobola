@@ -4,9 +4,7 @@ import com.utsman.tokobola.common.entity.Brand
 import com.utsman.tokobola.common.entity.HomeBanner
 import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.common.toBrand
-import com.utsman.tokobola.common.toEntity
 import com.utsman.tokobola.common.toHomeBanner
-import com.utsman.tokobola.common.toRealm
 import com.utsman.tokobola.common.toThumbnailProduct
 import com.utsman.tokobola.core.data.Paged
 import com.utsman.tokobola.core.data.orFalse
