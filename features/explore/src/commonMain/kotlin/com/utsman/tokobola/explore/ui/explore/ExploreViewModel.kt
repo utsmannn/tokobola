@@ -1,8 +1,8 @@
-package com.utsman.tokobola.explore.ui
+package com.utsman.tokobola.explore.ui.explore
 
-import com.utsman.tokobola.common.entity.Category
 import com.utsman.tokobola.core.ViewModel
-import com.utsman.tokobola.explore.domain.ExploreUseCase
+import com.utsman.tokobola.explore.domain.explore.ExploreUseCase
+import com.utsman.tokobola.explore.ui.ExploreUiConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -14,16 +14,10 @@ class ExploreViewModel(private val useCase: ExploreUseCase) : ViewModel() {
     val productBrandState get() = useCase.productBrandReducer.dataFlow
     val productCategoryState get() = useCase.productCategoryReducer.dataFlow
 
-    val brandAndProductState get() = useCase.brandAndProductReducer.dataFlow
-    val categoriesAndProductState get() = useCase.categoryAndProductReducer.dataFlow
-
-
     val topProductState get() = useCase.topProductReducer.dataFlow
     val curatedProductState get() = useCase.curatedProductReducer.dataFlow
 
     val uiConfig: MutableStateFlow<ExploreUiConfig> = MutableStateFlow(ExploreUiConfig())
-
-    val categories: MutableStateFlow<List<Category>> = MutableStateFlow(emptyList())
 
     fun getBrand() = viewModelScope.launch {
         useCase.getBrand()
@@ -32,15 +26,6 @@ class ExploreViewModel(private val useCase: ExploreUseCase) : ViewModel() {
     fun getCategory() = viewModelScope.launch {
         useCase.getCategory()
     }
-
-    fun getBrandAndProduct() = viewModelScope.launch {
-        useCase.getFirstBrandAndProduct()
-    }
-
-    fun getCategoriesAndProduct() = viewModelScope.launch {
-        useCase.getFirstCategoryAndProduct()
-    }
-
 
     fun getProductBrand(brandId: Int) = viewModelScope.launch {
         useCase.getProductBrand(brandId)
@@ -55,10 +40,6 @@ class ExploreViewModel(private val useCase: ExploreUseCase) : ViewModel() {
 
     fun getCuratedProduct() = viewModelScope.launch {
         useCase.getCuratedProduct()
-    }
-
-    fun pushCategories(categories: List<Category>) {
-        this.categories.value = categories
     }
 
     fun updateUiConfig(uiConfig: () -> ExploreUiConfig) {

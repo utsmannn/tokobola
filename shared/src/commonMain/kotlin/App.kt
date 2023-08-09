@@ -13,6 +13,7 @@ import com.utsman.tokobola.details.DetailInstanceProvider
 import com.utsman.tokobola.details.LocalDetailUseCase
 import com.utsman.tokobola.explore.ExploreInstanceProvider
 import com.utsman.tokobola.explore.LocalExploreUseCase
+import com.utsman.tokobola.explore.LocalSearchUseCase
 import com.utsman.tokobola.home.HomeInstanceProvider
 import com.utsman.tokobola.home.LocalHomeUseCase
 
@@ -25,7 +26,8 @@ fun App() {
 
     val homeUseCase = remember { HomeInstanceProvider.providedUseCase() }
     val detailUseCase = remember { DetailInstanceProvider.providedUseCase() }
-    val exploreUseCase = remember { ExploreInstanceProvider.providedUseCase() }
+    val exploreUseCase = remember { ExploreInstanceProvider.providedExploreUseCase() }
+    val searchUseCase = remember { ExploreInstanceProvider.providedSearchUseCase() }
 
 
     CompositionLocalProvider(
@@ -37,7 +39,8 @@ fun App() {
         // use case
         LocalDetailUseCase provides detailUseCase,
         LocalHomeUseCase provides homeUseCase,
-        LocalExploreUseCase provides exploreUseCase
+        LocalExploreUseCase provides exploreUseCase,
+        LocalSearchUseCase provides searchUseCase
     ) {
 
         CommonTheme {

@@ -22,16 +22,6 @@ open class ApiReducer<T> {
         dataFlow.value = result
     }
 
-    suspend inline fun <reified U> transformFlow(
-        transformation: StateFlowTransformation<U, T> = StateFlowTransformation.DefaultFlowTransform<U, T>(),
-        noinline call: suspend () -> Flow<U>,
-        noinline mapper: (U) -> T
-    ) {
-        dataFlow.value = State.Loading()
-        val result = transformation.transform(call, mapper)
-        dataFlow.value = result
-    }
-
     fun clear() {
         dataFlow.value = State.Idle()
     }

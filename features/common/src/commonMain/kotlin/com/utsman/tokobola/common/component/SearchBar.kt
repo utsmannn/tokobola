@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.utils.PlatformUtils
 import com.utsman.tokobola.resources.SharedRes
 import dev.icerock.moko.resources.compose.painterResource
@@ -28,6 +29,8 @@ import dev.icerock.moko.resources.compose.painterResource
 @Composable
 fun SearchBarStatic(modifier: Modifier = Modifier, action: () -> Unit) {
     val statusBarHeight = PlatformUtils.rememberStatusBarHeightDp()
+
+    val navigation = LocalNavigation.current
 
     Row(
         modifier = modifier
@@ -50,7 +53,9 @@ fun SearchBarStatic(modifier: Modifier = Modifier, action: () -> Unit) {
             modifier = Modifier.fillMaxWidth()
                 .wrapContentHeight()
                 .clip(RoundedCornerShape(18.dp))
-                .clickable { action.invoke() }
+                .clickable {
+                    navigation.goToSearch()
+                }
                 .background(color = Color.White)
                 .padding(
                     horizontal = 12.dp,

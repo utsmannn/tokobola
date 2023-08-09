@@ -1,12 +1,14 @@
-package com.utsman.tokobola.explore.ui
+package com.utsman.tokobola.explore.ui.explore
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -26,6 +28,7 @@ import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -46,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,8 +69,9 @@ import com.utsman.tokobola.core.utils.onIdle
 import com.utsman.tokobola.core.utils.onLoading
 import com.utsman.tokobola.core.utils.onSuccess
 import com.utsman.tokobola.explore.LocalExploreUseCase
+import com.utsman.tokobola.resources.SharedRes
+import dev.icerock.moko.resources.compose.painterResource
 import kotlinx.coroutines.delay
-
 
 @Composable
 fun Explore() {
@@ -247,7 +252,11 @@ fun Explore() {
                                                 vertical = 12.dp,
                                                 horizontal = 6.dp
                                             )
-                                            .shadow(4.dp, clip = false, shape = RoundedCornerShape(18.dp))
+                                            .shadow(
+                                                4.dp,
+                                                clip = false,
+                                                shape = RoundedCornerShape(18.dp)
+                                            )
                                             .clip(RoundedCornerShape(18.dp))
                                             .background(color = selectedTabColor)
                                     ) {
@@ -287,6 +296,12 @@ fun Explore() {
                                         products.forEach {
                                             item {
                                                 ProductItemGridRectangle(it)
+                                            }
+                                        }
+
+                                        item {
+                                            SeeAllItem {
+
                                             }
                                         }
                                     }
@@ -356,7 +371,11 @@ fun Explore() {
                                                 vertical = 12.dp,
                                                 horizontal = 6.dp
                                             )
-                                            .shadow(4.dp, clip = false, shape = RoundedCornerShape(18.dp))
+                                            .shadow(
+                                                4.dp,
+                                                clip = false,
+                                                shape = RoundedCornerShape(18.dp)
+                                            )
                                             .clip(RoundedCornerShape(18.dp))
                                             .background(color = selectedTabColor)
                                     ) {
@@ -408,6 +427,12 @@ fun Explore() {
                                         products.forEach {
                                             item {
                                                 ProductItemGridRectangle(it)
+                                            }
+                                        }
+
+                                        item {
+                                            SeeAllItem {
+
                                             }
                                         }
                                     }
@@ -503,5 +528,44 @@ fun TopProductBanner(products: List<ThumbnailProduct>) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun SeeAllItem(onClick: () -> Unit) {
+    Column(
+        modifier = Modifier.width(100.dp).height(Dimens.HeightProductItemGridRectangle)
+            .clip(RoundedCornerShape(12.dp)).clickable {
+                onClick.invoke()
+            },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Box(
+            modifier = Modifier.size(50.dp)
+                .padding(12.dp)
+                .clip(CircleShape)
+                .background(color = MaterialTheme.colors.primary)
+                .shadow(12.dp, shape = CircleShape)
+        ) {
+
+            Image(
+                painter = painterResource(SharedRes.images.icon_chevron_right),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                colorFilter = ColorFilter.tint(color = Color.White)
+            )
+        }
+
+        Text(
+            text = "See all product",
+            color = MaterialTheme.colors.primary,
+            textAlign = TextAlign.Center,
+            fontSize = 12.sp,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+            fontWeight = FontWeight.Bold
+        )
+
     }
 }

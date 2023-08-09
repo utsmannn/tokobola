@@ -27,6 +27,12 @@ class NavigationProvider : Navigation {
         }
     }
 
+    override fun goToSearch(): Boolean {
+        return tryAction { nav ->
+            screenContainer.value?.search()?.let { nav.push(it) }
+        }
+    }
+
     private fun tryAction(action: (Navigator) -> Unit): Boolean {
         return try {
             navigatorStack.value?.let(action)

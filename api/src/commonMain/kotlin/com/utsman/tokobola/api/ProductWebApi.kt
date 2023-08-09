@@ -26,6 +26,10 @@ class ProductWebApi : WebDataSource() {
         return getPaged(WebEndPoint.PRODUCT_CATEGORY.withParam("page", page).withParam("category_id", categoryId))
     }
 
+    suspend fun getBySearch(page: Int, query: String): BasePagedResponse<ThumbnailProductResponse> {
+        return getPaged(WebEndPoint.PRODUCT_SEARCH.withParam("page", page).withParam("query", query))
+    }
+
     suspend fun getThumbnailByIds(ids: List<Int>): BaseResponse<List<ThumbnailProductResponse>> {
         val newIds = ids.toString().replace("[", "").replace("]", "")
             .replace(" ", "")

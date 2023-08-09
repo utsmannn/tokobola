@@ -11,4 +11,6 @@ class ExploreRepository {
     suspend fun getProductCategory(categoryId: Int, page: Int) = productApi.getByCategoryPaged(categoryId, page)
     suspend fun getProductTop() = productApi.getTop()
     suspend fun getProductCurated() = productApi.getCurated()
+
+    suspend fun getProductBySearch(page: Int, query: String) = productApi.getBySearch(page, query)
 }

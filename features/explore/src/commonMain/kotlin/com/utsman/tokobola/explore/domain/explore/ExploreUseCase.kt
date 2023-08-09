@@ -1,4 +1,4 @@
-package com.utsman.tokobola.explore.domain
+package com.utsman.tokobola.explore.domain.explore
 
 import com.utsman.tokobola.common.entity.Brand
 import com.utsman.tokobola.common.entity.Category
@@ -6,12 +6,8 @@ import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.common.toBrand
 import com.utsman.tokobola.common.toCategory
 import com.utsman.tokobola.common.toThumbnailProduct
-import com.utsman.tokobola.core.data.orNol
-import com.utsman.tokobola.core.utils.pmap
-import com.utsman.tokobola.explore.ui.BrandData
-import com.utsman.tokobola.explore.ui.CategoryData
+import com.utsman.tokobola.explore.domain.ExploreRepository
 import com.utsman.tokobola.network.ApiReducer
-import com.utsman.tokobola.network.response.BasePagedResponse
 
 class ExploreUseCase(private val repository: ExploreRepository) {
 
@@ -20,9 +16,6 @@ class ExploreUseCase(private val repository: ExploreRepository) {
 
     val productBrandReducer = ApiReducer<List<ThumbnailProduct>>()
     val productCategoryReducer = ApiReducer<List<ThumbnailProduct>>()
-
-    val categoryAndProductReducer = ApiReducer<List<CategoryData>>()
-    val brandAndProductReducer = ApiReducer<List<BrandData>>()
 
     val topProductReducer = ApiReducer<List<ThumbnailProduct>>()
     val curatedProductReducer = ApiReducer<List<ThumbnailProduct>>()
@@ -82,50 +75,6 @@ class ExploreUseCase(private val repository: ExploreRepository) {
                 val dataResponse = productResponse.data?.data.orEmpty()
                 dataResponse.map {
                     it.toThumbnailProduct()
-                }
-            }
-        )
-    }
-
-    suspend fun getFirstCategoryAndProduct() {
-        categoryAndProductReducer.transform(
-            transformation = CategoryAndProductStateTransformation(),
-            call = {
-                val categoryResponse = repository.getCategory()
-                categoryResponse.data
-                    ?.filter { it.id != 40 }
-                    ?.pmap {
-                        val productPaging = repository.getProductCategory(it.id.orNol(), 1)
-                        Pair(it, productPaging.data ?: BasePagedResponse.DataResponse())
-                    }.orEmpty()
-            },
-            mapper = { data ->
-                data.map { (categoryResponse, dataResponse) ->
-                    val category = categoryResponse.toCategory()
-                    val product = dataResponse.data.map { it.toThumbnailProduct() }
-                    CategoryData(category, product)
-                }
-            }
-        )
-    }
-
-    suspend fun getFirstBrandAndProduct() {
-        brandAndProductReducer.transform(
-            transformation = BrandAndProductStateTransformation(),
-            call = {
-                val categoryResponse = repository.getBrand()
-                categoryResponse.data
-                    ?.filter { it.id != 40 }
-                    ?.pmap {
-                        val productPaging = repository.getProductBrand(it.id.orNol(), 1)
-                        Pair(it, productPaging.data ?: BasePagedResponse.DataResponse())
-                    }.orEmpty()
-            },
-            mapper = { data ->
-                data.map { (brandResponse, dataResponse) ->
-                    val brand = brandResponse.toBrand()
-                    val product = dataResponse.data.map { it.toThumbnailProduct() }
-                    BrandData(brand, product)
                 }
             }
         )

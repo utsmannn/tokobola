@@ -1,7 +1,5 @@
 package com.utsman.tokobola.explore.ui
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import com.utsman.tokobola.common.entity.Brand
 import com.utsman.tokobola.common.entity.Category
 import com.utsman.tokobola.common.entity.ThumbnailProduct

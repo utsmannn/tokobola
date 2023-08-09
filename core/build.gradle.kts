@@ -52,6 +52,7 @@ kotlin {
                 api("cafe.adriel.voyager:voyager-tab-navigator:$voyagerVersion")
 
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+
             }
         }
 

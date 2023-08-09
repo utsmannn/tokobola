@@ -12,6 +12,7 @@ import com.utsman.tokobola.core.data.orNol
 import com.utsman.tokobola.core.utils.IoScope
 import com.utsman.tokobola.core.utils.pmap
 import com.utsman.tokobola.network.ApiReducer
+import com.utsman.tokobola.network.AutoPagingAdapter
 import com.utsman.tokobola.network.StateTransformation
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -28,42 +29,17 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
 
     val productViewedReducer = ApiReducer<List<ThumbnailProduct>>()
 
-    private var currentPageProduct: Int = 1
-    private var prevPageProduct: Int = 1
-    private var hasNextPageProduct = true
-
-    private val prevListProduct: MutableList<ThumbnailProduct> = mutableListOf()
+    private val featurePagingAdapter = AutoPagingAdapter(productsFeaturedReducer)
 
     suspend fun getProduct() {
-        if (hasNextPageProduct) {
-            productsFeaturedReducer.transform(
-                call = {
-                    homeRepository.getFeaturedProductPaged(currentPageProduct).apply {
-                        hasNextPageProduct = this.data?.hasNextPage.orFalse()
-                        prevPageProduct = currentPageProduct
-                    }
-                },
-                mapper = { pagedResponseProduct ->
-                    val dataPaged = pagedResponseProduct.data
-                    val dataProduct = dataPaged?.data.orEmpty()
-                        .map {
-                            it.toThumbnailProduct()
-                        }
-
-                    currentPageProduct = dataPaged?.page.orNol() + 1
-
-                    prevListProduct.addAll(dataProduct)
-                    Paged(
-                        data = prevListProduct,
-                        hasNextPage = dataPaged?.hasNextPage.orFalse(),
-                        page = dataPaged?.page ?: 1,
-                        perPage = dataPaged?.perPage ?: 10
-                    )
-                }
-            )
-        } else {
-            println("End of reach product!")
-        }
+        featurePagingAdapter.executeResponse(
+            call = {
+                homeRepository.getFeaturedProductPaged(it)
+            },
+            mapper = {
+                it.toThumbnailProduct()
+            }
+        )
     }
 
     suspend fun getBanner() {
@@ -111,9 +87,7 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
     }
 
     fun clearProductPage() {
-        hasNextPageProduct = true
-        currentPageProduct = 1
-        prevListProduct.clear()
+        featurePagingAdapter.clear()
         brandReducer.clear()
         productViewedReducer.clear()
     }
