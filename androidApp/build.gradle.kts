@@ -13,6 +13,7 @@ kotlin {
                 implementation(compose.ui)
 
                 implementation(project(":shared"))
+                implementation(project(":core"))
             }
         }
     }

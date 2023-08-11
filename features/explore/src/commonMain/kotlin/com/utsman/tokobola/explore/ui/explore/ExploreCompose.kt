@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
@@ -28,7 +29,6 @@ import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
@@ -61,28 +61,29 @@ import com.utsman.tokobola.common.component.animatedTopBarColor
 import com.utsman.tokobola.common.component.ignoreHorizontalParentPadding
 import com.utsman.tokobola.common.component.ignoreVerticalParentPadding
 import com.utsman.tokobola.common.component.tintDark
+import com.utsman.tokobola.common.entity.Brand
+import com.utsman.tokobola.common.entity.Category
 import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.navigation.LocalNavigation
+import com.utsman.tokobola.core.navigation.Navigation
 import com.utsman.tokobola.core.rememberViewModel
-import com.utsman.tokobola.core.utils.PlatformUtils
 import com.utsman.tokobola.core.utils.onIdle
 import com.utsman.tokobola.core.utils.onLoading
 import com.utsman.tokobola.core.utils.onSuccess
+import com.utsman.tokobola.core.utils.rememberNavigationBarHeightDp
 import com.utsman.tokobola.explore.LocalExploreUseCase
+import com.utsman.tokobola.explore.ui.ExploreUiConfig
 import com.utsman.tokobola.resources.SharedRes
 import dev.icerock.moko.resources.compose.painterResource
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Explore() {
     val exploreUseCase = LocalExploreUseCase.current
     val navigation = LocalNavigation.current
 
     val exploreViewModel = rememberViewModel { ExploreViewModel(exploreUseCase) }
-
-    val navigationBarHeight = PlatformUtils.rememberNavigationBarHeightDp()
 
     val topProductState by exploreViewModel.topProductState.collectAsState()
     val curatedProductState by exploreViewModel.curatedProductState.collectAsState()
@@ -110,7 +111,6 @@ fun Explore() {
             productBrandState is State.Success
         }
     }
-
 
     ScaffoldGridState(
         topBar = {
@@ -185,120 +185,148 @@ fun Explore() {
         }
 
         // category tab
-        with(categoryState) {
-            onIdle {
-                exploreViewModel.getCategory()
+        categorySection(
+            categoryState,
+            exploreViewModel,
+            uiConfig,
+            isCategoryTabAllowClick,
+            productCategoryState,
+            navigation
+        )
+
+        // brand state
+        brandSection(
+            brandState,
+            exploreViewModel,
+            uiConfig,
+            isBrandTabAllowClick,
+            productBrandState,
+            navigation
+        )
+    }
+}
+
+private fun LazyGridScope.categorySection(
+    categoryState: State<List<Category>>,
+    exploreViewModel: ExploreViewModel,
+    uiConfig: ExploreUiConfig,
+    isCategoryTabAllowClick: Boolean,
+    productCategoryState: State<List<ThumbnailProduct>>,
+    navigation: Navigation
+) {
+    with(categoryState) {
+        onIdle {
+            exploreViewModel.getCategory()
+        }
+        onLoading {
+            item {
+                Shimmer(modifier = Modifier.height(100.dp))
             }
-            onLoading {
-                item {
-                    Shimmer(modifier = Modifier.height(100.dp))
-                }
+        }
+        onSuccess { categories ->
+            exploreViewModel.updateUiConfig {
+                uiConfig.copy(selectedCategory = categories[uiConfig.selectedTabCategoryIndex])
             }
-            onSuccess { categories ->
-                exploreViewModel.updateUiConfig {
-                    uiConfig.copy(selectedCategory = categories[uiConfig.selectedTabCategoryIndex])
-                }
-                item {
-                    Text(
-                        text = "Categories",
-                        modifier = Modifier.padding(6.dp).padding(top = 12.dp),
-                        fontWeight = FontWeight.Black
-                    )
-                }
-                item {
-                    ScrollableTabRow(
-                        selectedTabIndex = uiConfig.selectedTabCategoryIndex,
-                        modifier = Modifier.fillMaxWidth()
-                            .ignoreHorizontalParentPadding(12.dp),
-                        backgroundColor = Color.Transparent,
-                        edgePadding = 12.dp,
-                        indicator = {},
-                        divider = {}
-                    ) {
-                        categories.forEachIndexed { index, category ->
-                            val isSelected by remember {
-                                derivedStateOf {
-                                    index == uiConfig.selectedTabCategoryIndex
-                                }
+            item {
+                Text(
+                    text = "Categories",
+                    modifier = Modifier.padding(6.dp).padding(top = 12.dp),
+                    fontWeight = FontWeight.Black
+                )
+            }
+            item {
+                ScrollableTabRow(
+                    selectedTabIndex = uiConfig.selectedTabCategoryIndex,
+                    modifier = Modifier.fillMaxWidth()
+                        .ignoreHorizontalParentPadding(12.dp),
+                    backgroundColor = Color.Transparent,
+                    edgePadding = 12.dp,
+                    indicator = {},
+                    divider = {}
+                ) {
+                    categories.forEachIndexed { index, category ->
+                        val isSelected by remember {
+                            derivedStateOf {
+                                index == uiConfig.selectedTabCategoryIndex
                             }
+                        }
 
-                            val selectedTabColor by animateColorAsState(
-                                targetValue = if (isSelected) MaterialTheme.colors.primary else Color.White
-                            )
+                        val selectedTabColor by animateColorAsState(
+                            targetValue = if (isSelected) MaterialTheme.colors.primary else Color.White
+                        )
 
-                            val selectedTextColor by animateColorAsState(
-                                targetValue = if (isSelected) Color.White else Color.Black
-                            )
+                        val selectedTextColor by animateColorAsState(
+                            targetValue = if (isSelected) Color.White else Color.Black
+                        )
 
-                            Tab(
-                                selected = isSelected,
-                                onClick = {
-                                    exploreViewModel.updateUiConfig {
-                                        uiConfig.copy(
-                                            selectedTabCategoryIndex = index,
-                                            selectedCategory = category
-                                        )
-                                    }
-                                    exploreViewModel.getProductCategory(category.id)
-                                },
-                                enabled = isCategoryTabAllowClick,
-                                modifier = Modifier
-                                    .padding(
-                                        vertical = 12.dp,
-                                        horizontal = 6.dp
+                        Tab(
+                            selected = isSelected,
+                            onClick = {
+                                exploreViewModel.updateUiConfig {
+                                    uiConfig.copy(
+                                        selectedTabCategoryIndex = index,
+                                        selectedCategory = category
                                     )
-                                    .shadow(
-                                        4.dp,
-                                        clip = false,
-                                        shape = RoundedCornerShape(18.dp)
-                                    )
-                                    .clip(RoundedCornerShape(18.dp))
-                                    .background(color = selectedTabColor)
-                            ) {
-
-                                Text(
-                                    text = category.name,
-                                    modifier = Modifier.padding(8.dp),
-                                    fontSize = 12.sp,
-                                    color = selectedTextColor
+                                }
+                                exploreViewModel.getProductCategory(category.id)
+                            },
+                            enabled = isCategoryTabAllowClick,
+                            modifier = Modifier
+                                .padding(
+                                    vertical = 12.dp,
+                                    horizontal = 6.dp
                                 )
-                            }
-                        }
-                    }
-                }
+                                .shadow(
+                                    4.dp,
+                                    clip = false,
+                                    shape = RoundedCornerShape(18.dp)
+                                )
+                                .clip(RoundedCornerShape(18.dp))
+                                .background(color = selectedTabColor)
+                        ) {
 
-                // product in category
-                with(productCategoryState) {
-                    onIdle {
-                        exploreViewModel.getProductCategory(uiConfig.selectedCategory.id)
-                    }
-                    onLoading {
-                        item {
-                            Shimmer(
-                                modifier = Modifier.width(120.dp)
-                                    .height(180.dp)
+                            Text(
+                                text = category.name,
+                                modifier = Modifier.padding(8.dp),
+                                fontSize = 12.sp,
+                                color = selectedTextColor
                             )
                         }
                     }
-                    onSuccess { products ->
-                        item {
-                            LazyRow(
-                                contentPadding = PaddingValues(
-                                    horizontal = 12.dp
-                                ),
-                                modifier = Modifier.ignoreHorizontalParentPadding(12.dp)
-                            ) {
-                                products.forEach {
-                                    item {
-                                        ProductItemGridRectangle(it)
-                                    }
-                                }
+                }
+            }
 
+            // product in category
+            with(productCategoryState) {
+                onIdle {
+                    exploreViewModel.getProductCategory(uiConfig.selectedCategory.id)
+                }
+                onLoading {
+                    item {
+                        Shimmer(
+                            modifier = Modifier.width(120.dp)
+                                .height(180.dp)
+                        )
+                    }
+                }
+                onSuccess { products ->
+                    item {
+                        LazyRow(
+                            contentPadding = PaddingValues(
+                                horizontal = 12.dp
+                            ),
+                            modifier = Modifier.ignoreHorizontalParentPadding(12.dp)
+                        ) {
+                            products.forEach {
                                 item {
-                                    SeeAllItem {
-                                        val selectedCategory = uiConfig.selectedCategory
-                                        navigation.goToDetailCategory(selectedCategory.id)
-                                    }
+                                    ProductItemGridRectangle(it)
+                                }
+                            }
+
+                            item {
+                                SeeAllItem {
+                                    val selectedCategory = uiConfig.selectedCategory
+                                    navigation.goToDetailCategory(selectedCategory.id)
                                 }
                             }
                         }
@@ -306,131 +334,140 @@ fun Explore() {
                 }
             }
         }
+    }
+}
 
-        // brand state
-        with(brandState) {
-            onIdle {
-                exploreViewModel.getBrand()
+private fun LazyGridScope.brandSection(
+    brandState: State<List<Brand>>,
+    exploreViewModel: ExploreViewModel,
+    uiConfig: ExploreUiConfig,
+    isBrandTabAllowClick: Boolean,
+    productBrandState: State<List<ThumbnailProduct>>,
+    navigation: Navigation
+) {
+    with(brandState) {
+        onIdle {
+            exploreViewModel.getBrand()
+        }
+        onLoading {
+            item {
+                Shimmer(modifier = Modifier.height(100.dp))
             }
-            onLoading {
-                item {
-                    Shimmer(modifier = Modifier.height(100.dp))
-                }
+        }
+        onSuccess { brands ->
+            item {
+                Text(
+                    text = "Brand",
+                    modifier = Modifier.padding(6.dp).padding(top = 12.dp),
+                    fontWeight = FontWeight.Black
+                )
             }
-            onSuccess { brands ->
-                item {
-                    Text(
-                        text = "Brand",
-                        modifier = Modifier.padding(6.dp).padding(top = 12.dp),
-                        fontWeight = FontWeight.Black
-                    )
-                }
-                item {
-                    ScrollableTabRow(
-                        selectedTabIndex = uiConfig.selectedTabBrandIndex,
-                        modifier = Modifier.fillMaxWidth()
-                            .ignoreHorizontalParentPadding(12.dp),
-                        backgroundColor = Color.Transparent,
-                        edgePadding = 12.dp,
-                        indicator = {},
-                        divider = {}
-                    ) {
-                        brands.forEachIndexed { index, brand ->
-                            val isSelected by remember {
-                                derivedStateOf {
-                                    index == uiConfig.selectedTabBrandIndex
-                                }
+            item {
+                ScrollableTabRow(
+                    selectedTabIndex = uiConfig.selectedTabBrandIndex,
+                    modifier = Modifier.fillMaxWidth()
+                        .ignoreHorizontalParentPadding(12.dp),
+                    backgroundColor = Color.Transparent,
+                    edgePadding = 12.dp,
+                    indicator = {},
+                    divider = {}
+                ) {
+
+                    brands.forEachIndexed { index, brand ->
+                        val isSelected by remember {
+                            derivedStateOf {
+                                index == uiConfig.selectedTabBrandIndex
                             }
+                        }
 
-                            val selectedTabColor by animateColorAsState(
-                                targetValue = if (isSelected) MaterialTheme.colors.primary else Color.White
-                            )
+                        val selectedTabColor by animateColorAsState(
+                            targetValue = if (isSelected) MaterialTheme.colors.primary else Color.White
+                        )
 
-                            val selectedTextColor by animateColorAsState(
-                                targetValue = if (isSelected) Color.White else Color.Black
-                            )
+                        val selectedTextColor by animateColorAsState(
+                            targetValue = if (isSelected) Color.White else Color.Black
+                        )
 
-                            Tab(
-                                selected = isSelected,
-                                onClick = {
-                                    exploreViewModel.updateUiConfig {
-                                        uiConfig.copy(
-                                            selectedTabBrandIndex = index,
-                                            selectedBrand = brand
-                                        )
-                                    }
-                                    exploreViewModel.getProductBrand(brand.id)
-                                },
-                                enabled = isBrandTabAllowClick,
-                                modifier = Modifier
-                                    .padding(
-                                        vertical = 12.dp,
-                                        horizontal = 6.dp
+                        Tab(
+                            selected = isSelected,
+                            onClick = {
+                                exploreViewModel.updateUiConfig {
+                                    uiConfig.copy(
+                                        selectedTabBrandIndex = index,
+                                        selectedBrand = brand
                                     )
-                                    .shadow(
-                                        4.dp,
-                                        clip = false,
-                                        shape = RoundedCornerShape(18.dp)
-                                    )
-                                    .clip(RoundedCornerShape(18.dp))
-                                    .background(color = selectedTabColor)
+                                }
+                                exploreViewModel.getProductBrand(brand.id)
+                            },
+                            enabled = isBrandTabAllowClick,
+                            modifier = Modifier
+                                .padding(
+                                    vertical = 12.dp,
+                                    horizontal = 6.dp
+                                )
+                                .shadow(
+                                    4.dp,
+                                    clip = false,
+                                    shape = RoundedCornerShape(18.dp)
+                                )
+                                .clip(RoundedCornerShape(18.dp))
+                                .background(color = selectedTabColor)
+                        ) {
+
+                            Row(
+                                modifier = Modifier.padding(8.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-
-                                Row(
-                                    modifier = Modifier.padding(8.dp),
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    val painter = rememberImagePainter(brand.logo)
-                                    Image(
-                                        painter = painter,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(14.dp),
-                                        colorFilter = ColorFilter.tint(color = selectedTextColor)
-                                    )
-                                    Text(
-                                        text = brand.name,
-                                        modifier = Modifier.padding(start = 6.dp),
-                                        fontSize = 12.sp,
-                                        color = selectedTextColor
-                                    )
-                                }
-
+                                val painter = rememberImagePainter(brand.logo)
+                                Image(
+                                    painter = painter,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(14.dp),
+                                    colorFilter = ColorFilter.tint(color = selectedTextColor)
+                                )
+                                Text(
+                                    text = brand.name,
+                                    modifier = Modifier.padding(start = 6.dp),
+                                    fontSize = 12.sp,
+                                    color = selectedTextColor
+                                )
                             }
+
                         }
                     }
                 }
+            }
 
-                // product in brand
-                with(productBrandState) {
-                    onIdle {
-                        exploreViewModel.getProductBrand(uiConfig.selectedBrand.id)
+            // product in brand
+            with(productBrandState) {
+                onIdle {
+                    exploreViewModel.getProductBrand(uiConfig.selectedBrand.id)
+                }
+                onLoading {
+                    item {
+                        Shimmer(
+                            modifier = Modifier.width(120.dp)
+                                .height(180.dp)
+                        )
                     }
-                    onLoading {
-                        item {
-                            Shimmer(
-                                modifier = Modifier.width(120.dp)
-                                    .height(180.dp)
-                            )
-                        }
-                    }
-                    onSuccess { products ->
-                        item {
-                            LazyRow(
-                                contentPadding = PaddingValues(12.dp),
-                                modifier = Modifier.ignoreHorizontalParentPadding(12.dp)
-                            ) {
-                                products.forEach {
-                                    item {
-                                        ProductItemGridRectangle(it)
-                                    }
-                                }
-
+                }
+                onSuccess { products ->
+                    item {
+                        LazyRow(
+                            contentPadding = PaddingValues(12.dp),
+                            modifier = Modifier.ignoreHorizontalParentPadding(12.dp)
+                        ) {
+                            products.forEach {
                                 item {
-                                    SeeAllItem {
-                                        val selectedBrand = uiConfig.selectedBrand
-                                        navigation.goToDetailBrand(selectedBrand.id)
-                                    }
+                                    ProductItemGridRectangle(it)
+                                }
+                            }
+
+                            item {
+                                SeeAllItem {
+                                    val selectedBrand = uiConfig.selectedBrand
+                                    navigation.goToDetailBrand(selectedBrand.id)
                                 }
                             }
                         }

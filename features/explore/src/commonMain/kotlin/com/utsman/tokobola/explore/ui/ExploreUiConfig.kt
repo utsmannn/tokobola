@@ -12,5 +12,5 @@ data class ExploreUiConfig(
     val selectedTabBrandIndex: Int = 0,
     val selectedCategory: Category = Category(id = 1),
     val selectedBrand: Brand = Brand(id = 1),
-    val selectedProductCategory: State<List<ThumbnailProduct>> = State.Idle()
+    val selectedProductCategory: State<List<ThumbnailProduct>> = State.Loading()
 )

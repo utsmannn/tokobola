@@ -15,7 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
-import com.utsman.tokobola.core.utils.PlatformUtils
+import com.utsman.tokobola.core.utils.rememberNavigationBarHeightDp
 
 @Composable
 fun ScaffoldGridState(
@@ -27,7 +27,7 @@ fun ScaffoldGridState(
     content: LazyGridScope.() -> Unit
 ) {
 
-    val navigationBarHeight = PlatformUtils.rememberNavigationBarHeightDp()
+    val navigationBarHeight = rememberNavigationBarHeightDp()
 
     val isNeedLift by derivedStateOf {
         lazyGridState.canScrollBackward

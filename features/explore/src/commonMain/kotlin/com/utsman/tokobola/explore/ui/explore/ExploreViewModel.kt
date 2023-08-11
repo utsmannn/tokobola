@@ -17,7 +17,7 @@ class ExploreViewModel(private val useCase: ExploreUseCase) : ViewModel() {
     val topProductState get() = useCase.topProductReducer.dataFlow
     val curatedProductState get() = useCase.curatedProductReducer.dataFlow
 
-    val uiConfig: MutableStateFlow<ExploreUiConfig> = MutableStateFlow(ExploreUiConfig())
+    val uiConfig = MutableStateFlow(ExploreUiConfig())
 
     fun getBrand() = viewModelScope.launch {
         useCase.getBrand()

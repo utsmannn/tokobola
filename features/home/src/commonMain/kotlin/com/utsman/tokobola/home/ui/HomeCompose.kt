@@ -3,7 +3,10 @@ package com.utsman.tokobola.home.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,11 +15,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -26,7 +28,7 @@ import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Scaffold
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -45,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,8 +57,8 @@ import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductItemGrid
 import com.utsman.tokobola.common.component.ProductItemGridRectangle
 import com.utsman.tokobola.common.component.ScaffoldGridState
-import com.utsman.tokobola.common.component.Shimmer
 import com.utsman.tokobola.common.component.SearchBarStatic
+import com.utsman.tokobola.common.component.Shimmer
 import com.utsman.tokobola.common.component.SimpleErrorScreen
 import com.utsman.tokobola.common.component.animatedTopBarColor
 import com.utsman.tokobola.common.component.ignoreHorizontalParentPadding
@@ -64,15 +67,17 @@ import com.utsman.tokobola.common.component.isScrolledToEnd
 import com.utsman.tokobola.common.component.rememberForeverLazyListState
 import com.utsman.tokobola.common.component.shimmerBackground
 import com.utsman.tokobola.common.component.tintDark
+import com.utsman.tokobola.common.entity.Brand
 import com.utsman.tokobola.common.entity.HomeBanner
 import com.utsman.tokobola.core.State
+import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.rememberViewModel
-import com.utsman.tokobola.core.utils.PlatformUtils
 import com.utsman.tokobola.core.utils.onFailure
 import com.utsman.tokobola.core.utils.onIdle
 import com.utsman.tokobola.core.utils.onLoading
 import com.utsman.tokobola.core.utils.onSuccess
 import com.utsman.tokobola.core.utils.parseString
+import com.utsman.tokobola.core.utils.rememberStatusBarHeightDp
 import com.utsman.tokobola.home.LocalHomeUseCase
 import kotlinx.coroutines.delay
 
@@ -80,7 +85,6 @@ import kotlinx.coroutines.delay
 @Composable
 fun Home() {
     val homeUseCase = LocalHomeUseCase.current
-    /*val navigation = LocalNavigation.current*/
 
     val homeViewModel = rememberViewModel { HomeViewModel(homeUseCase) }
 
@@ -93,7 +97,7 @@ fun Home() {
         bannerState is State.Loading
     }
 
-    val statusBarHeight = PlatformUtils.rememberStatusBarHeightDp()
+    val statusBarHeight = rememberStatusBarHeightDp()
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = false,
@@ -185,7 +189,9 @@ fun Home() {
 
         // product viewed
         with(productViewedState) {
-            onIdle { homeViewModel.getProductViewed() }
+            onIdle {
+                homeViewModel.getProductViewed()
+            }
             onLoading {
                 item(
                     span = { GridItemSpan(this.maxLineSpan) }
@@ -250,9 +256,7 @@ fun Home() {
             items = brandList,
             span = { GridItemSpan((this.maxLineSpan / 3)) }
         ) {
-            HomeBrandItem(it) {
-
-            }
+            HomeBrandItem(it)
         }
 
         // brand state
@@ -340,6 +344,7 @@ fun Home() {
 fun Banner(banner: List<HomeBanner>) {
 
     val pagerState = rememberPagerState()
+    val navigation = LocalNavigation.current
 
     Box(
         modifier = Modifier.fillMaxWidth(),
@@ -384,6 +389,9 @@ fun Banner(banner: List<HomeBanner>) {
                     .fillMaxWidth()
                     .shadow(8.dp, clip = false, shape = RoundedCornerShape(Dimens.CornerSize))
                     .clip(RoundedCornerShape(Dimens.CornerSize))
+                    .clickable {
+                        navigation.goToDetailProduct(item.productId)
+                    }
             ) {
                 Image(
                     painter = painter,
@@ -412,4 +420,46 @@ fun Banner(banner: List<HomeBanner>) {
             }
         }
     }
+}
+
+@Composable
+fun HomeBrandItem(brand: Brand) {
+    val navigation = LocalNavigation.current
+
+    Column(
+        modifier = Modifier
+            .padding(6.dp)
+            .height(100.dp)
+            .clip(RoundedCornerShape(Dimens.CornerSize))
+            .background(color = MaterialTheme.colors.secondary.copy(alpha = 0.3f))
+            .clickable {
+                navigation.goToDetailBrand(brand.id)
+            }
+            .padding(12.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val painter = rememberImagePainter(brand.logo)
+        Image(
+            painter = painter,
+            contentDescription = brand.name,
+            modifier = Modifier.size(24.dp)
+        )
+        Text(
+            text = brand.name,
+            textAlign = TextAlign.Center,
+            fontSize = 12.sp
+        )
+    }
+}
+
+@Composable
+fun HomeBrandShimmer() {
+
+    Column(
+        modifier = Modifier
+            .padding(6.dp)
+            .height(100.dp)
+            .shimmerBackground()
+    ) {}
 }

@@ -1,4 +1,4 @@
-package com.utsman.tokobola.details.ui
+package com.utsman.tokobola.details.ui.product
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -58,13 +59,12 @@ import com.utsman.tokobola.common.entity.Product
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.rememberViewModel
-import com.utsman.tokobola.core.utils.PlatformUtils
 import com.utsman.tokobola.core.utils.currency
 import com.utsman.tokobola.core.utils.onFailureComposed
-import com.utsman.tokobola.core.utils.onIdle
 import com.utsman.tokobola.core.utils.onLoadingComposed
 import com.utsman.tokobola.core.utils.onSuccessComposed
 import com.utsman.tokobola.core.utils.pxToDp
+import com.utsman.tokobola.core.utils.rememberNavigationBarHeightDp
 import com.utsman.tokobola.details.LocalProductDetailUseCase
 import com.utsman.tokobola.resources.SharedRes
 import dev.icerock.moko.resources.compose.painterResource
@@ -73,30 +73,36 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun Detail(productId: Int) {
+fun ProductDetail(productId: Int) {
 
     val detailUseCase = LocalProductDetailUseCase.current
-    val detailViewModel = rememberViewModel { DetailViewModel(detailUseCase) }
+    val viewModel = rememberViewModel { ProductDetailViewModel(detailUseCase) }
 
-    val detailState by detailViewModel.detailState.collectAsState()
+    val detailState by viewModel.detailState.collectAsState()
 
     val isLoading by derivedStateOf {
         detailState is State.Loading
     }
 
-    val uiConfig by detailViewModel.uiConfig.collectAsState()
+    val uiConfig by viewModel.uiConfig.collectAsState()
 
     val pullRefreshState = rememberPullRefreshState(refreshing = isLoading, onRefresh = {
-        detailViewModel.getDetail(productId)
-        detailViewModel.getCart(productId)
+        viewModel.getDetail(productId)
+        viewModel.getCart(productId)
     })
 
     val navigation = LocalNavigation.current
 
+    LaunchedEffect(Unit) {
+        viewModel.getDetail(productId)
+        viewModel.getCart(productId)
+        viewModel.listenWishlist(productId)
+    }
+
     Scaffold(
         modifier = Modifier
             .onGloballyPositioned {
-                detailViewModel.updateUiConfig {
+                viewModel.updateUiConfig {
                     uiConfig.copy(globalSize = it.size)
                 }
             }
@@ -108,10 +114,6 @@ fun Detail(productId: Int) {
         ) {
 
             with(detailState) {
-                onIdle {
-                    detailViewModel.getDetail(productId)
-                    detailViewModel.getCart(productId)
-                }
                 onLoadingComposed {
                     DetailLoading()
                 }
@@ -120,7 +122,7 @@ fun Detail(productId: Int) {
                         modifier = Modifier.fillMaxWidth()
                             .height(uiConfig.globalSize.height.pxToDp())
                     ) {
-                        DetailSuccess(detail, detailViewModel)
+                        DetailSuccess(detail, viewModel)
                     }
 
                 }
@@ -133,7 +135,7 @@ fun Detail(productId: Int) {
                 modifier = Modifier, hideTitle = true, transparentBackground = true
             ) {
                 if (uiConfig.isShowImageDialog) {
-                    detailViewModel.updateUiConfig {
+                    viewModel.updateUiConfig {
                         uiConfig.copy(isShowImageDialog = false)
                     }
                 } else {
@@ -160,12 +162,21 @@ fun DetailLoading() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DetailSuccess(product: Product, viewModel: DetailViewModel) {
+fun DetailSuccess(product: Product, viewModel: ProductDetailViewModel) {
 
     val cart by viewModel.productCart.collectAsState()
+    val isExistInWishlist by viewModel.wishlistState.collectAsState()
 
     val isCartEmpty by derivedStateOf {
         cart.isEmpty()
+    }
+
+    val resourceWishlist by derivedStateOf {
+        if (isExistInWishlist) {
+            SharedRes.images.icon_bookmark_fill
+        } else {
+            SharedRes.images.icon_bookmark_outline
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -220,7 +231,6 @@ fun DetailSuccess(product: Product, viewModel: DetailViewModel) {
                     product.images.forEachIndexed { index, s ->
                         val eachPainter = rememberImagePainter(product.images[index])
 
-
                         val colorFilterAlpha by derivedStateOf {
                             if (index == uiConfig.selectedImageIndex) {
                                 0.4f
@@ -269,6 +279,19 @@ fun DetailSuccess(product: Product, viewModel: DetailViewModel) {
                     Text(
                         text = product.brand.name, style = MaterialTheme.typography.subtitle2
                     )
+                    
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Image(
+                        painter = painterResource(resourceWishlist),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                            .clickable {
+                                viewModel.toggleWishlist(product.id)
+                            },
+                        colorFilter = ColorFilter.tint(color = MaterialTheme.colors.primary)
+                    )
+
                 }
                 Divider(modifier = Modifier.fillMaxWidth().padding(6.dp))
                 Row(
@@ -323,8 +346,8 @@ fun DetailSuccess(product: Product, viewModel: DetailViewModel) {
 }
 
 @Composable
-fun ButtonEmptyCart(product: Product, viewModel: DetailViewModel) {
-    val navigationBarHeight = PlatformUtils.rememberNavigationBarHeightDp()
+fun ButtonEmptyCart(product: Product, viewModel: ProductDetailViewModel) {
+    val navigationBarHeight = rememberNavigationBarHeightDp()
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -367,8 +390,8 @@ fun ButtonEmptyCart(product: Product, viewModel: DetailViewModel) {
 }
 
 @Composable
-fun ButtonFoundCart(product: Product, viewModel: DetailViewModel) {
-    val navigationBarHeight = PlatformUtils.rememberNavigationBarHeightDp()
+fun ButtonFoundCart(product: Product, viewModel: ProductDetailViewModel) {
+    val navigationBarHeight = rememberNavigationBarHeightDp()
     val cart by viewModel.productCart.collectAsState()
 
     Row(
@@ -444,9 +467,9 @@ fun ButtonFoundCart(product: Product, viewModel: DetailViewModel) {
                 modifier = Modifier
                     .width(50.dp)
                     .padding(
-                    end = 6.dp,
-                    start = 6.dp
-                ),
+                        end = 6.dp,
+                        start = 6.dp
+                    ),
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colors.primary,
                 textAlign = TextAlign.Center

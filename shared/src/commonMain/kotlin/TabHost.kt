@@ -1,11 +1,6 @@
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -35,7 +29,7 @@ import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.TabNavigator
-import com.utsman.tokobola.core.utils.PlatformUtils
+import com.utsman.tokobola.core.utils.rememberNavigationBarHeightDp
 import tab.AboutTab
 import tab.CustomTab
 import tab.ExploreTab
@@ -53,7 +47,7 @@ object TabHost : Screen {
             Scaffold(
                 modifier = Modifier
                     .background(color = MaterialTheme.colors.primarySurface)
-                    .padding(bottom = PlatformUtils.rememberNavigationBarHeightDp()),
+                    .padding(bottom = rememberNavigationBarHeightDp()),
                 bottomBar = {
                     BottomNavigation {
                         TabNavigationItem(HomeTab)
@@ -66,7 +60,6 @@ object TabHost : Screen {
         }
     }
 
-    @OptIn(ExperimentalAnimationApi::class)
     @Composable
     private fun RowScope.TabNavigationItem(tab: CustomTab) {
         val tabNavigator = LocalTabNavigator.current

@@ -23,13 +23,13 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.utsman.tokobola.core.navigation.LocalNavigation
-import com.utsman.tokobola.core.utils.PlatformUtils
+import com.utsman.tokobola.core.utils.rememberStatusBarHeightDp
 import com.utsman.tokobola.resources.SharedRes
 import dev.icerock.moko.resources.compose.painterResource
 
 @Composable
 fun SearchBarStatic(modifier: Modifier = Modifier) {
-    val statusBarHeight = PlatformUtils.rememberStatusBarHeightDp()
+    val statusBarHeight = rememberStatusBarHeightDp()
 
     val navigation = LocalNavigation.current
 
@@ -88,7 +88,7 @@ fun SearchBarStaticWithTitle(
     backButton: @Composable () -> Unit = {},
     action: () -> Unit
 ) {
-    val statusBarHeight = PlatformUtils.rememberStatusBarHeightDp()
+    val statusBarHeight = rememberStatusBarHeightDp()
 
     val navigation = LocalNavigation.current
 

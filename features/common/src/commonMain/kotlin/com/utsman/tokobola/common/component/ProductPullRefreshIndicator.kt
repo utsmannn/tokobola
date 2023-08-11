@@ -6,8 +6,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.utsman.tokobola.core.utils.PlatformUtils
+import com.utsman.tokobola.core.utils.rememberStatusBarHeightDp
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -16,7 +15,7 @@ fun PullRefreshIndicatorOffset(
     state: PullRefreshState,
     modifier: Modifier = Modifier
 ) {
-    val offset = PlatformUtils.rememberStatusBarHeightDp()
+    val offset = rememberStatusBarHeightDp()
     PullRefreshIndicator(
         refreshing, state, modifier.offset(y = offset)
     )

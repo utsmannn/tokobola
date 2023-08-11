@@ -16,8 +16,6 @@ abstract class NetworkSources(protected val baseUrl: String) {
         endPoint: String,
         contentType: ContentType = ContentType.Application.Json
     ): BaseResponse<T> {
-        // simulate loading
-        delay(2000)
         return client().get("$baseUrl$endPoint") {
             contentType(contentType)
         }.body()
@@ -27,8 +25,6 @@ abstract class NetworkSources(protected val baseUrl: String) {
         endPoint: String,
         contentType: ContentType = ContentType.Application.Json
     ): BasePagedResponse<T> {
-        // simulate loading
-        delay(2000)
         return client().get("$baseUrl$endPoint") {
             contentType(contentType)
         }.body()

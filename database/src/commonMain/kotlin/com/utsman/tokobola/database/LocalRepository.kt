@@ -5,6 +5,7 @@ import com.utsman.tokobola.core.synchroniz
 import com.utsman.tokobola.core.utils.asyncAwait
 import com.utsman.tokobola.database.data.CartProductRealm
 import com.utsman.tokobola.database.data.RecentlyViewedRealm
+import com.utsman.tokobola.database.data.WishlistRealm
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.UpdatePolicy
@@ -53,7 +54,6 @@ class LocalRepository(private val realm: Realm) {
     }
 
     suspend fun insertOrUpdateProductCart(productId: Int, operationQuantity: (Int) -> Int) {
-        println("updated.....")
         asyncAwait {
             val productFound = realm.query(CartProductRealm::class, "productId == $productId")
                 .first()
@@ -76,7 +76,6 @@ class LocalRepository(private val realm: Realm) {
                 operationQuantity.invoke(0)
             }
 
-            println("inserted.....")
             realm.write {
                 val newCartProductRealm = CartProductRealm().also {
                     it.productId = productId
@@ -95,6 +94,44 @@ class LocalRepository(private val realm: Realm) {
         }
     }
 
+    suspend fun toggleWishlist(wishlistRealm: WishlistRealm) {
+        asyncAwait {
+            val isExist = realm.query(
+                WishlistRealm::class,
+                "productId == ${wishlistRealm.productId}"
+            )
+                .first()
+                .find() != null
+
+            if (isExist) {
+                realm.write {
+                    query(
+                        WishlistRealm::class,
+                        "productId == ${wishlistRealm.productId}"
+                    )
+                        .find {
+                            delete(it.first())
+                        }
+                }
+            } else {
+                realm.write {
+                    copyToRealm(wishlistRealm, updatePolicy = UpdatePolicy.ALL)
+                }
+            }
+        }
+    }
+
+    suspend fun checkWishlistIsExist(productId: Int): Flow<Boolean> {
+        return asyncAwait {
+            realm.query(
+                WishlistRealm::class,
+                "productId == $productId"
+            )
+                .asFlow()
+                .map { it.list.firstOrNull() != null }
+        }
+    }
+
     @ThreadLocal
     companion object : SynchronizObject() {
 
@@ -109,7 +146,8 @@ class LocalRepository(private val realm: Realm) {
                 val config = RealmConfiguration.create(
                     schema = setOf(
                         RecentlyViewedRealm::class,
-                        CartProductRealm::class
+                        CartProductRealm::class,
+                        WishlistRealm::class
                     )
                 ) // add others if needed
                 realm = Realm.open(config)

@@ -1,12 +1,9 @@
 package com.utsman.tokobola.explore.ui.search
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,16 +11,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
@@ -51,17 +45,17 @@ import com.utsman.tokobola.common.component.Dimens
 import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductItemGrid
 import com.utsman.tokobola.common.component.ScaffoldGridState
-import com.utsman.tokobola.common.component.SearchBarStatic
 import com.utsman.tokobola.common.component.Shimmer
 import com.utsman.tokobola.common.component.animatedTopBarColor
 import com.utsman.tokobola.common.component.isScrolledToEnd
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.rememberViewModel
-import com.utsman.tokobola.core.utils.PlatformUtils
 import com.utsman.tokobola.core.utils.onFailure
 import com.utsman.tokobola.core.utils.onLoading
 import com.utsman.tokobola.core.utils.onSuccess
+import com.utsman.tokobola.core.utils.rememberNavigationBarHeightDp
+import com.utsman.tokobola.core.utils.rememberStatusBarHeightDp
 import com.utsman.tokobola.explore.LocalSearchUseCase
 import com.utsman.tokobola.resources.SharedRes
 import dev.icerock.moko.resources.compose.painterResource
@@ -71,7 +65,7 @@ fun Search() {
     val searchUseCase = LocalSearchUseCase.current
     val viewModel = rememberViewModel { SearchViewModel(searchUseCase) }
 
-    val navigationBarHeight = PlatformUtils.rememberNavigationBarHeightDp()
+    val navigationBarHeight = rememberNavigationBarHeightDp()
 
     val lazyGridState = rememberLazyGridState()
 
@@ -156,7 +150,7 @@ fun Search() {
 
 @Composable
 fun SearchBar(modifier: Modifier = Modifier, viewModel: SearchViewModel) {
-    val statusBarHeight = PlatformUtils.rememberStatusBarHeightDp()
+    val statusBarHeight = rememberStatusBarHeightDp()
 
     val query by viewModel.query.collectAsState()
     val navigation = LocalNavigation.current

@@ -14,7 +14,7 @@ class SearchViewModel(private val useCase: SearchUseCase) : ViewModel() {
     val query get() = useCase.query
 
     val productSearchState get() = useCase.productSearchReducer.dataFlow
-    val productSearchFlow: MutableStateFlow<List<ThumbnailProduct>> = MutableStateFlow(emptyList())
+    val productSearchFlow = MutableStateFlow(emptyList<ThumbnailProduct>())
 
     fun postResultSearch(list: List<ThumbnailProduct>) {
         productSearchFlow.value = list

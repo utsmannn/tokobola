@@ -17,8 +17,3 @@ fun <T : Any> State<T>.onSuccessComposed(content: @Composable (T) -> Unit) {
 fun <T : Any> State<T>.onFailureComposed(content: @Composable (Throwable) -> Unit) {
     if (this is State.Failure) { content.invoke(this.exception) }
 }
-
-@Composable
-fun <T : Any> State<T>.onIdleComposed(content: @Composable () -> Unit) {
-    if (this is State.Idle) { content.invoke() }
-}

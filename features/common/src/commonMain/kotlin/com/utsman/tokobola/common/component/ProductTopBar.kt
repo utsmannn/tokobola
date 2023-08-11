@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.utsman.tokobola.core.utils.PlatformUtils
+import com.utsman.tokobola.core.utils.rememberStatusBarHeightDp
 import com.utsman.tokobola.resources.SharedRes
 import dev.icerock.moko.resources.compose.painterResource
 
@@ -38,7 +38,7 @@ fun ProductTopBar(
     backAction: () -> Unit = {}
 ) {
 
-    val statusBarHeight = PlatformUtils.rememberStatusBarHeightDp()
+    val statusBarHeight = rememberStatusBarHeightDp()
 
     Row(
         modifier = modifier

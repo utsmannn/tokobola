@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class NavigationProvider : Navigation {
 
-    private val navigatorStack: MutableStateFlow<Navigator?> = MutableStateFlow(null)
-    private val screenContainer: MutableStateFlow<ScreenContainer?> = MutableStateFlow(null)
+    private val navigatorStack = MutableStateFlow<Navigator?>(null)
+    private val screenContainer = MutableStateFlow<ScreenContainer?>(null)
 
     @Composable
     fun initialize() {
@@ -35,7 +35,6 @@ class NavigationProvider : Navigation {
 
     override fun goToDetailBrand(brandId: Int): Boolean {
         return tryAction { nav ->
-            println("asuuuuuu -> brand")
             screenContainer.value?.detailBrand(brandId)?.let { nav.push(it) }
         }
     }

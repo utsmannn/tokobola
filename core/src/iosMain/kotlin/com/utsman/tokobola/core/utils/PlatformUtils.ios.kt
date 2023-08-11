@@ -7,28 +7,25 @@ import androidx.compose.ui.unit.dp
 import kotlinx.cinterop.useContents
 import platform.UIKit.UIApplication
 
-actual object PlatformUtils {
-
-    @Composable
-    actual fun rememberStatusBarHeightDp(): Dp {
-        return remember {
-            val currentHeight = UIApplication.sharedApplication.statusBarFrame.useContents {
-                this.size.height
-            }
-            val statusBarHeight = if (currentHeight > 0) {
-                currentHeight.toInt()
-            } else {
-                0
-            }
-            statusBarHeight
-        }.dp
-    }
+@Composable
+actual fun rememberStatusBarHeightDp(): Dp {
+    return remember {
+        val currentHeight = UIApplication.sharedApplication.statusBarFrame.useContents {
+            this.size.height
+        }
+        val statusBarHeight = if (currentHeight > 0) {
+            currentHeight.toInt()
+        } else {
+            0
+        }
+        statusBarHeight
+    }.dp
+}
 
 
-    @Composable
-    actual fun rememberNavigationBarHeightDp(): Dp {
-        return remember {
-            30
-        }.dp
-    }
+@Composable
+actual fun rememberNavigationBarHeightDp(): Dp {
+    return remember {
+        30
+    }.dp
 }

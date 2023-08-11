@@ -1,12 +1,7 @@
 package com.utsman.tokobola.network
 
 import com.utsman.tokobola.core.State
-import io.ktor.client.plugins.ClientRequestException
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
 
 open class ApiReducer<T> {
 

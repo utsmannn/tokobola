@@ -45,10 +45,10 @@ import com.utsman.tokobola.common.component.isScrolledToEnd
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.rememberViewModel
-import com.utsman.tokobola.core.utils.PlatformUtils
 import com.utsman.tokobola.core.utils.onFailure
 import com.utsman.tokobola.core.utils.onLoading
 import com.utsman.tokobola.core.utils.onSuccess
+import com.utsman.tokobola.core.utils.rememberStatusBarHeightDp
 import com.utsman.tokobola.details.LocalCategoryDetailUseCase
 import com.utsman.tokobola.resources.SharedRes
 import dev.icerock.moko.resources.compose.painterResource
@@ -102,7 +102,7 @@ fun CategoryDetail(categoryId: Int) {
                     .background(color = topBarColor)
                     .wrapContentHeight()
                     .padding(
-                        top = 12.dp + PlatformUtils.rememberStatusBarHeightDp(),
+                        top = 12.dp + rememberStatusBarHeightDp(),
                         start = 12.dp,
                         end = 12.dp,
                         bottom = 12.dp

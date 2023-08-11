@@ -11,17 +11,14 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-actual object PlatformUtils {
+@Composable
+actual fun rememberStatusBarHeightDp(): Dp {
+    val statusBarPadding = WindowInsets.statusBars.asPaddingValues()
+    return statusBarPadding.calculateTopPadding().value.toInt().dp
+}
 
-    @Composable
-    actual fun rememberStatusBarHeightDp(): Dp {
-        val statusBarPadding = WindowInsets.statusBars.asPaddingValues()
-        return statusBarPadding.calculateTopPadding().value.toInt().dp
-    }
-
-    @Composable
-    actual fun rememberNavigationBarHeightDp(): Dp {
-        val navBarPadding = WindowInsets.navigationBars.asPaddingValues()
-        return navBarPadding.calculateBottomPadding().value.toInt().dp
-    }
+@Composable
+actual fun rememberNavigationBarHeightDp(): Dp {
+    val navBarPadding = WindowInsets.navigationBars.asPaddingValues()
+    return navBarPadding.calculateBottomPadding().value.toInt().dp
 }

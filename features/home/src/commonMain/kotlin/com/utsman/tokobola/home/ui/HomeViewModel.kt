@@ -15,10 +15,10 @@ class HomeViewModel(private val homeUseCase: HomeUseCase) : ViewModel() {
 
     val productViewed get() = homeUseCase.productViewedReducer.dataFlow
 
-    val productsFeaturedFlow: MutableStateFlow<List<ThumbnailProduct>> = MutableStateFlow(emptyList())
-    val brandListFlow: MutableStateFlow<List<Brand>> = MutableStateFlow(emptyList())
+    val productsFeaturedFlow = MutableStateFlow(emptyList<ThumbnailProduct>())
+    val brandListFlow = MutableStateFlow(emptyList<Brand>())
 
-    val isRestart: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isRestart = MutableStateFlow(false)
 
     fun getHomeProduct() = viewModelScope.launch {
         isRestart.value = true

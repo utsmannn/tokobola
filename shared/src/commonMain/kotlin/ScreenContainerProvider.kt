@@ -1,7 +1,7 @@
 import cafe.adriel.voyager.core.screen.Screen
 import com.utsman.tokobola.core.navigation.ScreenContainer
 import com.utsman.tokobola.core.navigation.screenContentOf
-import com.utsman.tokobola.details.ui.Detail
+import com.utsman.tokobola.details.ui.product.ProductDetail
 import com.utsman.tokobola.details.ui.brand.BrandDetail
 import com.utsman.tokobola.details.ui.category.CategoryDetail
 import com.utsman.tokobola.explore.ui.explore.Explore
@@ -15,7 +15,7 @@ class ScreenContainerProvider : ScreenContainer {
     }
 
     override fun detailProduct(productId: Int): Screen = screenContentOf("detail") {
-        Detail(productId)
+        ProductDetail(productId)
     }
 
     override fun detailCategory(categoryId: Int) = screenContentOf("category_detail") {

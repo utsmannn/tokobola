@@ -1,7 +1,10 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
     kotlin("plugin.serialization") version "1.8.21"
+    id("com.codingfeline.buildkonfig")
 }
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
@@ -42,5 +45,14 @@ android {
     compileSdk = 33
     defaultConfig {
         minSdk = 24
+    }
+}
+
+buildkonfig {
+    packageName = "com.utsman.tokobola.api"
+
+    // default config is required
+    defaultConfigs {
+        buildConfigField(STRING, "BASE_URL", project.properties.get("base.url").toString())
     }
 }

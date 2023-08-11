@@ -6,13 +6,16 @@ import com.utsman.tokobola.common.entity.Product
 import com.utsman.tokobola.common.toEntity
 import com.utsman.tokobola.network.ApiReducer
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 
 class ProductDetailUseCase(private val repository: DetailRepository) {
 
     val productDetailReducer = ApiReducer<Product>()
 
-    val productCart: MutableStateFlow<CartProduct> = MutableStateFlow(CartProduct())
+    val productCart = MutableStateFlow(CartProduct())
+
+    val isProductExist = MutableStateFlow(false)
 
     suspend fun getDetail(productId: Int) {
         productDetailReducer.transform(
@@ -45,6 +48,17 @@ class ProductDetailUseCase(private val repository: DetailRepository) {
             .collect {
                 productCart.value = it
             }
+    }
+
+    suspend fun listenIsWishlistExist(productId: Int) {
+        repository.isWishlistExist(productId)
+            .collect { isExist ->
+                isProductExist.value = isExist
+            }
+    }
+
+    suspend fun toggleWishlist(productId: Int) {
+        repository.toggleWishlist(productId)
     }
 
     suspend fun clearDetail() {

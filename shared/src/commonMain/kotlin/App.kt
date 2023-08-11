@@ -6,7 +6,7 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import com.seiko.imageloader.LocalImageLoader
 import com.utsman.tokobola.common.theme.CommonTheme
-import com.utsman.tokobola.core.appImageLoader
+import com.utsman.tokobola.core.rememberImageLoader
 import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.navigation.LocalScreenContainer
 import com.utsman.tokobola.details.DetailInstanceProvider
@@ -23,6 +23,7 @@ import com.utsman.tokobola.home.LocalHomeUseCase
 @Composable
 fun App() {
 
+    val imageLoader = rememberImageLoader()
     val screenContainer = remember { ScreenContainerProvider() }
     val navigation = remember { NavigationProvider() }
 
@@ -38,7 +39,7 @@ fun App() {
 
     CompositionLocalProvider(
         // core
-        LocalImageLoader provides appImageLoader(),
+        LocalImageLoader provides imageLoader,
         LocalScreenContainer provides screenContainer,
         LocalNavigation provides navigation,
 

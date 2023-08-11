@@ -67,28 +67,3 @@ interface StateTransformation<U, T> {
         }
     }
 }
-
-interface StateFlowTransformation<U, T> {
-    suspend fun transform(call: suspend () -> Flow<U>, mapper: (U) -> T): State<T>
-
-    companion object {
-        @Suppress("FunctionName")
-        inline fun <reified U, T>DefaultFlowTransform(): StateFlowTransformation<U, T> {
-            return object : StateFlowTransformation<U, T> {
-                override suspend fun transform(
-                    call: suspend () -> Flow<U>,
-                    mapper: (U) -> T
-                ): State<T> {
-                    val dataFlow = call.invoke()
-                    val newFlow = dataFlow.map {
-                        mapper.invoke(it)
-                    }
-                    return asyncAwait {
-                        State.Success(newFlow.first())
-                    }
-                }
-
-            }
-        }
-    }
-}

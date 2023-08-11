@@ -24,6 +24,7 @@ pluginManagement {
 
         id("org.jetbrains.compose").version(composeVersion)
         id("dev.icerock.mobile.multiplatform-resources").version("0.23.0")
+        id("com.codingfeline.buildkonfig").version("0.13.3")
     }
 }
 

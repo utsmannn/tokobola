@@ -1,4 +1,4 @@
-package com.utsman.tokobola.details.ui
+package com.utsman.tokobola.details.ui.product
 
 import com.utsman.tokobola.core.ViewModel
 import com.utsman.tokobola.details.domain.ProductDetailUseCase
@@ -6,11 +6,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class DetailViewModel(private val productDetailUseCase: ProductDetailUseCase) : ViewModel() {
+class ProductDetailViewModel(private val productDetailUseCase: ProductDetailUseCase) : ViewModel() {
 
     val detailState get() = productDetailUseCase.productDetailReducer.dataFlow.asStateFlow()
+    val wishlistState get() = productDetailUseCase.isProductExist.asStateFlow()
 
-    val uiConfig = MutableStateFlow(DetailUiConfig())
+    val uiConfig = MutableStateFlow(ProductDetailUiConfig())
 
     val productCart get() = productDetailUseCase.productCart.asStateFlow()
 
@@ -22,7 +23,7 @@ class DetailViewModel(private val productDetailUseCase: ProductDetailUseCase) : 
         productDetailUseCase.markProductViewed(productId)
     }
 
-    fun updateUiConfig(uiConfig: () -> DetailUiConfig) {
+    fun updateUiConfig(uiConfig: () -> ProductDetailUiConfig) {
         val newUiConfig = uiConfig.invoke()
         this.uiConfig.value = newUiConfig
     }
@@ -37,6 +38,14 @@ class DetailViewModel(private val productDetailUseCase: ProductDetailUseCase) : 
 
     fun decrementCart(productId: Int) = viewModelScope.launch {
         productDetailUseCase.decrementCart(productId)
+    }
+
+    fun listenWishlist(productId: Int) = viewModelScope.launch {
+        productDetailUseCase.listenIsWishlistExist(productId)
+    }
+
+    fun toggleWishlist(productId: Int) = viewModelScope.launch {
+        productDetailUseCase.toggleWishlist(productId)
     }
 
     override fun onCleared() {
