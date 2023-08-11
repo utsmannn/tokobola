@@ -1,24 +1,24 @@
-package com.utsman.tokobola.details.ui.category
+package com.utsman.tokobola.details.ui.brand
 
 import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.core.ViewModel
-import com.utsman.tokobola.details.domain.CategoryDetailUseCase
+import com.utsman.tokobola.details.domain.BrandDetailUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class CategoryDetailViewModel(private val useCase: CategoryDetailUseCase) : ViewModel() {
+class BrandDetailViewModel(private val useCase: BrandDetailUseCase) : ViewModel() {
 
     val productListState get() = useCase.productPagedReducer.dataFlow
     val productListFlow = MutableStateFlow(emptyList<ThumbnailProduct>())
-    val categoryTitle = MutableStateFlow("")
+    val brandTitle = MutableStateFlow("")
 
-    fun getProduct(categoryId: Int) = viewModelScope.launch {
-        useCase.getProduct(categoryId)
+    fun getProduct(brandId: Int) = viewModelScope.launch {
+        useCase.getProduct(brandId)
     }
 
     fun pushProductList(productList: List<ThumbnailProduct>) = viewModelScope.launch {
         productListFlow.value = productList
-        categoryTitle.value = productList.firstOrNull()?.category?.name.orEmpty()
+        brandTitle.value = productList.firstOrNull()?.brand?.name.orEmpty()
     }
 
     fun clearData() {

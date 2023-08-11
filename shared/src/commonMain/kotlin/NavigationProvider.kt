@@ -33,6 +33,13 @@ class NavigationProvider : Navigation {
         }
     }
 
+    override fun goToDetailBrand(brandId: Int): Boolean {
+        return tryAction { nav ->
+            println("asuuuuuu -> brand")
+            screenContainer.value?.detailBrand(brandId)?.let { nav.push(it) }
+        }
+    }
+
     override fun goToSearch(): Boolean {
         return tryAction { nav ->
             screenContainer.value?.search()?.let { nav.push(it) }

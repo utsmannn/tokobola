@@ -10,6 +10,7 @@ interface ScreenContainer {
     fun home(): Screen
     fun detailProduct(productId: Int): Screen
     fun detailCategory(categoryId: Int): Screen
+    fun detailBrand(brandId: Int): Screen
     fun explore(): Screen
 
     fun search(): Screen

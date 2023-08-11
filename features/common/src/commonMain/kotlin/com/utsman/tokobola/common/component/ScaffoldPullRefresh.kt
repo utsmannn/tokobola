@@ -10,7 +10,10 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import com.utsman.tokobola.core.utils.PlatformUtils
 
@@ -26,6 +29,16 @@ fun ScaffoldGridState(
 
     val navigationBarHeight = PlatformUtils.rememberNavigationBarHeightDp()
 
+    val isNeedLift by derivedStateOf {
+        lazyGridState.canScrollBackward
+    }
+
+    val topModifier = if (isNeedLift) {
+        Modifier.shadow(12.dp)
+    } else {
+        Modifier
+    }
+
     Scaffold {
         Box(modifier = modifier) {
             LazyVerticalGrid(
@@ -40,7 +53,11 @@ fun ScaffoldGridState(
                 content = content,
             )
 
-            topBar()
+            Box(
+                modifier = topModifier
+            ) {
+                topBar()
+            }
             pullRefresh()
         }
     }

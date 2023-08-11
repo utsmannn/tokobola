@@ -7,7 +7,7 @@ interface Navigation {
 
     fun goToDetailProduct(id: Int): Boolean
     fun goToDetailCategory(categoryId: Int): Boolean
-
+    fun goToDetailBrand(brandId: Int): Boolean
     fun goToSearch(): Boolean
 }
 

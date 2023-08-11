@@ -1,10 +1,10 @@
 package com.utsman.tokobola.common.component
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.AppBarDefaults
-import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -87,29 +87,12 @@ fun LazyGridState.isScrollingUp(): Boolean {
     }.value
 }
 
-
-val LazyGridState.elevation: Dp
-    get() = if (firstVisibleItemIndex == 0) {
-        minOf(firstVisibleItemScrollOffset.toFloat().dp, AppBarDefaults.TopAppBarElevation)
-    } else {
-        AppBarDefaults.TopAppBarElevation
-    }
-
 val LazyGridState.animatedTopBarColor: State<Color>
     @Composable
     get() {
         val isColorizeSearchBar by remember { derivedStateOf { canScrollBackward } }
         return animateColorAsState(
             targetValue = if (!isColorizeSearchBar) Color.Transparent else MaterialTheme.colors.primary
-        )
-    }
-
-val LazyGridState.animatedTopBarAccentColor: State<Color>
-    @Composable
-    get() {
-        val isColorizeSearchBar by remember { derivedStateOf { canScrollBackward } }
-        return animateColorAsState(
-            targetValue = if (!isColorizeSearchBar) MaterialTheme.colors.primary else Color.White
         )
     }
 
