@@ -1,12 +1,19 @@
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.with
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
@@ -17,7 +24,10 @@ import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
@@ -69,30 +79,55 @@ object TabHost : Screen {
         BottomNavigationItem(
             selected = isSelected,
             onClick = { tabNavigator.current = tab },
-            label = {
-                Text(
-                    text = tab.options.title,
-                    fontSize = 12.sp
-                )
-            },
-            alwaysShowLabel = true,
             icon = {
                 val defaultPainter = tab.options.icon
                 val selectedPainter = tab.iconSelected ?: defaultPainter
 
-                AnimatedContent(
-                    targetState = if (isSelected) selectedPainter else defaultPainter,
-                    transitionSpec = {
-                        fadeIn() with fadeOut()
+                val animatedColorAccent by animateColorAsState(
+                    targetValue = if (isSelected) MaterialTheme.colors.primary else Color.White
+                )
+
+                val animatedSizeIcon by animateDpAsState(
+                    targetValue = if (isSelected) 20.dp else 28.dp
+                )
+
+                val painter = if (isSelected) selectedPainter else defaultPainter
+
+                painter?.let {
+                    val modifier = if (isSelected) {
+                        Modifier
+                            .background(color = Color.White.copy(alpha = 0.6f), shape = RoundedCornerShape(16.dp))
+                    } else {
+                        Modifier
                     }
-                ) {
-                    it?.let {
-                        Icon(
-                            painter = it,
+                    Row(
+                        modifier = modifier.padding(
+                            horizontal = 6.dp,
+                            vertical = 4.dp
+                        ),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Image(
+                            painter = painter,
                             contentDescription = tab.options.title,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(animatedSizeIcon),
+                            colorFilter = ColorFilter.tint(animatedColorAccent)
                         )
+
+                        AnimatedVisibility(
+                            visible = isSelected,
+                        ) {
+                            Text(
+                                text = tab.options.title,
+                                fontSize = 12.sp,
+                                color = animatedColorAccent,
+                                modifier = Modifier.padding(6.dp)
+                            )
+                        }
                     }
+
+
                 }
             }
         )

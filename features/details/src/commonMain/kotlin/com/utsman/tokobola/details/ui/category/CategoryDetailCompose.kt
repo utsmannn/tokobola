@@ -5,26 +5,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
@@ -39,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.utsman.tokobola.common.component.Dimens
 import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductItemGrid
 import com.utsman.tokobola.common.component.ScaffoldGridState
@@ -77,7 +69,6 @@ fun CategoryDetail(categoryId: Int) {
     }
 
     val topBarColor by lazyGridState.animatedTopBarColor
-    val navigationBarHeight = PlatformUtils.rememberNavigationBarHeightDp()
 
     ScaffoldGridState(
         topBar = {
@@ -128,7 +119,7 @@ fun CategoryDetail(categoryId: Int) {
 @Composable
 fun TopBar(text: String, modifier: Modifier = Modifier, lazyGridState: LazyGridState) {
     val navigation = LocalNavigation.current
-    val accentColor by lazyGridState.animatedColor(
+    val titleColor by lazyGridState.animatedColor(
         from = Color.White,
         to = MaterialTheme.colors.primary
     )
@@ -153,14 +144,14 @@ fun TopBar(text: String, modifier: Modifier = Modifier, lazyGridState: LazyGridS
                 .padding(6.dp),
             painter = painterResource(SharedRes.images.arrow_back_default),
             contentDescription = "",
-            colorFilter = ColorFilter.tint(accentColor)
+            colorFilter = ColorFilter.tint(Color.White)
         )
 
         Text(
             text = text,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.weight(1f).padding(12.dp),
-            color = accentColor
+            color = titleColor
         )
     }
 }
