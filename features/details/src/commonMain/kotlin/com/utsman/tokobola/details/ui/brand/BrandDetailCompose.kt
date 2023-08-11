@@ -110,7 +110,7 @@ fun BrandDetail(brandId: Int) {
             }
             onFailure {
                 item(
-                    span = { GridItemSpan(this.maxLineSpan) }
+                    span = { GridItemSpan(maxLineSpan) }
                 ) {
                     ErrorScreen(it)
                 }

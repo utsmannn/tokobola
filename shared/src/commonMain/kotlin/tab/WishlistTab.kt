@@ -14,8 +14,7 @@ internal object WishlistTab : CustomTab {
     @Composable
     override fun Content() {
         val screenContainer = LocalScreenContainer.current
-        //Text("wishlist")
-        MapView()
+        screenContainer.wishlist().Content()
     }
 
     override val options: TabOptions

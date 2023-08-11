@@ -152,7 +152,7 @@ fun Home() {
             }
             onLoading {
                 item(
-                    span = { GridItemSpan(this.maxLineSpan) }
+                    span = { GridItemSpan(maxLineSpan) }
                 ) {
                     Box(
                         modifier = Modifier
@@ -165,7 +165,7 @@ fun Home() {
             }
             onSuccess {
                 item(
-                    span = { GridItemSpan(this.maxLineSpan) }
+                    span = { GridItemSpan(maxLineSpan) }
                 ) {
                     Box(
                         modifier = Modifier
@@ -180,7 +180,7 @@ fun Home() {
             }
             onFailure {
                 item(
-                    span = { GridItemSpan(this.maxLineSpan) }
+                    span = { GridItemSpan(maxLineSpan) }
                 ) {
                     SimpleErrorScreen(it)
                 }
@@ -194,7 +194,7 @@ fun Home() {
             }
             onLoading {
                 item(
-                    span = { GridItemSpan(this.maxLineSpan) }
+                    span = { GridItemSpan(maxLineSpan) }
                 ) {
                     Shimmer(
                         modifier = Modifier.fillMaxWidth()
@@ -205,7 +205,7 @@ fun Home() {
             onSuccess { products ->
                 if (products.isNotEmpty()) {
                     item(
-                        span = { GridItemSpan(this.maxLineSpan) }
+                        span = { GridItemSpan(maxLineSpan) }
                     ) {
                         Text(
                             text = "Recently Viewed",
@@ -215,7 +215,7 @@ fun Home() {
                     }
                 }
                 item(
-                    span = { GridItemSpan(this.maxLineSpan) }
+                    span = { GridItemSpan(maxLineSpan) }
                 ) {
                     LazyRow(
                         contentPadding = PaddingValues(12.dp),
@@ -233,7 +233,7 @@ fun Home() {
 
         // divider title brand
         item(
-            span = { GridItemSpan((this.maxLineSpan)) }
+            span = { GridItemSpan((maxLineSpan)) }
         ) {
             if (isLoading) {
                 Box(
@@ -254,7 +254,7 @@ fun Home() {
         // brand item
         items(
             items = brandList,
-            span = { GridItemSpan((this.maxLineSpan / 3)) }
+            span = { GridItemSpan((maxLineSpan / 3)) }
         ) {
             HomeBrandItem(it)
         }
@@ -267,7 +267,7 @@ fun Home() {
             onLoading {
                 items(
                     items = listOf(1, 2, 3, 4, 5, 6),
-                    span = { GridItemSpan((this.maxLineSpan / 3)) }
+                    span = { GridItemSpan((maxLineSpan / 3)) }
                 ) {
                     HomeBrandShimmer()
                 }
@@ -277,7 +277,7 @@ fun Home() {
             }
             onFailure {
                 item(
-                    span = { GridItemSpan(this.maxLineSpan) }
+                    span = { GridItemSpan(maxLineSpan) }
                 ) {
                     ErrorScreen(it)
                 }
@@ -286,7 +286,7 @@ fun Home() {
 
         // divider title featured product
         item(
-            span = { GridItemSpan((this.maxLineSpan)) }
+            span = { GridItemSpan((maxLineSpan)) }
         ) {
             if (isLoading) {
                 Box(
@@ -307,7 +307,7 @@ fun Home() {
         // product item paging
         items(
             items = productList,
-            span = { GridItemSpan(this.maxLineSpan / 2) }
+            span = { GridItemSpan(maxLineSpan / 2) }
         ) {
             ProductItemGrid(it)
         }
@@ -320,7 +320,7 @@ fun Home() {
             onLoading {
                 items(
                     items = listOf(1, 2),
-                    span = { GridItemSpan(this.maxLineSpan / 2) }
+                    span = { GridItemSpan(maxLineSpan / 2) }
                 ) {
                     Shimmer()
                 }
@@ -330,7 +330,7 @@ fun Home() {
             }
             onFailure {
                 item(
-                    span = { GridItemSpan(this.maxLineSpan) }
+                    span = { GridItemSpan(maxLineSpan) }
                 ) {
                     ErrorScreen(it)
                 }

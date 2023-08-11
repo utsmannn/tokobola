@@ -1,12 +1,7 @@
 package com.utsman.tokobola.network
 
 import com.utsman.tokobola.core.State
-import com.utsman.tokobola.core.utils.asyncAwait
 import io.ktor.client.plugins.ClientRequestException
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
@@ -56,7 +51,7 @@ interface StateTransformation<U, T> {
         }
 
         @Suppress("FunctionName")
-        inline fun <reified U, T>SimpleResponseTransform(): StateTransformation<U, T> {
+        inline fun <reified U, T>SimpleTransform(): StateTransformation<U, T> {
             return object : StateTransformation<U, T> {
                 override suspend fun transform(call: suspend () -> U, mapper: (U) -> T): State<T> {
                     val data = call.invoke()

@@ -7,6 +7,7 @@ import com.utsman.tokobola.details.ui.category.CategoryDetail
 import com.utsman.tokobola.explore.ui.explore.Explore
 import com.utsman.tokobola.explore.ui.search.Search
 import com.utsman.tokobola.home.ui.Home
+import com.utsman.tokobola.wishlist.ui.Wishlist
 
 class ScreenContainerProvider : ScreenContainer {
 
@@ -28,6 +29,10 @@ class ScreenContainerProvider : ScreenContainer {
 
     override fun explore(): Screen = screenContentOf("explore") {
         Explore()
+    }
+
+    override fun wishlist(): Screen = screenContentOf("wishlist") {
+        Wishlist()
     }
 
     override fun search(): Screen = screenContentOf("search") {

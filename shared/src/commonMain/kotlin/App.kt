@@ -18,6 +18,8 @@ import com.utsman.tokobola.explore.LocalExploreUseCase
 import com.utsman.tokobola.explore.LocalSearchUseCase
 import com.utsman.tokobola.home.HomeInstanceProvider
 import com.utsman.tokobola.home.LocalHomeUseCase
+import com.utsman.tokobola.wishlist.LocalWishlistUseCase
+import com.utsman.tokobola.wishlist.WishlistInstanceProvider
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -32,6 +34,7 @@ fun App() {
     val productDetailUseCase = remember { DetailInstanceProvider.providedProductDetailUseCase() }
     val categoryDetailUseCase = remember { DetailInstanceProvider.providedCategoryDetailUseCase() }
     val brandDetailUseCase = remember { DetailInstanceProvider.providedBrandDetailUseCase() }
+    val wishlistUseCase = remember { WishlistInstanceProvider.providedUseCase() }
 
     val exploreUseCase = remember { ExploreInstanceProvider.providedExploreUseCase() }
     val searchUseCase = remember { ExploreInstanceProvider.providedSearchUseCase() }
@@ -47,10 +50,10 @@ fun App() {
         LocalProductDetailUseCase provides productDetailUseCase,
         LocalCategoryDetailUseCase provides categoryDetailUseCase,
         LocalBrandDetailUseCase provides brandDetailUseCase,
-
         LocalHomeUseCase provides homeUseCase,
         LocalExploreUseCase provides exploreUseCase,
-        LocalSearchUseCase provides searchUseCase
+        LocalSearchUseCase provides searchUseCase,
+        LocalWishlistUseCase provides wishlistUseCase
     ) {
 
         CommonTheme {

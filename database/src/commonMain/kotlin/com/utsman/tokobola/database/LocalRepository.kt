@@ -49,7 +49,7 @@ class LocalRepository(private val realm: Realm) {
     suspend fun selectAllRecentlyViewed(): Flow<List<RecentlyViewedRealm>> {
         return asyncAwait {
             realm.query(RecentlyViewedRealm::class).asFlow()
-                .map { it.list.asReversed() }
+                .map { it.list.asReversed().take(10) }
         }
     }
 
@@ -60,7 +60,6 @@ class LocalRepository(private val realm: Realm) {
                 .find()
 
             val quantity = if (productFound != null) {
-                println("not null..... $productFound")
                 val currentQuantity = productFound.quantity
                 val newQuantity = operationQuantity.invoke(currentQuantity)
 
@@ -88,9 +87,8 @@ class LocalRepository(private val realm: Realm) {
 
     suspend fun getProductCart(productId: Int): Flow<CartProductRealm?> {
         return asyncAwait {
-            val anu = realm.query(CartProductRealm::class, "productId == $productId")
+            realm.query(CartProductRealm::class, "productId == $productId")
                 .asFlow().mapLatest { it.list.firstOrNull() }
-            anu
         }
     }
 
@@ -129,6 +127,13 @@ class LocalRepository(private val realm: Realm) {
             )
                 .asFlow()
                 .map { it.list.firstOrNull() != null }
+        }
+    }
+
+    suspend fun selectAllWishlist(): Flow<List<WishlistRealm>> {
+        return asyncAwait {
+            realm.query(WishlistRealm::class).asFlow()
+                .map { it.list.asReversed() }
         }
     }
 

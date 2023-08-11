@@ -12,7 +12,7 @@ interface ScreenContainer {
     fun detailCategory(categoryId: Int): Screen
     fun detailBrand(brandId: Int): Screen
     fun explore(): Screen
-
+    fun wishlist(): Screen
     fun search(): Screen
 
 }

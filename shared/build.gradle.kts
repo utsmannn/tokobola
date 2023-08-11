@@ -33,12 +33,13 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(project(":core"))
-                api(project(":database"))
+                implementation(project(":core"))
+                implementation(project(":database"))
 
                 implementation(project(":features:common"))
                 implementation(project(":features:home"))
                 implementation(project(":features:explore"))
+                implementation(project(":features:wishlist"))
                 implementation(project(":features:details"))
 
             }

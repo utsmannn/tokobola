@@ -7,19 +7,9 @@ import com.utsman.tokobola.common.toBrand
 import com.utsman.tokobola.common.toHomeBanner
 import com.utsman.tokobola.common.toThumbnailProduct
 import com.utsman.tokobola.core.data.Paged
-import com.utsman.tokobola.core.data.orFalse
-import com.utsman.tokobola.core.data.orNol
-import com.utsman.tokobola.core.utils.IoScope
-import com.utsman.tokobola.core.utils.pmap
 import com.utsman.tokobola.network.ApiReducer
 import com.utsman.tokobola.network.AutoPagingAdapter
 import com.utsman.tokobola.network.StateTransformation
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.flow.transformLatest
-import kotlinx.coroutines.launch
 
 class HomeUseCase(private val homeRepository: HomeRepository) {
 
@@ -72,7 +62,7 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
         homeRepository.getAllRecentlyViewedFlow()
             .collect { realms ->
                 productViewedReducer.transform(
-                    transformation = StateTransformation.SimpleResponseTransform(),
+                    transformation = StateTransformation.SimpleTransform(),
                     call = {
                         val ids = realms.map { it.productId }
                         homeRepository.getThumbnailByIds(ids)
