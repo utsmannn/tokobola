@@ -5,7 +5,8 @@ import androidx.compose.runtime.compositionLocalOf
 interface Navigation {
     fun back(): Boolean
 
-    fun goToDetail(id: Int): Boolean
+    fun goToDetailProduct(id: Int): Boolean
+    fun goToDetailCategory(categoryId: Int): Boolean
 
     fun goToSearch(): Boolean
 }

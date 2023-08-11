@@ -22,4 +22,6 @@ class DetailRepository {
     suspend fun insertOrUpdateCart(productId: Int, operationQuantity: (Int) -> Int) {
         localRepository.insertOrUpdateProductCart(productId, operationQuantity)
     }
+
+    suspend fun getProductCategory(categoryId: Int, page: Int) = productApi.getByCategoryPaged(categoryId, page)
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -49,7 +50,10 @@ import androidx.compose.ui.unit.sp
 import com.utsman.tokobola.common.component.Dimens
 import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductItemGrid
+import com.utsman.tokobola.common.component.ScaffoldGridState
+import com.utsman.tokobola.common.component.SearchBarStatic
 import com.utsman.tokobola.common.component.Shimmer
+import com.utsman.tokobola.common.component.animatedTopBarColor
 import com.utsman.tokobola.common.component.isScrolledToEnd
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.navigation.LocalNavigation
@@ -71,13 +75,7 @@ fun Search() {
 
     val lazyGridState = rememberLazyGridState()
 
-    val isColorizeSearchBar by remember {
-        derivedStateOf { !lazyGridState.canScrollBackward }
-    }
-
-    val searchBarColor = animateColorAsState(
-        targetValue = if (isColorizeSearchBar) Color.Transparent else MaterialTheme.colors.primary
-    )
+    val searchBarColor by lazyGridState.animatedTopBarColor
 
     val isReachBottom by remember {
         derivedStateOf {
@@ -113,57 +111,45 @@ fun Search() {
         }
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Box {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(
-                    top = (Dimens.HeightTopBarSearch.value).dp,
-                    bottom = (6 + (navigationBarHeight.value * 2)).dp,
-                    start = 6.dp,
-                    end = 6.dp
-                ),
-                state = lazyGridState
-            ) {
-
-                items(
-                    items = productSearch
-                ) {
-                    ProductItemGrid(it) {
-                        isRetainData = true
-                    }
-                }
-
-                with(productSearchState) {
-                    onLoading {
-                        items(
-                            items = listOf(1, 2)
-                        ) {
-                            Shimmer()
-                        }
-                    }
-                    onSuccess { paged ->
-                        focusManager.clearFocus(true)
-                        viewModel.postResultSearch(paged.data)
-                    }
-                    onFailure {
-                        item(
-                            span = { GridItemSpan(this.maxLineSpan) }
-                        ) {
-                            ErrorScreen(it)
-                        }
-                    }
-                }
-            }
-
+    ScaffoldGridState(
+        topBar = {
             SearchBar(
                 modifier = Modifier
-                    .background(color = searchBarColor.value),
+                    .background(color = searchBarColor),
                 viewModel = viewModel
             )
+        },
+        lazyGridState = lazyGridState,
+        fixColumn = 2,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(
+            items = productSearch
+        ) {
+            ProductItemGrid(it) {
+                isRetainData = true
+            }
+        }
+
+        with(productSearchState) {
+            onLoading {
+                items(
+                    items = listOf(1, 2)
+                ) {
+                    Shimmer()
+                }
+            }
+            onSuccess { paged ->
+                focusManager.clearFocus(true)
+                viewModel.postResultSearch(paged.data)
+            }
+            onFailure {
+                item(
+                    span = { GridItemSpan(this.maxLineSpan) }
+                ) {
+                    ErrorScreen(it)
+                }
+            }
         }
     }
 }

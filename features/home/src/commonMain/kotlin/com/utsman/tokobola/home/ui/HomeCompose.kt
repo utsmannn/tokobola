@@ -1,7 +1,5 @@
 package com.utsman.tokobola.home.ui
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,7 +26,6 @@ import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -56,13 +53,14 @@ import com.utsman.tokobola.common.component.Dimens
 import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductItemGrid
 import com.utsman.tokobola.common.component.ProductItemGridRectangle
+import com.utsman.tokobola.common.component.ScaffoldGridState
 import com.utsman.tokobola.common.component.Shimmer
 import com.utsman.tokobola.common.component.SearchBarStatic
 import com.utsman.tokobola.common.component.SimpleErrorScreen
+import com.utsman.tokobola.common.component.animatedTopBarColor
 import com.utsman.tokobola.common.component.ignoreHorizontalParentPadding
 import com.utsman.tokobola.common.component.ignoreVerticalParentPadding
 import com.utsman.tokobola.common.component.isScrolledToEnd
-import com.utsman.tokobola.common.component.isScrollingUp
 import com.utsman.tokobola.common.component.rememberForeverLazyListState
 import com.utsman.tokobola.common.component.shimmerBackground
 import com.utsman.tokobola.common.component.tintDark
@@ -75,7 +73,6 @@ import com.utsman.tokobola.core.utils.onIdle
 import com.utsman.tokobola.core.utils.onLoading
 import com.utsman.tokobola.core.utils.onSuccess
 import com.utsman.tokobola.core.utils.parseString
-import com.utsman.tokobola.core.utils.pxToDp
 import com.utsman.tokobola.home.LocalHomeUseCase
 import kotlinx.coroutines.delay
 
@@ -97,7 +94,6 @@ fun Home() {
     }
 
     val statusBarHeight = PlatformUtils.rememberStatusBarHeightDp()
-    val navigationBarHeight = PlatformUtils.rememberNavigationBarHeightDp()
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = false,
@@ -114,10 +110,6 @@ fun Home() {
         }
     }
 
-    val heightTopBar = animateDpAsState(
-        targetValue = if (lazyGridState.isScrollingUp()) 0.dp else (-Dimens.HeightTopBarSearch.value).dp
-    )
-
     // paging works
     LaunchedEffect(isReachBottom) {
         if (productsFeaturedState is State.Success && isReachBottom) {
@@ -125,243 +117,220 @@ fun Home() {
         }
     }
 
-    val isColorizeSearchBar by remember {
-        derivedStateOf { !lazyGridState.canScrollBackward }
-    }
-
-    val searchBarColor = animateColorAsState(
-        targetValue = if (isColorizeSearchBar) Color.Transparent else MaterialTheme.colors.primary
-    )
+    val searchBarColor by lazyGridState.animatedTopBarColor
 
     val productList by homeViewModel.productsFeaturedFlow.collectAsState()
     val brandList by homeViewModel.brandListFlow.collectAsState()
 
-
-    Scaffold {
-        Box(
-            modifier = Modifier.fillMaxSize()
-                .pullRefresh(pullRefreshState)
-        ) {
-
-            // main list
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(6),
-                contentPadding = PaddingValues(
-                    top = (Dimens.HeightTopBarSearch.value).dp,
-                    bottom = (6 + (navigationBarHeight.value * 2)).dp,
-                    start = 6.dp,
-                    end = 6.dp
-                ),
-                state = lazyGridState
-            ) {
-
-                // banner state and item
-                with(bannerState) {
-                    onIdle {
-                        homeViewModel.getHomeBanner()
-                    }
-                    onLoading {
-                        item(
-                            span = { GridItemSpan(this.maxLineSpan) }
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .aspectRatio(3f / 1.5f)
-                            ) {
-                                Shimmer()
-                            }
-                        }
-                    }
-                    onSuccess {
-                        item(
-                            span = { GridItemSpan(this.maxLineSpan) }
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .aspectRatio(3f / 1.5f)
-                                    .ignoreHorizontalParentPadding(6.dp)
-                                    .ignoreVerticalParentPadding(6.dp)
-                                    .padding(bottom = 12.dp)
-                            ) {
-                                Banner(it)
-                            }
-                        }
-                    }
-                    onFailure {
-                        item(
-                            span = { GridItemSpan(this.maxLineSpan) }
-                        ) {
-                            SimpleErrorScreen(it)
-                        }
-                    }
-                }
-
-                // product viewed
-                with(productViewedState) {
-                    onIdle { homeViewModel.getProductViewed() }
-                    onLoading {
-                        item(
-                            span = { GridItemSpan(this.maxLineSpan) }
-                        ) {
-                            Shimmer(
-                                modifier = Modifier.fillMaxWidth()
-                                    .height(Dimens.HeightProductItemGridRectangle)
-                            )
-                        }
-                    }
-                    onSuccess { products ->
-                        if (products.isNotEmpty()) {
-                            item(
-                                span = { GridItemSpan(this.maxLineSpan) }
-                            ) {
-                                Text(
-                                    text = "Recently Viewed",
-                                    modifier = Modifier.padding(6.dp),
-                                    fontWeight = FontWeight.Black
-                                )
-                            }
-                        }
-                        item(
-                            span = { GridItemSpan(this.maxLineSpan) }
-                        ) {
-                            LazyRow(
-                                contentPadding = PaddingValues(12.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .ignoreHorizontalParentPadding(12.dp)
-                            ) {
-                                items(products) { product ->
-                                    ProductItemGridRectangle(product)
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // divider title brand
-                item(
-                    span = { GridItemSpan((this.maxLineSpan)) }
-                ) {
-                    if (isLoading) {
-                        Box(
-                            modifier = Modifier.fillMaxWidth()
-                                .height(30.dp)
-                                .padding(6.dp)
-                                .shimmerBackground()
-                        )
-                    } else {
-                        Text(
-                            text = "Top Brands",
-                            modifier = Modifier.padding(6.dp),
-                            fontWeight = FontWeight.Black
-                        )
-                    }
-                }
-
-                // brand item
-                items(
-                    items = brandList,
-                    span = { GridItemSpan((this.maxLineSpan / 3)) }
-                ) {
-                    HomeBrandItem(it) {
-
-                    }
-                }
-
-                // brand state
-                with(brandState) {
-                    onIdle {
-                        homeViewModel.getBrand()
-                    }
-                    onLoading {
-                        items(
-                            items = listOf(1, 2, 3, 4, 5, 6),
-                            span = { GridItemSpan((this.maxLineSpan / 3)) }
-                        ) {
-                            HomeBrandShimmer()
-                        }
-                    }
-                    onSuccess {
-                        homeViewModel.postBrandList(it)
-                    }
-                    onFailure {
-                        item(
-                            span = { GridItemSpan(this.maxLineSpan) }
-                        ) {
-                            ErrorScreen(it)
-                        }
-                    }
-                }
-
-                // divider title featured product
-                item(
-                    span = { GridItemSpan((this.maxLineSpan)) }
-                ) {
-                    if (isLoading) {
-                        Box(
-                            modifier = Modifier.fillMaxWidth()
-                                .height(30.dp)
-                                .padding(6.dp)
-                                .shimmerBackground()
-                        )
-                    } else {
-                        Text(
-                            text = "Featured Product",
-                            modifier = Modifier.padding(6.dp),
-                            fontWeight = FontWeight.Black
-                        )
-                    }
-                }
-
-                // product item paging
-                items(
-                    items = productList,
-                    span = { GridItemSpan(this.maxLineSpan / 2) }
-                ) {
-                    ProductItemGrid(it)
-                }
-
-                // product state with paging
-                with(productsFeaturedState) {
-                    onIdle {
-                        homeViewModel.getHomeProduct()
-                    }
-                    onLoading {
-                        items(
-                            items = listOf(1, 2),
-                            span = { GridItemSpan(this.maxLineSpan / 2) }
-                        ) {
-                            Shimmer()
-                        }
-                    }
-                    onSuccess {
-                        homeViewModel.postProduct(it.data)
-                    }
-                    onFailure {
-                        item(
-                            span = { GridItemSpan(this.maxLineSpan) }
-                        ) {
-                            ErrorScreen(it)
-                        }
-                    }
-                }
-            }
-
+    ScaffoldGridState(
+        topBar = {
             SearchBarStatic(
                 modifier = Modifier
-                    .background(color = searchBarColor.value)
-            ) {
-
-            }
-
+                    .background(color = searchBarColor)
+            )
+        },
+        pullRefresh = {
             PullRefreshIndicator(
                 refreshing = isLoading,
                 state = pullRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter)
                     .offset(y = statusBarHeight)
             )
+        },
+        lazyGridState = lazyGridState,
+        fixColumn = 6,
+        modifier = Modifier.pullRefresh(pullRefreshState)
+    ) {
+        // banner state and item
+        with(bannerState) {
+            onIdle {
+                homeViewModel.getHomeBanner()
+            }
+            onLoading {
+                item(
+                    span = { GridItemSpan(this.maxLineSpan) }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(3f / 1.5f)
+                    ) {
+                        Shimmer()
+                    }
+                }
+            }
+            onSuccess {
+                item(
+                    span = { GridItemSpan(this.maxLineSpan) }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .aspectRatio(3f / 1.5f)
+                            .ignoreHorizontalParentPadding(6.dp)
+                            .ignoreVerticalParentPadding(6.dp)
+                            .padding(bottom = 12.dp)
+                    ) {
+                        Banner(it)
+                    }
+                }
+            }
+            onFailure {
+                item(
+                    span = { GridItemSpan(this.maxLineSpan) }
+                ) {
+                    SimpleErrorScreen(it)
+                }
+            }
+        }
 
+        // product viewed
+        with(productViewedState) {
+            onIdle { homeViewModel.getProductViewed() }
+            onLoading {
+                item(
+                    span = { GridItemSpan(this.maxLineSpan) }
+                ) {
+                    Shimmer(
+                        modifier = Modifier.fillMaxWidth()
+                            .height(Dimens.HeightProductItemGridRectangle)
+                    )
+                }
+            }
+            onSuccess { products ->
+                if (products.isNotEmpty()) {
+                    item(
+                        span = { GridItemSpan(this.maxLineSpan) }
+                    ) {
+                        Text(
+                            text = "Recently Viewed",
+                            modifier = Modifier.padding(6.dp),
+                            fontWeight = FontWeight.Black
+                        )
+                    }
+                }
+                item(
+                    span = { GridItemSpan(this.maxLineSpan) }
+                ) {
+                    LazyRow(
+                        contentPadding = PaddingValues(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .ignoreHorizontalParentPadding(12.dp)
+                    ) {
+                        items(products) { product ->
+                            ProductItemGridRectangle(product)
+                        }
+                    }
+                }
+            }
+        }
+
+        // divider title brand
+        item(
+            span = { GridItemSpan((this.maxLineSpan)) }
+        ) {
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(30.dp)
+                        .padding(6.dp)
+                        .shimmerBackground()
+                )
+            } else {
+                Text(
+                    text = "Top Brands",
+                    modifier = Modifier.padding(6.dp),
+                    fontWeight = FontWeight.Black
+                )
+            }
+        }
+
+        // brand item
+        items(
+            items = brandList,
+            span = { GridItemSpan((this.maxLineSpan / 3)) }
+        ) {
+            HomeBrandItem(it) {
+
+            }
+        }
+
+        // brand state
+        with(brandState) {
+            onIdle {
+                homeViewModel.getBrand()
+            }
+            onLoading {
+                items(
+                    items = listOf(1, 2, 3, 4, 5, 6),
+                    span = { GridItemSpan((this.maxLineSpan / 3)) }
+                ) {
+                    HomeBrandShimmer()
+                }
+            }
+            onSuccess {
+                homeViewModel.postBrandList(it)
+            }
+            onFailure {
+                item(
+                    span = { GridItemSpan(this.maxLineSpan) }
+                ) {
+                    ErrorScreen(it)
+                }
+            }
+        }
+
+        // divider title featured product
+        item(
+            span = { GridItemSpan((this.maxLineSpan)) }
+        ) {
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(30.dp)
+                        .padding(6.dp)
+                        .shimmerBackground()
+                )
+            } else {
+                Text(
+                    text = "Featured Product",
+                    modifier = Modifier.padding(6.dp),
+                    fontWeight = FontWeight.Black
+                )
+            }
+        }
+
+        // product item paging
+        items(
+            items = productList,
+            span = { GridItemSpan(this.maxLineSpan / 2) }
+        ) {
+            ProductItemGrid(it)
+        }
+
+        // product state with paging
+        with(productsFeaturedState) {
+            onIdle {
+                homeViewModel.getHomeProduct()
+            }
+            onLoading {
+                items(
+                    items = listOf(1, 2),
+                    span = { GridItemSpan(this.maxLineSpan / 2) }
+                ) {
+                    Shimmer()
+                }
+            }
+            onSuccess {
+                homeViewModel.postProduct(it.data)
+            }
+            onFailure {
+                item(
+                    span = { GridItemSpan(this.maxLineSpan) }
+                ) {
+                    ErrorScreen(it)
+                }
+            }
         }
     }
 }

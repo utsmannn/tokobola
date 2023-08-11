@@ -21,9 +21,15 @@ class NavigationProvider : Navigation {
         return tryAction { it.pop() }
     }
 
-    override fun goToDetail(id: Int): Boolean {
+    override fun goToDetailProduct(id: Int): Boolean {
         return tryAction { nav ->
-            screenContainer.value?.detail(id)?.let { nav.push(it) }
+            screenContainer.value?.detailProduct(id)?.let { nav.push(it) }
+        }
+    }
+
+    override fun goToDetailCategory(categoryId: Int): Boolean {
+        return tryAction { nav ->
+            screenContainer.value?.detailCategory(categoryId)?.let { nav.push(it) }
         }
     }
 

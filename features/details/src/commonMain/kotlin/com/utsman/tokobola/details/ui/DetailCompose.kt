@@ -1,9 +1,5 @@
 package com.utsman.tokobola.details.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -69,7 +65,7 @@ import com.utsman.tokobola.core.utils.onIdle
 import com.utsman.tokobola.core.utils.onLoadingComposed
 import com.utsman.tokobola.core.utils.onSuccessComposed
 import com.utsman.tokobola.core.utils.pxToDp
-import com.utsman.tokobola.details.LocalDetailUseCase
+import com.utsman.tokobola.details.LocalProductDetailUseCase
 import com.utsman.tokobola.resources.SharedRes
 import dev.icerock.moko.resources.compose.painterResource
 import kotlinx.coroutines.delay
@@ -79,7 +75,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Detail(productId: Int) {
 
-    val detailUseCase = LocalDetailUseCase.current
+    val detailUseCase = LocalProductDetailUseCase.current
     val detailViewModel = rememberViewModel { DetailViewModel(detailUseCase) }
 
     val detailState by detailViewModel.detailState.collectAsState()

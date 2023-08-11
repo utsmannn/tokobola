@@ -8,10 +8,12 @@ import cafe.adriel.voyager.core.screen.ScreenKey
 interface ScreenContainer {
 
     fun home(): Screen
-    fun detail(productId: Int): Screen
+    fun detailProduct(productId: Int): Screen
+    fun detailCategory(categoryId: Int): Screen
     fun explore(): Screen
 
     fun search(): Screen
+
 }
 
 val LocalScreenContainer = compositionLocalOf<ScreenContainer> { error("screen container not found") }

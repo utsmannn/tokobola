@@ -1,17 +1,23 @@
 package com.utsman.tokobola.common.component
 
-import androidx.compose.foundation.lazy.grid.LazyGridItemScope
-import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material.AppBarDefaults
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -82,14 +88,35 @@ fun LazyGridState.isScrollingUp(): Boolean {
 }
 
 
-private var headersIndexes: MutableList<Int>? = null
-    private set
-
-fun LazyGridScope.stickyHeader(totalSize: Int, content: @Composable LazyGridItemScope.() -> Unit) {
-    val headersIndexes = headersIndexes ?: mutableListOf<Int>().also {
-        headersIndexes = it
+val LazyGridState.elevation: Dp
+    get() = if (firstVisibleItemIndex == 0) {
+        minOf(firstVisibleItemScrollOffset.toFloat().dp, AppBarDefaults.TopAppBarElevation)
+    } else {
+        AppBarDefaults.TopAppBarElevation
     }
-    headersIndexes.add(totalSize)
 
-    item(content = content)
+val LazyGridState.animatedTopBarColor: State<Color>
+    @Composable
+    get() {
+        val isColorizeSearchBar by remember { derivedStateOf { canScrollBackward } }
+        return animateColorAsState(
+            targetValue = if (!isColorizeSearchBar) Color.Transparent else MaterialTheme.colors.primary
+        )
+    }
+
+val LazyGridState.animatedTopBarAccentColor: State<Color>
+    @Composable
+    get() {
+        val isColorizeSearchBar by remember { derivedStateOf { canScrollBackward } }
+        return animateColorAsState(
+            targetValue = if (!isColorizeSearchBar) MaterialTheme.colors.primary else Color.White
+        )
+    }
+
+@Composable
+fun LazyGridState.animatedColor(from: Color, to: Color): State<Color> {
+    val isColorizeSearchBar by remember { derivedStateOf { canScrollBackward } }
+    return animateColorAsState(
+        targetValue = if (isColorizeSearchBar) from else to
+    )
 }

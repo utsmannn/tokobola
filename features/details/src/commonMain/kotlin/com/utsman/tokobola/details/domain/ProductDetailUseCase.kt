@@ -6,10 +6,9 @@ import com.utsman.tokobola.common.entity.Product
 import com.utsman.tokobola.common.toEntity
 import com.utsman.tokobola.network.ApiReducer
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 
-class DetailUseCase(private val repository: DetailRepository) {
+class ProductDetailUseCase(private val repository: DetailRepository) {
 
     val productDetailReducer = ApiReducer<Product>()
 
@@ -44,7 +43,6 @@ class DetailUseCase(private val repository: DetailRepository) {
         repository.getCartProduct(productId)
             .map { it?.toEntity() ?: CartProduct() }
             .collect {
-                println("asuuuu watcher --- $it")
                 productCart.value = it
             }
     }

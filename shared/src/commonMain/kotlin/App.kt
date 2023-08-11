@@ -10,7 +10,9 @@ import com.utsman.tokobola.core.appImageLoader
 import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.navigation.LocalScreenContainer
 import com.utsman.tokobola.details.DetailInstanceProvider
-import com.utsman.tokobola.details.LocalDetailUseCase
+import com.utsman.tokobola.details.LocalBrandDetailUseCase
+import com.utsman.tokobola.details.LocalCategoryDetailUseCase
+import com.utsman.tokobola.details.LocalProductDetailUseCase
 import com.utsman.tokobola.explore.ExploreInstanceProvider
 import com.utsman.tokobola.explore.LocalExploreUseCase
 import com.utsman.tokobola.explore.LocalSearchUseCase
@@ -25,7 +27,11 @@ fun App() {
     val navigation = remember { NavigationProvider() }
 
     val homeUseCase = remember { HomeInstanceProvider.providedUseCase() }
-    val detailUseCase = remember { DetailInstanceProvider.providedUseCase() }
+
+    val productDetailUseCase = remember { DetailInstanceProvider.providedProductDetailUseCase() }
+    val categoryDetailUseCase = remember { DetailInstanceProvider.providedCategoryDetailUseCase() }
+    val brandDetailUseCase = remember { DetailInstanceProvider.providedBrandDetailUseCase() }
+
     val exploreUseCase = remember { ExploreInstanceProvider.providedExploreUseCase() }
     val searchUseCase = remember { ExploreInstanceProvider.providedSearchUseCase() }
 
@@ -37,7 +43,10 @@ fun App() {
         LocalNavigation provides navigation,
 
         // use case
-        LocalDetailUseCase provides detailUseCase,
+        LocalProductDetailUseCase provides productDetailUseCase,
+        LocalCategoryDetailUseCase provides categoryDetailUseCase,
+        LocalBrandDetailUseCase provides brandDetailUseCase,
+
         LocalHomeUseCase provides homeUseCase,
         LocalExploreUseCase provides exploreUseCase,
         LocalSearchUseCase provides searchUseCase
