@@ -2,6 +2,7 @@ package com.utsman.tokobola.explore.domain.search
 
 import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.common.toThumbnailProduct
+import com.utsman.tokobola.core.SingletonCreator
 import com.utsman.tokobola.core.data.Paged
 import com.utsman.tokobola.core.data.orFalse
 import com.utsman.tokobola.core.data.orNol
@@ -48,4 +49,6 @@ class SearchUseCase(private val repository: ExploreRepository) {
         productSearchReducer.clear()
         query.value = ""
     }
+
+    companion object : SingletonCreator<SearchUseCase>()
 }

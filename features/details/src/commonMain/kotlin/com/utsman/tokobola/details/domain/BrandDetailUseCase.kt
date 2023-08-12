@@ -2,6 +2,7 @@ package com.utsman.tokobola.details.domain
 
 import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.common.toThumbnailProduct
+import com.utsman.tokobola.core.SingletonCreator
 import com.utsman.tokobola.core.data.Paged
 import com.utsman.tokobola.network.ApiReducer
 import com.utsman.tokobola.network.AutoPagingAdapter
@@ -23,4 +24,6 @@ class BrandDetailUseCase(private val detailRepository: DetailRepository) {
     }
 
     fun clear() = productPagedAdapter.clear()
+
+    companion object : SingletonCreator<BrandDetailUseCase>()
 }

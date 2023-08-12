@@ -2,6 +2,7 @@ package com.utsman.tokobola.wishlist.domain
 
 import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.common.toThumbnailProduct
+import com.utsman.tokobola.core.SingletonCreator
 import com.utsman.tokobola.network.ApiReducer
 import com.utsman.tokobola.network.StateTransformation
 
@@ -26,4 +27,6 @@ class WishlistUseCase(private val repository: WishlistRepository) {
                 )
             }
     }
+
+    companion object : SingletonCreator<WishlistUseCase>()
 }

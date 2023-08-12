@@ -1,6 +1,7 @@
 package com.utsman.tokobola.explore.domain
 
 import com.utsman.tokobola.api.productWebApi
+import com.utsman.tokobola.core.SingletonCreator
 
 class ExploreRepository {
     private val productApi by productWebApi()
@@ -13,4 +14,6 @@ class ExploreRepository {
     suspend fun getProductCurated() = productApi.getCurated()
 
     suspend fun getProductBySearch(page: Int, query: String) = productApi.getBySearch(page, query)
+
+    companion object : SingletonCreator<ExploreRepository>()
 }

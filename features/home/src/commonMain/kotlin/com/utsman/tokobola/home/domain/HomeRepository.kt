@@ -1,6 +1,7 @@
 package com.utsman.tokobola.home.domain
 
 import com.utsman.tokobola.api.productWebApi
+import com.utsman.tokobola.core.SingletonCreator
 import com.utsman.tokobola.database.data.RecentlyViewedRealm
 import com.utsman.tokobola.database.localRepository
 import kotlinx.coroutines.flow.Flow
@@ -17,10 +18,14 @@ class HomeRepository {
     suspend fun getThumbnailByIds(ids: List<Int>) = productApi.getThumbnailByIds(ids)
 
     suspend fun markAsViewed(productId: Int) {
-        localRepository.insertRecentlyViewed(RecentlyViewedRealm().apply { this.productId = productId })
+        localRepository.insertRecentlyViewed(RecentlyViewedRealm().apply {
+            this.productId = productId
+        })
     }
 
     suspend fun getAllRecentlyViewedFlow(): Flow<List<RecentlyViewedRealm>> {
         return localRepository.selectAllRecentlyViewed()
     }
+
+    companion object : SingletonCreator<HomeRepository>()
 }

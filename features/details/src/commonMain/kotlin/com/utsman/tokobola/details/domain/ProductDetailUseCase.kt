@@ -4,6 +4,7 @@ import com.utsman.tokobola.common.entity.CartProduct
 import com.utsman.tokobola.common.mapToProduct
 import com.utsman.tokobola.common.entity.Product
 import com.utsman.tokobola.common.toEntity
+import com.utsman.tokobola.core.SingletonCreator
 import com.utsman.tokobola.network.ApiReducer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -64,4 +65,6 @@ class ProductDetailUseCase(private val repository: DetailRepository) {
     suspend fun clearDetail() {
         productDetailReducer.clear()
     }
+
+    companion object : SingletonCreator<ProductDetailUseCase>()
 }

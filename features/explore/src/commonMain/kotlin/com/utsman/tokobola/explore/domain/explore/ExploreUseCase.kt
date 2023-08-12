@@ -6,6 +6,7 @@ import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.common.toBrand
 import com.utsman.tokobola.common.toCategory
 import com.utsman.tokobola.common.toThumbnailProduct
+import com.utsman.tokobola.core.SingletonCreator
 import com.utsman.tokobola.explore.domain.ExploreRepository
 import com.utsman.tokobola.network.ApiReducer
 
@@ -108,4 +109,6 @@ class ExploreUseCase(private val repository: ExploreRepository) {
         brandReducer.clear()
         categoryReducer.clear()
     }
+
+    companion object : SingletonCreator<ExploreUseCase>()
 }

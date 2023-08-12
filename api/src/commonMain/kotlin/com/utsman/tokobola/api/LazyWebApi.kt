@@ -4,6 +4,6 @@ fun productWebApi(): Lazy<ProductWebApi> {
     return lazy(
         mode = LazyThreadSafetyMode.SYNCHRONIZED
     ) {
-        ProductWebApi.getInstance()
+        ProductWebApi.create { ProductWebApi() }
     }
 }

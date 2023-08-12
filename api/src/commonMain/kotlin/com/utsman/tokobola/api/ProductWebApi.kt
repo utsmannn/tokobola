@@ -9,6 +9,7 @@ import com.utsman.tokobola.api.response.CategoryResponse
 import com.utsman.tokobola.api.response.HomeBannerResponse
 import com.utsman.tokobola.api.response.ProductResponse
 import com.utsman.tokobola.api.response.ThumbnailProductResponse
+import com.utsman.tokobola.core.SingletonCreator
 import kotlin.jvm.Volatile
 import kotlin.native.concurrent.ThreadLocal
 
@@ -60,15 +61,5 @@ class ProductWebApi : WebDataSource() {
         return get(WebEndPoint.CATEGORY)
     }
 
-    @ThreadLocal
-    companion object : SynchronizObject() {
-
-        @Volatile
-        private var webApi: ProductWebApi? = null
-
-        fun getInstance(): ProductWebApi {
-            if (webApi == null) webApi = ProductWebApi()
-            return synchroniz(this) { webApi ?: ProductWebApi() }
-        }
-    }
+    companion object : SingletonCreator<ProductWebApi>()
 }

@@ -41,6 +41,7 @@ kotlin {
                 implementation(project(":features:explore"))
                 implementation(project(":features:wishlist"))
                 implementation(project(":features:details"))
+                implementation(project(":features:cart"))
 
             }
         }

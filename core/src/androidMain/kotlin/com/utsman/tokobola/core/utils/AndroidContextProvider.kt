@@ -1,21 +1,16 @@
 package com.utsman.tokobola.core.utils
 
 import android.content.Context
+import com.utsman.tokobola.core.SingletonCreator
 
 interface AndroidContextProvider {
 
     val context: Context
 
-    companion object {
-        @Volatile
-        private var _contextProvider: AndroidContextProvider? = null
-
-        fun setInstance(contextProvider: AndroidContextProvider) {
-            _contextProvider = contextProvider
-        }
-
+    companion object : SingletonCreator<AndroidContextProvider>() {
         fun getInstance(): AndroidContextProvider {
-            return synchronized(this) { _contextProvider ?: throw IllegalStateException("Context not provided") }
+            return synchronized(this) { instance as AndroidContextProvider }
         }
+
     }
 }

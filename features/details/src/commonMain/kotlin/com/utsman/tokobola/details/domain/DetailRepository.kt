@@ -1,11 +1,10 @@
 package com.utsman.tokobola.details.domain
 
 import com.utsman.tokobola.api.productWebApi
-import com.utsman.tokobola.common.entity.CartProduct
+import com.utsman.tokobola.core.SingletonCreator
 import com.utsman.tokobola.database.data.RecentlyViewedRealm
 import com.utsman.tokobola.database.data.WishlistRealm
 import com.utsman.tokobola.database.localRepository
-import kotlinx.coroutines.flow.Flow
 
 class DetailRepository {
 
@@ -37,4 +36,6 @@ class DetailRepository {
         })
     }
     suspend fun isWishlistExist(productId: Int) = localRepository.checkWishlistIsExist(productId)
+
+    companion object : SingletonCreator<DetailRepository>()
 }

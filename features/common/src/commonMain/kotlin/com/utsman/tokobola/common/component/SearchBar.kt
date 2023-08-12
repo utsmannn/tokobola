@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.utsman.tokobola.core.SingletonCreator
 import com.utsman.tokobola.core.SynchronizObject
 import com.utsman.tokobola.core.ViewModel
 import com.utsman.tokobola.core.navigation.LocalNavigation
@@ -251,15 +252,7 @@ class SearchBarViewModel : ViewModel() {
         }
     }
 
-    @ThreadLocal
-    companion object : SynchronizObject() {
-
-        @Volatile
-        private var viewModel: SearchBarViewModel? = null
-
-        fun instance(): SearchBarViewModel {
-            if (viewModel == null) viewModel = SearchBarViewModel()
-            return synchroniz(this) { viewModel ?: SearchBarViewModel() }
-        }
+    companion object : SingletonCreator<SearchBarViewModel>() {
+        fun instance() = create { SearchBarViewModel() }
     }
 }

@@ -1,5 +1,6 @@
 package com.utsman.tokobola.database
 
+import com.utsman.tokobola.core.SingletonCreator
 import com.utsman.tokobola.core.SynchronizObject
 import com.utsman.tokobola.core.synchroniz
 import com.utsman.tokobola.core.utils.asyncAwait
@@ -18,6 +19,10 @@ import kotlin.jvm.Volatile
 import kotlin.native.concurrent.ThreadLocal
 
 class LocalRepository(private val realm: Realm) {
+
+    init {
+        println("create local repository......")
+    }
 
     suspend fun insertRecentlyViewed(recentlyViewedRealm: RecentlyViewedRealm) {
         asyncAwait {
@@ -150,27 +155,27 @@ class LocalRepository(private val realm: Realm) {
         @Volatile
         private var realm: Realm? = null
 
-        @Volatile
-        private var repository: LocalRepository? = null
-
         private fun providedRealmProduct(): Realm {
-            if (realm == null) {
-                val config = RealmConfiguration.create(
-                    schema = setOf(
-                        RecentlyViewedRealm::class,
-                        CartProductRealm::class,
-                        WishlistRealm::class
+            return synchroniz(this) {
+                if (realm == null) {
+                    val config = RealmConfiguration.create(
+                        schema = setOf(
+                            RecentlyViewedRealm::class,
+                            CartProductRealm::class,
+                            WishlistRealm::class,
+                            // add others if needed
+                        )
                     )
-                ) // add others if needed
-                realm = Realm.open(config)
+                    realm = Realm.open(config)
+                }
+                realm as Realm
             }
-
-            return synchroniz(this) { realm!! }
         }
 
         fun providedLocalRepository(): LocalRepository {
-            if (repository == null) repository = LocalRepository(providedRealmProduct())
-            return synchroniz(this) { repository!! }
+            return Builder.create { LocalRepository(providedRealmProduct()) }
         }
     }
+
+    private object Builder : SingletonCreator<LocalRepository>()
 }

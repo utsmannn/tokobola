@@ -6,6 +6,7 @@ import com.utsman.tokobola.common.entity.ThumbnailProduct
 import com.utsman.tokobola.common.toBrand
 import com.utsman.tokobola.common.toHomeBanner
 import com.utsman.tokobola.common.toThumbnailProduct
+import com.utsman.tokobola.core.SingletonCreator
 import com.utsman.tokobola.core.data.Paged
 import com.utsman.tokobola.network.ApiReducer
 import com.utsman.tokobola.network.AutoPagingAdapter
@@ -81,4 +82,6 @@ class HomeUseCase(private val homeRepository: HomeRepository) {
         brandReducer.clear()
         productViewedReducer.clear()
     }
+
+    companion object : SingletonCreator<HomeUseCase>()
 }

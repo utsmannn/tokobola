@@ -14,6 +14,6 @@ class MainApplication : Application() {
                 get() = this@MainApplication
         }
 
-        AndroidContextProvider.setInstance(androidContextProvider)
+        AndroidContextProvider.create { androidContextProvider }
     }
 }

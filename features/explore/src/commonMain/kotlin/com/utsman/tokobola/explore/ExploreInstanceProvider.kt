@@ -9,31 +9,18 @@ import com.utsman.tokobola.explore.domain.search.SearchUseCase
 import kotlin.jvm.Volatile
 import kotlin.native.concurrent.ThreadLocal
 
-@ThreadLocal
-object ExploreInstanceProvider : SynchronizObject() {
-
-    @Volatile
-    private var repository: ExploreRepository? = null
-
-    @Volatile
-    private var exploreUseCase: ExploreUseCase? = null
-
-    @Volatile
-    private var searchUseCase: SearchUseCase? = null
+object ExploreInstanceProvider {
 
     private fun getRepository(): ExploreRepository {
-        if (repository == null) repository = ExploreRepository()
-        return synchroniz(this) { repository!! }
+        return ExploreRepository.create { ExploreRepository() }
     }
 
     fun providedExploreUseCase(): ExploreUseCase {
-        if (exploreUseCase == null) exploreUseCase = ExploreUseCase(getRepository())
-        return synchroniz(this) { exploreUseCase!! }
+        return ExploreUseCase.create { ExploreUseCase(getRepository()) }
     }
 
     fun providedSearchUseCase(): SearchUseCase {
-        if (searchUseCase == null) searchUseCase = SearchUseCase(getRepository())
-        return synchroniz(this) { searchUseCase!! }
+        return SearchUseCase.create { SearchUseCase(getRepository()) }
     }
 }
 
