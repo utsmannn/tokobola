@@ -3,6 +3,7 @@ package com.utsman.tokobola.cart.ui
 import com.utsman.tokobola.cart.domain.CartUseCase
 import com.utsman.tokobola.common.entity.Cart
 import com.utsman.tokobola.core.ViewModel
+import io.ktor.util.date.getTimeMillis
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -22,20 +23,20 @@ class CartViewModel(private val useCase: CartUseCase) : ViewModel() {
     }
 
     fun incrementCart(productId: Int) {
-        val currentCart = cartUiConfig.value.carts
-        val newCart = updateQuantityInCart(currentCart, productId) {
+        val currentCart = cartUiConfig.value
+        val newCart = updateQuantityInCart(currentCart.carts, productId) {
             it+1
         }
 
-        cartUiConfig.value = CartUiConfig(newCart)
+        cartUiConfig.value = currentCart.copy(carts = newCart, time = getTimeMillis())
     }
 
     fun decrementCart(productId: Int) {
-        val currentCart = cartUiConfig.value.carts
-        val newCart = updateQuantityInCart(currentCart, productId) {
+        val currentCart = cartUiConfig.value
+        val newCart = updateQuantityInCart(currentCart.carts, productId) {
             it-1
         }
-        cartUiConfig.value = CartUiConfig(newCart)
+        cartUiConfig.value = currentCart.copy(carts = newCart, time = getTimeMillis())
     }
 
     private fun updateQuantityInCart(cart: List<Cart>, productIdToUpdate: Int, operation: (Int) -> Int): List<Cart> {
