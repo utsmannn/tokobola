@@ -34,7 +34,7 @@ internal object AboutTab : CustomTab {
         @Composable
         get() {
             val title = "About"
-            val painter = painterResource(SharedRes.images.icon_code)
+            val painter = painterResource(SharedRes.images.icon_about)
             return remember {
                 TabOptions(
                     index = 1u,
@@ -47,6 +47,6 @@ internal object AboutTab : CustomTab {
     override val iconSelected: Painter?
         @Composable
         get() {
-            return painterResource(SharedRes.images.icon_code_fill)
+            return painterResource(SharedRes.images.icon_about_fill)
         }
 }

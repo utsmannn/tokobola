@@ -21,7 +21,7 @@ internal object WishlistTab : CustomTab {
         @Composable
         get() {
             val title = "Wishlist"
-            val painter = painterResource(SharedRes.images.icon_bookmark_outline)
+            val painter = painterResource(SharedRes.images.icon_bookmark)
             return remember {
                 TabOptions(
                     index = 2u,

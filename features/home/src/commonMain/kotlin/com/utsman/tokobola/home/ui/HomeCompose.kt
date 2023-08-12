@@ -58,6 +58,7 @@ import com.utsman.tokobola.common.component.ProductItemGrid
 import com.utsman.tokobola.common.component.ProductItemGridRectangle
 import com.utsman.tokobola.common.component.ScaffoldGridState
 import com.utsman.tokobola.common.component.SearchBarStatic
+import com.utsman.tokobola.common.component.SearchBarStaticWithTitle
 import com.utsman.tokobola.common.component.Shimmer
 import com.utsman.tokobola.common.component.SimpleErrorScreen
 import com.utsman.tokobola.common.component.animatedTopBarColor
@@ -121,18 +122,17 @@ fun Home() {
         }
     }
 
-    val searchBarColor by lazyGridState.animatedTopBarColor
-
     val productList by homeViewModel.productsFeaturedFlow.collectAsState()
     val brandList by homeViewModel.brandListFlow.collectAsState()
 
     ScaffoldGridState(
         topBar = {
-            SearchBarStatic(
-                modifier = Modifier
-                    .background(color = searchBarColor)
+            SearchBarStaticWithTitle(
+                lazyGridState = lazyGridState,
+                title = "Welcome football lovers!"
             )
         },
+        topBarPadding = Dimens.HeightTopBarSearchWithTitle,
         pullRefresh = {
             PullRefreshIndicator(
                 refreshing = isLoading,

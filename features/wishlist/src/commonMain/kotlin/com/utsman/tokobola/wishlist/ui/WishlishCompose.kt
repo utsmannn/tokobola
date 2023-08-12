@@ -1,6 +1,5 @@
 package com.utsman.tokobola.wishlist.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.items
@@ -9,12 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.utsman.tokobola.common.component.Dimens
 import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductItemGrid
 import com.utsman.tokobola.common.component.ScaffoldGridState
-import com.utsman.tokobola.common.component.SearchBarStatic
+import com.utsman.tokobola.common.component.SearchBarStaticWithTitle
 import com.utsman.tokobola.common.component.Shimmer
-import com.utsman.tokobola.common.component.animatedTopBarColor
 import com.utsman.tokobola.core.rememberViewModel
 import com.utsman.tokobola.core.utils.onFailure
 import com.utsman.tokobola.core.utils.onIdle
@@ -31,15 +31,14 @@ fun Wishlist() {
 
     val lazyGridState = rememberLazyGridState()
 
-    val searchBarColor by lazyGridState.animatedTopBarColor
-    
     ScaffoldGridState(
         topBar = {
-            SearchBarStatic(
-                modifier = Modifier
-                    .background(color = searchBarColor)
+            SearchBarStaticWithTitle(
+                lazyGridState = lazyGridState,
+                title = "Your Football Wishlist"
             )
         },
+        topBarPadding = Dimens.HeightTopBarSearchWithTitle,
         lazyGridState = lazyGridState,
         modifier = Modifier.fillMaxSize()
     ) {

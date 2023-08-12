@@ -88,7 +88,14 @@ class LocalRepository(private val realm: Realm) {
     suspend fun getProductCart(productId: Int): Flow<CartProductRealm?> {
         return asyncAwait {
             realm.query(CartProductRealm::class, "productId == $productId")
-                .asFlow().mapLatest { it.list.firstOrNull() }
+                .asFlow().map { it.list.firstOrNull() }
+        }
+    }
+
+    suspend fun selectAllCart(): Flow<List<CartProductRealm>> {
+        return asyncAwait {
+            realm.query(CartProductRealm::class).asFlow()
+                .map { it.list.asReversed() }
         }
     }
 

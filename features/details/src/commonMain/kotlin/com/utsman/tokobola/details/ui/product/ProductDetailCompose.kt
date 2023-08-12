@@ -175,7 +175,7 @@ fun DetailSuccess(product: Product, viewModel: ProductDetailViewModel) {
         if (isExistInWishlist) {
             SharedRes.images.icon_bookmark_fill
         } else {
-            SharedRes.images.icon_bookmark_outline
+            SharedRes.images.icon_bookmark
         }
     }
 
@@ -285,7 +285,7 @@ fun DetailSuccess(product: Product, viewModel: ProductDetailViewModel) {
                     Image(
                         painter = painterResource(resourceWishlist),
                         contentDescription = null,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(28.dp)
                             .clickable {
                                 viewModel.toggleWishlist(product.id)
                             },
