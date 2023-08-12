@@ -101,7 +101,9 @@ class LocalRepository(private val realm: Realm) {
                 val all = query(CartProductRealm::class)
                 delete(all)
 
-                list.forEach {
+                list
+                    .filter { it.quantity > 0 }
+                    .forEach {
                     copyToRealm(it, updatePolicy = UpdatePolicy.ALL)
                 }
 

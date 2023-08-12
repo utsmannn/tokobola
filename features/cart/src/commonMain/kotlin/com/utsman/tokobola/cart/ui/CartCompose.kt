@@ -24,6 +24,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.seiko.imageloader.rememberImagePainter
 import com.utsman.tokobola.cart.LocalCartUseCase
 import com.utsman.tokobola.common.component.Dimens
+import com.utsman.tokobola.common.component.EmptyScreen
 import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ScaffoldGridState
 import com.utsman.tokobola.common.component.Shimmer
@@ -58,6 +60,10 @@ fun Cart() {
     val cartState by viewModel.cartState.collectAsState()
     val uiConfig by viewModel.cartUiConfig.collectAsState()
 
+    val carts by derivedStateOf {
+        uiConfig.carts.filter { it.quantity > 0 }
+    }
+
     val lazyGridState = rememberLazyGridState()
 
     val navigation = LocalNavigation.current
@@ -66,145 +72,162 @@ fun Cart() {
         viewModel.listenCart()
     }
 
-    ScaffoldGridState(
-        topBar = {
-            TopBar(
-                text = "Shopping Cart",
-                lazyGridState = lazyGridState
-            )
-        },
-        topBarPadding = Dimens.HeightTopBarSearch,
-        lazyGridState = lazyGridState,
-        modifier = Modifier.fillMaxSize(),
-        fixColumn = 1,
-    ) {
+    Box {
+        ScaffoldGridState(
+            topBar = {
+                TopBar(
+                    text = "Shopping Cart",
+                    lazyGridState = lazyGridState
+                )
+            },
+            topBarPadding = Dimens.HeightTopBarSearch,
+            lazyGridState = lazyGridState,
+            modifier = Modifier.fillMaxSize(),
+            fixColumn = 1,
+        ) {
 
-        items(uiConfig.carts.filter { it.quantity > 0 }) { cart ->
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(6.dp)
-                ) {
+            if (carts.isEmpty()) {
+                item {
+                    EmptyScreen()
+                }
+            } else {
+                items(carts) { cart ->
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
 
-                    Box(
-                        modifier = Modifier.wrapContentSize()
-                            .addShadow(12.dp)
-
-                    ) {
-                        val painter = rememberImagePainter(cart.product.image)
-                        Image(
-                            modifier = Modifier.size(70.dp)
-                                .background(
-                                    color = Color.White,
-                                    shape = RoundedCornerShape(Dimens.CornerSize)
+                            Box(
+                                modifier = Modifier.wrapContentSize()
+                                    .addShadow(12.dp)
+                            ) {
+                                val painter = rememberImagePainter(cart.product.image)
+                                Image(
+                                    modifier = Modifier.size(70.dp)
+                                        .background(
+                                            color = Color.White,
+                                            shape = RoundedCornerShape(Dimens.CornerSize)
+                                        )
+                                        .clip(RoundedCornerShape(Dimens.CornerSize))
+                                        .clickable {
+                                            navigation.goToDetailProduct(cart.product.id)
+                                        },
+                                    painter = painter,
+                                    contentDescription = cart.product.name,
+                                    contentScale = ContentScale.Crop
                                 )
-                                .clip(RoundedCornerShape(Dimens.CornerSize))
-                                .clickable {
-                                    navigation.goToDetailProduct(cart.product.id)
-                                },
-                            painter = painter,
-                            contentDescription = cart.product.name,
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                    Column(
-                        modifier = Modifier
-                            .padding(all = 6.dp)
-                            .weight(1f)
-                            .wrapContentHeight()
-                    ) {
-                        Text(
-                            text = cart.product.brand.name,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontSize = 12.sp
-                        )
-                        Text(
-                            text = cart.product.name,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 2,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = cart.product.price.currency(),
-                            fontWeight = FontWeight.Black,
-                            color = MaterialTheme.colors.primary
-                        )
-                    }
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .padding(all = 6.dp)
+                                    .weight(1f)
+                                    .wrapContentHeight()
+                            ) {
+                                Text(
+                                    text = cart.product.brand.name,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    fontSize = 12.sp
+                                )
+                                Text(
+                                    text = cart.product.name,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 2,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = cart.product.price.currency(),
+                                    fontWeight = FontWeight.Black,
+                                    color = MaterialTheme.colors.primary
+                                )
+                            }
 
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
 
-                        Box(
-                            modifier = Modifier
-                                .size(34.dp).clip(CircleShape)
-                                .background(color = MaterialTheme.colors.primary)
-                                .clickable {
-                                    viewModel.decrementCart(cart.product.id)
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "-",
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                textAlign = TextAlign.Center
-                            )
+                                Box(
+                                    modifier = Modifier
+                                        .size(34.dp).clip(CircleShape)
+                                        .background(color = MaterialTheme.colors.primary)
+                                        .clickable {
+                                            viewModel.decrementCart(cart.product.id)
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "-",
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+
+                                Text(
+                                    text = "${cart.quantity}",
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .padding(
+                                            end = 6.dp,
+                                            start = 6.dp
+                                        ),
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colors.primary,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Box(
+                                    modifier = Modifier
+                                        .size(34.dp).clip(CircleShape)
+                                        .background(color = MaterialTheme.colors.primary)
+                                        .clickable {
+                                            viewModel.incrementCart(cart.product.id)
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "+",
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
                         }
 
-                        Text(
-                            text = "${cart.quantity}",
-                            modifier = Modifier
-                                .width(50.dp)
-                                .padding(
-                                    end = 6.dp,
-                                    start = 6.dp
-                                ),
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colors.primary,
-                            textAlign = TextAlign.Center
-                        )
-
-                        Box(
-                            modifier = Modifier
-                                .size(34.dp).clip(CircleShape)
-                                .background(color = MaterialTheme.colors.primary)
-                                .clickable {
-                                    viewModel.incrementCart(cart.product.id)
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "+",
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                textAlign = TextAlign.Center
-                            )
-                        }
+                        Divider(modifier = Modifier.fillMaxWidth().padding(6.dp))
                     }
                 }
+            }
 
-                Divider(modifier = Modifier.fillMaxWidth().padding(6.dp))
+
+            with(cartState) {
+                onLoading {
+                    item {
+                        Shimmer()
+                    }
+                }
+                onSuccess { carts ->
+                    if (carts.isEmpty()) {
+                        item {
+                            EmptyScreen()
+                        }
+                    } else {
+                        viewModel.pushCart(carts)
+                    }
+                }
+                onFailure {
+                    item {
+                        ErrorScreen(it)
+                    }
+                }
             }
         }
 
-        with(cartState) {
-            onLoading {
-                item {
-                    Shimmer()
-                }
-            }
-            onSuccess { carts ->
-                viewModel.pushCart(carts)
-            }
-            onFailure {
-                item {
-                    ErrorScreen(it)
-                }
-            }
-        }
+        //
     }
 }

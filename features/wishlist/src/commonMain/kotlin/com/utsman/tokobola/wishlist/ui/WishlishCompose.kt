@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.utsman.tokobola.common.component.Dimens
+import com.utsman.tokobola.common.component.EmptyScreen
 import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductItemGrid
 import com.utsman.tokobola.common.component.ScaffoldGridState
@@ -53,9 +54,17 @@ fun Wishlist() {
                     Shimmer()
                 }
             }
-            onSuccess { products -> 
-                items(products) { product ->
-                    ProductItemGrid(product)
+            onSuccess { products ->
+                if (products.isEmpty()) {
+                    item(
+                        span = { GridItemSpan(maxLineSpan) }
+                    ) {
+                        EmptyScreen()
+                    }
+                } else {
+                    items(products) { product ->
+                        ProductItemGrid(product)
+                    }
                 }
             }
             onFailure { 

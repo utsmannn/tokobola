@@ -219,20 +219,24 @@ fun SearchBarStaticWithTitle(
                 )
             }
 
-            Box(
+            DefaultAnimatedVisibility(
+                isVisible = cartCount > 0,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .offset(x = 6.dp, y = (-4).dp)
-                    .size(18.dp)
-                    .background(color = Color.Red, shape = RoundedCornerShape(12.dp)),
-                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "$cartCount",
-                    color = Color.White,
-                    fontSize = 10.sp,
-                    textAlign = TextAlign.Center
-                )
+                Box(modifier = Modifier
+                        .size(18.dp)
+                        .background(color = Color.Red, shape = RoundedCornerShape(12.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "$cartCount",
+                        color = Color.White,
+                        fontSize = 10.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
     }

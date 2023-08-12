@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,7 +27,7 @@ fun ErrorScreen(throwable: Throwable) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        val painter = painterResource(SharedRes.images.icon_emoji_error)
+        val painter = painterResource(SharedRes.images.image_error)
         Image(
             painter = painter,
             contentDescription = "",
@@ -62,6 +63,30 @@ fun SimpleErrorScreen(throwable: Throwable) {
             fontWeight = FontWeight.Black,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(22.dp)
+        )
+    }
+}
+
+@Composable
+fun EmptyScreen(message: String = "Nothing") {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        val painter = painterResource(SharedRes.images.image_empty)
+        Image(
+            painter = painter,
+            contentDescription = "",
+            modifier = Modifier.size(180.dp)
+        )
+        Text(
+            text = message,
+            color = MaterialTheme.colors.primary,
+            fontWeight = FontWeight.Black,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+                .padding(22.dp)
         )
     }
 }
