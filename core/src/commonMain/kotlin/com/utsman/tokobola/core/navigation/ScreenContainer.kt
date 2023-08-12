@@ -14,6 +14,7 @@ interface ScreenContainer {
     fun explore(): Screen
     fun wishlist(): Screen
     fun search(): Screen
+    fun cart(): Screen
 
 }
 

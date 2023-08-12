@@ -5,6 +5,8 @@ import androidx.compose.runtime.remember
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import com.seiko.imageloader.LocalImageLoader
+import com.utsman.tokobola.cart.CartInstanceProvider
+import com.utsman.tokobola.cart.LocalCartUseCase
 import com.utsman.tokobola.common.theme.CommonTheme
 import com.utsman.tokobola.core.rememberImageLoader
 import com.utsman.tokobola.core.navigation.LocalNavigation
@@ -38,7 +40,7 @@ fun App() {
 
     val exploreUseCase = remember { ExploreInstanceProvider.providedExploreUseCase() }
     val searchUseCase = remember { ExploreInstanceProvider.providedSearchUseCase() }
-
+    val cartUseCase = remember { CartInstanceProvider.providedUseCase() }
 
     CompositionLocalProvider(
         // core
@@ -53,7 +55,8 @@ fun App() {
         LocalHomeUseCase provides homeUseCase,
         LocalExploreUseCase provides exploreUseCase,
         LocalSearchUseCase provides searchUseCase,
-        LocalWishlistUseCase provides wishlistUseCase
+        LocalWishlistUseCase provides wishlistUseCase,
+        LocalCartUseCase provides cartUseCase
     ) {
 
         CommonTheme {

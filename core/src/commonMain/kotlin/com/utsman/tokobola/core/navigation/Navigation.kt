@@ -9,6 +9,7 @@ interface Navigation {
     fun goToDetailCategory(categoryId: Int): Boolean
     fun goToDetailBrand(brandId: Int): Boolean
     fun goToSearch(): Boolean
+    fun goToCart(): Boolean
 }
 
 val LocalNavigation = compositionLocalOf<Navigation> { error("navigation failure") }

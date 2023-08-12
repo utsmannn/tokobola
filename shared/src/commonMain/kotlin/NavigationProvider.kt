@@ -45,6 +45,12 @@ class NavigationProvider : Navigation {
         }
     }
 
+    override fun goToCart(): Boolean {
+        return tryAction { nav ->
+            screenContainer.value?.cart()?.let { nav.push(it) }
+        }
+    }
+
     private fun tryAction(action: (Navigator) -> Unit): Boolean {
         return try {
             navigatorStack.value?.let(action)

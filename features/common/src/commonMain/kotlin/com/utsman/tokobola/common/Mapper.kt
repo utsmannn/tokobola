@@ -86,10 +86,3 @@ fun CartProductRealm.toEntity(): CartProduct {
         productId, quantity
     )
 }
-
-fun CartProduct.toRealm(): CartProductRealm {
-    return CartProductRealm().also {
-        it.productId = productId
-        it.quantity = quantity
-    }
-}

@@ -39,6 +39,7 @@ import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductItemGrid
 import com.utsman.tokobola.common.component.ScaffoldGridState
 import com.utsman.tokobola.common.component.Shimmer
+import com.utsman.tokobola.common.component.TopBar
 import com.utsman.tokobola.common.component.animatedColor
 import com.utsman.tokobola.common.component.animatedTopBarColor
 import com.utsman.tokobola.common.component.isScrolledToEnd
@@ -92,21 +93,10 @@ fun CategoryDetail(categoryId: Int) {
         }
     }
 
-    val topBarColor by lazyGridState.animatedTopBarColor
-
     ScaffoldGridState(
         topBar = {
             TopBar(
                 text = categoryTitle,
-                modifier = Modifier
-                    .background(color = topBarColor)
-                    .wrapContentHeight()
-                    .padding(
-                        top = 12.dp + rememberStatusBarHeightDp(),
-                        start = 12.dp,
-                        end = 12.dp,
-                        bottom = 12.dp
-                    ),
                 lazyGridState = lazyGridState
             )
         },
@@ -137,45 +127,5 @@ fun CategoryDetail(categoryId: Int) {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun TopBar(text: String, modifier: Modifier = Modifier, lazyGridState: LazyGridState) {
-    val navigation = LocalNavigation.current
-    val titleColor by lazyGridState.animatedColor(
-        from = Color.White,
-        to = MaterialTheme.colors.primary
-    )
-
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            modifier = Modifier.size(34.dp)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(false),
-                    onClick = {
-                        navigation.back()
-                    })
-                .clip(CircleShape)
-                .background(
-                    color = MaterialTheme.colors.secondary.copy(alpha = 0.6f)
-                )
-                .padding(6.dp),
-            painter = painterResource(SharedRes.images.arrow_back_default),
-            contentDescription = "",
-            colorFilter = ColorFilter.tint(Color.White)
-        )
-
-        Text(
-            text = text,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.weight(1f).padding(12.dp),
-            color = titleColor
-        )
     }
 }

@@ -22,6 +22,7 @@ import com.utsman.tokobola.common.component.ErrorScreen
 import com.utsman.tokobola.common.component.ProductItemGrid
 import com.utsman.tokobola.common.component.ScaffoldGridState
 import com.utsman.tokobola.common.component.Shimmer
+import com.utsman.tokobola.common.component.TopBar
 import com.utsman.tokobola.common.component.animatedTopBarColor
 import com.utsman.tokobola.common.component.isScrolledToEnd
 import com.utsman.tokobola.core.State
@@ -31,7 +32,6 @@ import com.utsman.tokobola.core.utils.onLoading
 import com.utsman.tokobola.core.utils.onSuccess
 import com.utsman.tokobola.core.utils.rememberStatusBarHeightDp
 import com.utsman.tokobola.details.LocalBrandDetailUseCase
-import com.utsman.tokobola.details.ui.category.TopBar
 
 @Composable
 fun BrandDetail(brandId: Int) {

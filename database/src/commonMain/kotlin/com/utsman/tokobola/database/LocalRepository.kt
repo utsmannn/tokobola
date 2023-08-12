@@ -12,9 +12,7 @@ import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.query.find
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlin.jvm.Volatile
 import kotlin.native.concurrent.ThreadLocal
 
@@ -97,10 +95,24 @@ class LocalRepository(private val realm: Realm) {
         }
     }
 
+    suspend fun replaceAllCart(list: List<CartProductRealm>) {
+        asyncAwait {
+            realm.write {
+                val all = query(CartProductRealm::class)
+                delete(all)
+
+                list.forEach {
+                    copyToRealm(it, updatePolicy = UpdatePolicy.ALL)
+                }
+
+            }
+        }
+    }
+
     suspend fun selectAllCart(): Flow<List<CartProductRealm>> {
         return asyncAwait {
             realm.query(CartProductRealm::class).asFlow()
-                .map { it.list.asReversed() }
+                .map { it.list.sortedBy { cart -> cart.millis }.asReversed() }
         }
     }
 

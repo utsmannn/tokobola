@@ -214,7 +214,7 @@ fun SearchBarStaticWithTitle(
                         .size(28.dp)
                         .clip(CircleShape)
                         .clickable {
-
+                            navigation.goToCart()
                         }
                 )
             }
