@@ -25,6 +25,9 @@ actual fun MapView() {
     }
     val mkMapView = remember { MKMapView().apply { addAnnotation(annotation) } }
 
+    val mapview = remember {
+    }
+
     DisposableEffect(mkMapView) {
         onDispose {
             mkMapView.centerCoordinate().useContents {

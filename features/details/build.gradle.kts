@@ -30,11 +30,11 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":core"))
-                implementation(project(":network"))
-                implementation(project(":database"))
+                implementation(project(":libraries:core"))
+                implementation(project(":libraries:network"))
+                implementation(project(":libraries:database"))
 
-                implementation(project(":features:common"))
+                implementation(project(":libraries:common"))
             }
         }
     }

@@ -7,7 +7,6 @@ import com.utsman.tokobola.common.toEntity
 import com.utsman.tokobola.core.SingletonCreator
 import com.utsman.tokobola.network.ApiReducer
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 
 class ProductDetailUseCase(private val repository: DetailRepository) {

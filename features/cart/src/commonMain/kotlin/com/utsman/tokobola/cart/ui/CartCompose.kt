@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -51,11 +52,14 @@ import com.utsman.tokobola.core.utils.currency
 import com.utsman.tokobola.core.utils.onFailure
 import com.utsman.tokobola.core.utils.onLoading
 import com.utsman.tokobola.core.utils.onSuccess
+import com.utsman.tokobola.location.LocalLocationTrackerProvider
 
 @Composable
 fun Cart() {
     val useCase = LocalCartUseCase.current
-    val viewModel = rememberViewModel { CartViewModel(useCase) }
+    val trackerProvider = LocalLocationTrackerProvider.current
+
+    val viewModel = rememberViewModel { CartViewModel(useCase, trackerProvider) }
 
     val cartState by viewModel.cartState.collectAsState()
     val uiConfig by viewModel.cartUiConfig.collectAsState()
@@ -68,11 +72,16 @@ fun Cart() {
 
     val navigation = LocalNavigation.current
 
+    val location by viewModel.location.collectAsState()
+    val lastLocation by viewModel.lastLocation.collectAsState()
+
     LaunchedEffect(Unit) {
         viewModel.listenCart()
+        viewModel.getLastLocation()
     }
 
     Box {
+
         ScaffoldGridState(
             topBar = {
                 TopBar(
@@ -226,6 +235,16 @@ fun Cart() {
                     }
                 }
             }
+        }
+
+        Button(
+            onClick = {
+                //viewModel.getLastLocation()
+                //navigation.goToLocationPicker()
+            },
+            modifier = Modifier.padding(120.dp)
+        ) {
+            Text("location -> $location | \n${lastLocation}")
         }
 
         //

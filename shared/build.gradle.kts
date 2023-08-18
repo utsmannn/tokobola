@@ -28,15 +28,20 @@ kotlin {
             isStatic = true
         }
         extraSpecAttributes["resources"] = "['src/commonMain/resources/**', 'src/iosMain/resources/**']"
+        pod("MapboxMaps") {
+            version = "10.15.0"
+            moduleName = "shared"
+        }
     }
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":core"))
-                implementation(project(":database"))
+                implementation(project(":libraries:core"))
+                implementation(project(":libraries:database"))
+                implementation(project(":libraries:location"))
 
-                implementation(project(":features:common"))
+                implementation(project(":libraries:common"))
                 implementation(project(":features:home"))
                 implementation(project(":features:explore"))
                 implementation(project(":features:wishlist"))
@@ -45,7 +50,11 @@ kotlin {
 
             }
         }
-        val androidMain by getting {}
+        val androidMain by getting {
+            dependencies {
+                api("com.google.android.gms:play-services-location:21.0.1")
+            }
+        }
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting

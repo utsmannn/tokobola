@@ -1,5 +1,6 @@
 import cafe.adriel.voyager.core.screen.Screen
 import com.utsman.tokobola.cart.ui.Cart
+import com.utsman.tokobola.cart.ui.LocationPicker
 import com.utsman.tokobola.core.navigation.ScreenContainer
 import com.utsman.tokobola.core.navigation.screenContentOf
 import com.utsman.tokobola.details.ui.product.ProductDetail
@@ -42,5 +43,9 @@ class ScreenContainerProvider : ScreenContainer {
 
     override fun cart(): Screen = screenContentOf("cart") {
         Cart()
+    }
+
+    override fun locationPicker() = screenContentOf("location_picker") {
+        LocationPicker()
     }
 }

@@ -3,10 +3,7 @@ package com.utsman.tokobola.cart.domain
 import com.utsman.tokobola.common.entity.Cart
 import com.utsman.tokobola.common.toThumbnailProduct
 import com.utsman.tokobola.core.SingletonCreator
-import com.utsman.tokobola.database.data.CartProductRealm
 import com.utsman.tokobola.network.ApiReducer
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.transform
 
 class CartUseCase(private val repository: CartRepository) {
 

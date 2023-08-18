@@ -20,6 +20,8 @@ import com.utsman.tokobola.explore.LocalExploreUseCase
 import com.utsman.tokobola.explore.LocalSearchUseCase
 import com.utsman.tokobola.home.HomeInstanceProvider
 import com.utsman.tokobola.home.LocalHomeUseCase
+import com.utsman.tokobola.location.LocalLocationTrackerProvider
+import com.utsman.tokobola.location.LocationInstanceProvider
 import com.utsman.tokobola.wishlist.LocalWishlistUseCase
 import com.utsman.tokobola.wishlist.WishlistInstanceProvider
 
@@ -30,6 +32,7 @@ fun App() {
     val imageLoader = rememberImageLoader()
     val screenContainer = remember { ScreenContainerProvider() }
     val navigation = remember { NavigationProvider() }
+    val locationProvider = remember { LocationInstanceProvider.providedLocationTrackerProvider() }
 
     val homeUseCase = remember { HomeInstanceProvider.providedUseCase() }
 
@@ -42,11 +45,14 @@ fun App() {
     val searchUseCase = remember { ExploreInstanceProvider.providedSearchUseCase() }
     val cartUseCase = remember { CartInstanceProvider.providedUseCase() }
 
+    locationProvider.bindComposable()
+
     CompositionLocalProvider(
         // core
         LocalImageLoader provides imageLoader,
         LocalScreenContainer provides screenContainer,
         LocalNavigation provides navigation,
+        LocalLocationTrackerProvider provides locationProvider,
 
         // use case
         LocalProductDetailUseCase provides productDetailUseCase,

@@ -3,16 +3,35 @@ package com.utsman.tokobola.cart.ui
 import com.utsman.tokobola.cart.domain.CartUseCase
 import com.utsman.tokobola.common.entity.Cart
 import com.utsman.tokobola.core.ViewModel
+import com.utsman.tokobola.location.LocationTrackerProvider
+import dev.icerock.moko.geo.LatLng
 import io.ktor.util.date.getTimeMillis
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class CartViewModel(private val useCase: CartUseCase) : ViewModel() {
+class CartViewModel(private val useCase: CartUseCase, private val trackerProvider: LocationTrackerProvider) : ViewModel() {
 
     val cartState get() = useCase.cartReducer.dataFlow.asStateFlow()
 
     val cartUiConfig: MutableStateFlow<CartUiConfig> = MutableStateFlow(CartUiConfig())
+
+    val coroutineHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
+        throwable.printStackTrace()
+    }
+
+    val location = trackerProvider.locationFlow
+
+    //val lastLocation = trackerProvider.getLastLocation()
+
+    val lastLocation = MutableStateFlow<LatLng?>(null)
+
+    init {
+        viewModelScope.launch {
+            trackerProvider.startTracking()
+        }
+    }
 
     fun listenCart() = viewModelScope.launch {
         useCase.getCart()
@@ -50,7 +69,12 @@ class CartViewModel(private val useCase: CartUseCase) : ViewModel() {
         return newCart
     }
 
+    fun getLastLocation() = viewModelScope.launch {
+        lastLocation.value = trackerProvider.getLastLocation()
+    }
+
     override fun onCleared() {
+        trackerProvider.stopTracking()
         viewModelScope.launch {
             useCase.updateCart(cartUiConfig.value.carts)
         }

@@ -51,6 +51,12 @@ class NavigationProvider : Navigation {
         }
     }
 
+    override fun goToLocationPicker(): Boolean {
+        return tryAction { nav ->
+            screenContainer.value?.locationPicker()?.let { nav.push(it) }
+        }
+    }
+
     private fun tryAction(action: (Navigator) -> Unit): Boolean {
         return try {
             navigatorStack.value?.let(action)
