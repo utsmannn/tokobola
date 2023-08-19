@@ -8,6 +8,12 @@ goal of learning Kotlin Multiplatform, Compose for Multiplatform for Android and
 things. I chose the marketplace theme because by developing this themed application, there's so much
 that can be learned, starting from architecture, local database, up to maps.
 
+
+| ![](doc/ss1.png)   | ![](doc/ss2.png)   |
+|--------------------|--------------------|
+| ![](doc/ss3.png)   | ![](doc/ss4.png)   |
+| ![](doc/ss5.png)   | ![](doc/ss6.png)   |
+
 ## Architecture
 
 This main architecture combines MVVM with state management, and I call it MVVM + State. This state
@@ -27,8 +33,4 @@ according to their respective needs.
 - [Compose ImageLoader](https://github.com/qdsfdhvh/compose-imageloader)
 - [Realm Kotlin](https://realm.io/realm-kotlin/)
 
-| ![](doc/ss1.png)   | ![](doc/ss2.png)   |
-|--------------------|--------------------|
-| ![](doc/ss3.png)   | ![](doc/ss4.png)   |
-| ------------------ | ------------------ |
-| ![](doc/ss5.png)   | ![](doc/ss6.png)   |
+---
