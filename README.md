@@ -33,5 +33,7 @@ according to their respective needs.
 - [Voyager](https://voyager.adriel.cafe/)
 - [Compose ImageLoader](https://github.com/qdsfdhvh/compose-imageloader)
 - [Realm Kotlin](https://realm.io/realm-kotlin/)
+- [BuildKonfig](https://github.com/yshrsmz/BuildKonfig)
+- [Mapbox Android SDK](https://docs.mapbox.com/android/maps/guides/)
 
 ---
