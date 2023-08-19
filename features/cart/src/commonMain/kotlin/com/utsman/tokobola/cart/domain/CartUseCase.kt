@@ -15,7 +15,10 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
-class CartUseCase(private val repository: CartRepository, private val locationTrackerProvider: LocationTrackerProvider) {
+class CartUseCase(
+    private val repository: CartRepository,
+    private val locationTrackerProvider: LocationTrackerProvider
+) {
 
 
     val cartReducer = ApiReducer<List<Cart>>()
@@ -48,8 +51,6 @@ class CartUseCase(private val repository: CartRepository, private val locationTr
                 it?.toLocationPlace()
             }
             .firstOrNull()
-
-        println("asuuu -> $currentLocation")
 
         if (currentLocation == null) {
             val currentLocalLocation = repository.getLocalCurrentLocationPlace()
@@ -98,47 +99,15 @@ class CartUseCase(private val repository: CartRepository, private val locationTr
         }
     }
 
-    suspend fun startGetLocationPlace() {
-        val currentLocalLocation = repository.getLocalCurrentLocationPlace()
-            .map {
-                it?.toLocationPlace()
-            }
-            .firstOrNull() ?: LocationPlace()
 
-        locationTrackerProvider.startTracking()
-        locationTrackerProvider
-            .locationFlow
-            .onStart {
-                locationPlaceReducer.forcePushState(State.Loading())
-            }
-            .filterNotNull()
-            .collect { latLon ->
-                locationPlaceReducer
-                    .transform(
-                        transformation = StateTransformation.SimpleTransform(),
-                        call = {
-                            if (currentLocalLocation.latLon.isNear(latLon)) {
-                                currentLocalLocation
-                            } else {
-                                repository.getLocationPlace(latLon).toLocationPlace().also { locationPlace ->
-                                    repository.insertLocalCurrentLocationPlace(locationPlace)
-                                }
-                            }
-                        },
-                        mapper = {
-                            it
-                        }
-                    )
-            }
-    }
 
-    suspend fun stopLocationPlace() {
+    fun stopLocationPlace() {
         locationTrackerProvider.stopTracking()
     }
 
-   suspend fun updateCart(list: List<Cart>) {
-       repository.replaceCart(list)
-   }
+    suspend fun updateCart(list: List<Cart>) {
+        repository.replaceCart(list)
+    }
 
     companion object : SingletonCreator<CartUseCase>()
 }

@@ -60,9 +60,7 @@ class CartViewModel(private val useCase: CartUseCase) : ViewModel() {
     }
 
     override fun onCleared() {
-        viewModelScope.launch {
-            useCase.stopLocationPlace()
-        }
+        useCase.stopLocationPlace()
         viewModelScope.launch {
             useCase.updateCart(cartUiConfig.value.carts)
         }

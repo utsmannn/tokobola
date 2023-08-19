@@ -33,7 +33,8 @@ class CartRepository {
         localRepository.replaceAllCart(cartProductRealm)
     }
 
-    suspend fun getLocationPlace(latLon: LatLon) = mapboxWebApi.getGeocodingLatLon(latLon, BuildKonfig.MAPBOX_TOKEN)
+    suspend fun getLocationPlace(latLon: LatLon) = mapboxWebApi.getReverseGeocoding(latLon, BuildKonfig.MAPBOX_TOKEN)
+    suspend fun searchLocationPlace(query: String, latLon: LatLon) = mapboxWebApi.getSearchGeocoding(query, latLon, BuildKonfig.MAPBOX_TOKEN)
 
     suspend fun getLocalCurrentLocationPlace() = localRepository.getLocationPlace(CartUiConfig.KEY_LOCATION_CURRENT)
     suspend fun getShippingLocationPlace() = localRepository.getLocationPlace(CartUiConfig.KEY_LOCATION_SHIPPING)

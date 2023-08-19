@@ -11,10 +11,13 @@ import dev.icerock.moko.permissions.compose.BindEffect
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
 
 internal expect val locationTracker: LocationTracker
+
+private var lastKnowLocations: MutableList<LatLon> = mutableListOf()
 
 class LocationTrackerProvider {
     private val tracker = locationTracker
@@ -24,6 +27,11 @@ class LocationTrackerProvider {
 
     val locationFlow = tracker.getLocationsFlow()
         .map { LatLon(it.latitude, it.longitude) }
+        .onEach {
+            if (lastKnowLocations.isEmpty()) {
+                lastKnowLocations.add(it)
+            }
+        }
         .stateIn(
             DefaultScope(),
             SharingStarted.Eagerly,
@@ -50,6 +58,10 @@ class LocationTrackerProvider {
         BindEffect(tracker.permissionsController)
     }
 
+    fun getLastKnownLocation(): LatLon? {
+        return lastKnowLocations.firstOrNull()
+    }
+
     suspend fun startTracking() {
         if (!isHasStart) {
             tracker.startTracking()
@@ -57,14 +69,9 @@ class LocationTrackerProvider {
         }
     }
 
-    suspend fun stopTracking() {
-        locationFlow
-            .collect {
-            if (it != null) {
-                tracker.stopTracking()
-                isHasStart = false
-            }
-        }
+    fun stopTracking() {
+        tracker.stopTracking()
+        isHasStart = false
     }
 
     suspend fun isEmptyQueue(): Boolean {

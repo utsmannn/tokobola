@@ -46,7 +46,7 @@ fun App() {
     val exploreUseCase = remember { ExploreInstanceProvider.providedExploreUseCase() }
     val searchUseCase = remember { ExploreInstanceProvider.providedSearchUseCase() }
     val cartUseCase = remember { CartInstanceProvider.providedCartUseCase(locationProvider) }
-    val locationPickerUseCase = remember { CartInstanceProvider.providedLocationPickerUseCase(locationProvider) }
+    val locationPickerUseCase = remember { CartInstanceProvider.providedLocationPickerUseCase() }
 
 
     CompositionLocalProvider(

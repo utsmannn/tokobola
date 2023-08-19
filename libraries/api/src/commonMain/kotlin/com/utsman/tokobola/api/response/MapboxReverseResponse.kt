@@ -5,11 +5,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MapboxGeocodingResponse(
+data class MapboxReverseResponse(
     @SerialName("type")
     val type: String?,
-    @SerialName("query")
-    val query: List<Double?>?,
     @SerialName("features")
     val features: List<FeatureResponse?>?,
     @SerialName("attribution")

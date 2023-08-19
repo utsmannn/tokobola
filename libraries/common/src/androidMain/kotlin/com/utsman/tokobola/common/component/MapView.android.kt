@@ -11,6 +11,9 @@ import com.mapbox.maps.MapInitOptions
 import com.mapbox.maps.ResourceOptions
 import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.animation.flyTo
+import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.toCameraOptions
 import com.utsman.tokobola.common.BuildKonfig
 import com.utsman.tokobola.core.data.LatLon
@@ -21,6 +24,8 @@ private typealias MapBoxView = com.mapbox.maps.MapView
 @Composable
 actual fun MapView(mapConfigState: MapConfigState, modifier: Modifier) {
     val context = LocalContext.current
+
+    //val annotations by mutableStateOf(mutableListOf<MKPointAnnotation>())
 
     val mapboxView = remember {
         val resourcesOptions = ResourceOptions
@@ -77,6 +82,17 @@ actual fun MapView(mapConfigState: MapConfigState, modifier: Modifier) {
                         .build()
 
                     it.getMapboxMap().flyTo(cameraOption)
+                }
+
+                override fun addAnnotation(latLon: LatLon, title: String?) {
+                    val annotationPlugin = it.annotations
+                    val manager = annotationPlugin.createPointAnnotationManager()
+                    manager.deleteAll()
+
+                    val pointAnnotation = PointAnnotationOptions()
+                        .withPoint(Point.fromLngLat(latLon.longitude, latLon.latitude))
+
+                    manager.create(pointAnnotation)
                 }
             }
         }

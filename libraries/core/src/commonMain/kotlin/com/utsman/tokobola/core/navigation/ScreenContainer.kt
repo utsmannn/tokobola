@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.ScreenKey
+import com.utsman.tokobola.core.data.LatLon
 
 interface ScreenContainer {
 
@@ -15,7 +16,7 @@ interface ScreenContainer {
     fun wishlist(): Screen
     fun search(): Screen
     fun cart(): Screen
-    fun locationPicker(): Screen
+    fun locationPicker(latLon: LatLon): Screen
 
 }
 

@@ -102,25 +102,19 @@ fun Cart() {
             fixColumn = 1,
         ) {
 
-            if (carts.isEmpty()) {
-                item {
-                    EmptyScreen()
-                }
-            } else {
-                items(carts) { cart ->
-                    ItemCart(
-                        cart = cart,
-                        increment = {
-                            viewModel.incrementCart(cart.product.id)
-                        },
-                        decrement = {
-                            viewModel.decrementCart(cart.product.id)
-                        },
-                        toDetail = {
-                            navigation.goToDetailProduct(cart.product.id)
-                        }
-                    )
-                }
+            items(carts) { cart ->
+                ItemCart(
+                    cart = cart,
+                    increment = {
+                        viewModel.incrementCart(cart.product.id)
+                    },
+                    decrement = {
+                        viewModel.decrementCart(cart.product.id)
+                    },
+                    toDetail = {
+                        navigation.goToDetailProduct(cart.product.id)
+                    }
+                )
             }
 
 
@@ -168,7 +162,7 @@ fun Cart() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    navigation.goToLocationPicker()
+                                    navigation.goToLocationPicker(place.latLon)
                                 }
                                 .padding(12.dp)
                         ) {

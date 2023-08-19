@@ -16,8 +16,8 @@ object CartInstanceProvider {
         return CartUseCase.create { CartUseCase(getRepository(), locationTrackerProvider) }
     }
 
-    fun providedLocationPickerUseCase(locationTrackerProvider: LocationTrackerProvider): LocationPickerUseCase {
-        return LocationPickerUseCase.create { LocationPickerUseCase(locationTrackerProvider) }
+    fun providedLocationPickerUseCase(): LocationPickerUseCase {
+        return LocationPickerUseCase.create { LocationPickerUseCase(getRepository()) }
     }
 }
 

@@ -4,6 +4,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.onDrag
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.interop.UIKitView
@@ -13,12 +15,15 @@ import kotlinx.cinterop.useContents
 import platform.CoreLocation.CLLocationCoordinate2DMake
 import platform.MapKit.MKCoordinateRegionMakeWithDistance
 import platform.MapKit.MKMapView
+import platform.MapKit.MKPointAnnotation
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 actual fun MapView(mapConfigState: MapConfigState, modifier: Modifier) {
     val latLon = mapConfigState.currentLatLon
     val location = CLLocationCoordinate2DMake(latLon.latitude, latLon.longitude)
+
+    val annotations by mutableStateOf(mutableListOf<MKPointAnnotation>())
 
     val mkMapView = remember {
         MKMapView().also {
@@ -60,12 +65,28 @@ actual fun MapView(mapConfigState: MapConfigState, modifier: Modifier) {
                 }
 
                 override fun setLocation(latLon: LatLon) {
+                    println("asuuu set location -> $latLon")
                     val newRegion = it.region().copy {
                         center.latitude = latLon.latitude
                         center.longitude = latLon.longitude
                     }
 
                     it.setRegion(newRegion, true)
+                }
+
+                override fun addAnnotation(latLon: LatLon, title: String?) {
+                    val annotationLocation = CLLocationCoordinate2DMake(latLon.latitude, latLon.longitude)
+                    val annotation = MKPointAnnotation(
+                        coordinate = annotationLocation,
+                        title = title,
+                        subtitle = null
+                    )
+
+                    if (annotations.isNotEmpty()) {
+                        it.removeAnnotations(annotations)
+                    }
+                    it.addAnnotation(annotation)
+                    annotations.add(annotation)
                 }
             }
         }
@@ -78,19 +99,9 @@ actual fun MapView(mapConfigState: MapConfigState, modifier: Modifier) {
     }
 
     UIKitView(
-        modifier = modifier.onDrag {
-            val currentCoordinate = mkMapView.centerCoordinate()
-            val updatedLatLon = currentCoordinate.useContents {
-                LatLon(latitude, longitude)
-            }
-
-            mapConfigState.currentLatLon = updatedLatLon
-        },
+        modifier = modifier,
         factory = {
             mkMapView
-        },
-        update = {
-
         }
     )
 }

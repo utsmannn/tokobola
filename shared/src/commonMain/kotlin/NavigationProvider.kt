@@ -1,6 +1,7 @@
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
+import com.utsman.tokobola.core.data.LatLon
 import com.utsman.tokobola.core.navigation.LocalScreenContainer
 import com.utsman.tokobola.core.navigation.Navigation
 import com.utsman.tokobola.core.navigation.ScreenContainer
@@ -51,9 +52,9 @@ class NavigationProvider : Navigation {
         }
     }
 
-    override fun goToLocationPicker(): Boolean {
+    override fun goToLocationPicker(latLon: LatLon): Boolean {
         return tryAction { nav ->
-            screenContainer.value?.locationPicker()?.let { nav.push(it) }
+            screenContainer.value?.locationPicker(latLon)?.let { nav.push(it) }
         }
     }
 

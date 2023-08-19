@@ -14,7 +14,10 @@ import com.utsman.tokobola.core.data.LatLon
 import com.utsman.tokobola.core.utils.getOrNull
 import com.utsman.tokobola.location.LocalLocationTrackerProvider
 import dev.icerock.moko.geo.LatLng
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 
 @Composable
 expect fun MapView(
@@ -31,6 +34,7 @@ internal interface MapAction {
     fun zoomIn()
     fun zoomOut()
     fun setLocation(latLon: LatLon)
+    fun addAnnotation(latLon: LatLon, title: String? = null)
 }
 
 fun LatLng.toLatLon(): LatLon {
@@ -49,7 +53,13 @@ class MapConfigState(currentLatLon: LatLon) {
     fun zoomIn() = mapAction?.zoomIn()
     fun zoomOut() = mapAction?.zoomOut()
 
-    fun setLocation(latLon: LatLon) = mapAction?.setLocation(latLon)
+    fun setLocation(latLon: LatLon) {
+        MainScope().launch {
+            delay(100)
+            mapAction?.setLocation(latLon)
+        }
+    }
+    fun addAnnotation(latLon: LatLon, title: String? = null) = mapAction?.addAnnotation(latLon, title)
 
     companion object {
         val Saver: Saver<MapConfigState, String> = Saver(
@@ -67,14 +77,14 @@ class MapConfigState(currentLatLon: LatLon) {
 fun rememberMapConfigState(latLon: LatLon? = null): MapConfigState {
     val state = if (latLon == null || latLon.isBlank()) {
         val trackerProvider = LocalLocationTrackerProvider.current
-        val location = trackerProvider.locationStateFlow.collectAsState()
+        val location = trackerProvider.getLastKnownLocation()
 
         LaunchedEffect(Unit) {
             trackerProvider.startTracking()
         }
 
         val newLatLon by derivedStateOf {
-            location.value.getOrNull()
+            location
         }
 
         MapConfigState(newLatLon ?: LatLon())

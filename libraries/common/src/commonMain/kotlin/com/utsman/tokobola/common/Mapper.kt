@@ -3,7 +3,8 @@ package com.utsman.tokobola.common
 import com.utsman.tokobola.api.response.BrandResponse
 import com.utsman.tokobola.api.response.CategoryResponse
 import com.utsman.tokobola.api.response.HomeBannerResponse
-import com.utsman.tokobola.api.response.MapboxGeocodingResponse
+import com.utsman.tokobola.api.response.MapboxReverseResponse
+import com.utsman.tokobola.api.response.MapboxSearchResponse
 import com.utsman.tokobola.api.response.ProductResponse
 import com.utsman.tokobola.api.response.ThumbnailProductResponse
 import com.utsman.tokobola.common.entity.Brand
@@ -66,7 +67,7 @@ fun HomeBannerResponse.toHomeBanner(): HomeBanner {
     )
 }
 
-fun MapboxGeocodingResponse.toLocationPlace(): LocationPlace {
+fun MapboxReverseResponse.toLocationPlace(): LocationPlace {
     val item = features.orEmpty().firstOrNull()
     val name = item?.placeName.orEmpty()
     val latLon = item?.geometry?.coordinates.let {
@@ -76,6 +77,15 @@ fun MapboxGeocodingResponse.toLocationPlace(): LocationPlace {
         "${it?.get(0)},${it?.get(1)},${it?.get(2)},${it?.get(3)}"
     }
     return LocationPlace(name, latLon, bbox)
+}
+
+fun MapboxSearchResponse.FeatureResponse.toLocationPlace(): LocationPlace {
+    val name = this.placeName.orEmpty()
+    val latLon = this.geometry?.coordinates.let {
+        LatLon(it?.get(1).orNol(), it?.get(0).orNol())
+    }
+
+    return LocationPlace(name, latLon, "")
 }
 
 fun LocationPlaceRealm.toLocationPlace(): LocationPlace {
