@@ -7,3 +7,11 @@ fun productWebApi(): Lazy<ProductWebApi> {
         ProductWebApi.create { ProductWebApi() }
     }
 }
+
+fun mapboxWebApi(): Lazy<MapboxWebApi> {
+    return lazy(
+        mode = LazyThreadSafetyMode.SYNCHRONIZED
+    ) {
+        MapboxWebApi.create { MapboxWebApi() }
+    }
+}

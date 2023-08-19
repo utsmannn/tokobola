@@ -11,6 +11,15 @@ abstract class NetworkSources(protected val baseUrl: String) {
 
     protected fun client() = ClientProvider.client()
 
+    protected suspend inline fun <reified T> getRaw(
+        endPoint: String,
+        contentType: ContentType = ContentType.Application.Json
+    ): T {
+        return client().get("$baseUrl$endPoint") {
+            contentType(contentType)
+        }.body()
+    }
+
     protected suspend inline fun <reified T> get(
         endPoint: String,
         contentType: ContentType = ContentType.Application.Json

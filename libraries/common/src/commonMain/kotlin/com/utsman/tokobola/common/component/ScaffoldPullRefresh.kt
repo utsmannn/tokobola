@@ -35,12 +35,11 @@ fun ScaffoldGridState(
     lazyGridState: LazyGridState,
     fixColumn: Int = 2,
     topBarPadding: Dp = Dimens.HeightTopBarSearch,
+    bottomBarPadding: Dp = (6 + (rememberNavigationBarHeightDp().value * 2)).dp,
     topBar: @Composable BoxScope.() -> Unit = {},
     pullRefresh: @Composable BoxScope.() -> Unit = {},
     content: LazyGridScope.() -> Unit
 ) {
-
-    val navigationBarHeight = rememberNavigationBarHeightDp()
 
     val isNeedLift by derivedStateOf {
         lazyGridState.canScrollBackward
@@ -59,7 +58,7 @@ fun ScaffoldGridState(
                 columns = GridCells.Fixed(fixColumn),
                 contentPadding = PaddingValues(
                     top = topBarPadding + 12.dp,
-                    bottom = (6 + (navigationBarHeight.value * 2)).dp,
+                    bottom = bottomBarPadding,
                     start = 6.dp,
                     end = 6.dp
                 ),

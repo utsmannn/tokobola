@@ -3,17 +3,21 @@ package com.utsman.tokobola.common
 import com.utsman.tokobola.api.response.BrandResponse
 import com.utsman.tokobola.api.response.CategoryResponse
 import com.utsman.tokobola.api.response.HomeBannerResponse
+import com.utsman.tokobola.api.response.MapboxGeocodingResponse
 import com.utsman.tokobola.api.response.ProductResponse
 import com.utsman.tokobola.api.response.ThumbnailProductResponse
 import com.utsman.tokobola.common.entity.Brand
 import com.utsman.tokobola.common.entity.CartProduct
 import com.utsman.tokobola.common.entity.Category
 import com.utsman.tokobola.common.entity.HomeBanner
+import com.utsman.tokobola.common.entity.LocationPlace
 import com.utsman.tokobola.common.entity.Product
 import com.utsman.tokobola.common.entity.ThumbnailProduct
+import com.utsman.tokobola.core.data.LatLon
 import com.utsman.tokobola.core.data.orFalse
 import com.utsman.tokobola.core.data.orNol
 import com.utsman.tokobola.database.data.CartProductRealm
+import com.utsman.tokobola.database.data.LocationPlaceRealm
 
 fun ProductResponse.mapToProduct(): Product {
     return Product(
@@ -60,6 +64,36 @@ fun HomeBannerResponse.toHomeBanner(): HomeBanner {
         productImage = productImage.orEmpty(),
         description = description.orEmpty()
     )
+}
+
+fun MapboxGeocodingResponse.toLocationPlace(): LocationPlace {
+    val item = features.orEmpty().firstOrNull()
+    val name = item?.placeName.orEmpty()
+    val latLon = item?.geometry?.coordinates.let {
+        LatLon(it?.get(1).orNol(), it?.get(0).orNol())
+    }
+    val bbox = item?.bbox.let {
+        "${it?.get(0)},${it?.get(1)},${it?.get(2)},${it?.get(3)}"
+    }
+    return LocationPlace(name, latLon, bbox)
+}
+
+fun LocationPlaceRealm.toLocationPlace(): LocationPlace {
+    return LocationPlace(
+        name = name,
+        latLon = LatLon(latitude, longitude),
+        bbox = bbox
+    )
+}
+
+fun LocationPlace.toRealm(key: String): LocationPlaceRealm {
+    return LocationPlaceRealm().also {
+        it.key = key
+        it.name = name
+        it.latitude = latLon.latitude
+        it.longitude = latLon.longitude
+        it.bbox = bbox
+    }
 }
 
 fun BrandResponse.toBrand(): Brand {

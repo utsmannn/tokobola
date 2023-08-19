@@ -279,7 +279,7 @@ fun DetailSuccess(product: Product, viewModel: ProductDetailViewModel) {
                     Text(
                         text = product.brand.name, style = MaterialTheme.typography.subtitle2
                     )
-                    
+
                     Spacer(modifier = Modifier.weight(1f))
 
                     Image(
@@ -393,6 +393,7 @@ fun ButtonEmptyCart(product: Product, viewModel: ProductDetailViewModel) {
 fun ButtonFoundCart(product: Product, viewModel: ProductDetailViewModel) {
     val navigationBarHeight = rememberNavigationBarHeightDp()
     val cart by viewModel.productCart.collectAsState()
+    val navigation = LocalNavigation.current
 
     Row(
         modifier = Modifier.fillMaxWidth()
@@ -414,7 +415,7 @@ fun ButtonFoundCart(product: Product, viewModel: ProductDetailViewModel) {
                 .clip(RoundedCornerShape(12.dp))
                 .background(color = MaterialTheme.colors.primary)
                 .clickable {
-
+                    navigation.goToCart()
                 },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center

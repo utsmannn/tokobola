@@ -2,16 +2,17 @@ package com.utsman.tokobola.location
 
 import androidx.compose.runtime.Composable
 import com.utsman.tokobola.core.SingletonCreator
+import com.utsman.tokobola.core.State
+import com.utsman.tokobola.core.data.LatLon
 import com.utsman.tokobola.core.utils.DefaultScope
-import dev.icerock.moko.geo.LatLng
 import dev.icerock.moko.geo.LocationTracker
 import dev.icerock.moko.geo.compose.BindLocationTrackerEffect
 import dev.icerock.moko.permissions.compose.BindEffect
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.transform
 
 internal expect val locationTracker: LocationTracker
 
@@ -22,19 +23,26 @@ class LocationTrackerProvider {
         private set
 
     val locationFlow = tracker.getLocationsFlow()
+        .map { LatLon(it.latitude, it.longitude) }
         .stateIn(
             DefaultScope(),
             SharingStarted.Eagerly,
             null
         )
 
-    suspend fun getLastLocation(): LatLng? {
-        return locationFlow.firstOrNull()
-    }
-
-    fun getLastLocationBlocking(): LatLng? {
-        return runBlocking { locationFlow.firstOrNull() }
-    }
+    val locationStateFlow = locationFlow
+        .transform { value ->
+            if (value == null) {
+                emit(State.Loading())
+            } else {
+                emit(State.Success(value))
+            }
+        }
+        .stateIn(
+            DefaultScope(),
+            SharingStarted.Eagerly,
+            State.Idle()
+        )
 
     @Composable
     fun bindComposable() {
@@ -47,9 +55,20 @@ class LocationTrackerProvider {
         isHasStart = true
     }
 
-    fun stopTracking() {
-        tracker.stopTracking()
-        isHasStart = false
+    suspend fun stopTracking() {
+        /*tracker.stopTracking()
+        isHasStart = false*/
+        locationFlow
+            .collect {
+            if (it != null) {
+                tracker.stopTracking()
+                isHasStart = false
+            }
+        }
+    }
+
+    suspend fun isEmptyQueue(): Boolean {
+        return tracker.getLocationsFlow().firstOrNull() == null
     }
 
     companion object : SingletonCreator<LocationTrackerProvider>()

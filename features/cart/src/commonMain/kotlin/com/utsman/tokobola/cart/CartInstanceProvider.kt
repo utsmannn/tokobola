@@ -3,6 +3,7 @@ package com.utsman.tokobola.cart
 import androidx.compose.runtime.compositionLocalOf
 import com.utsman.tokobola.cart.domain.CartRepository
 import com.utsman.tokobola.cart.domain.CartUseCase
+import com.utsman.tokobola.location.LocationTrackerProvider
 
 object CartInstanceProvider {
 
@@ -10,8 +11,8 @@ object CartInstanceProvider {
         return CartRepository.create { CartRepository() }
     }
 
-    fun providedUseCase(): CartUseCase {
-        return CartUseCase.create { CartUseCase(getRepository()) }
+    fun providedUseCase(locationTrackerProvider: LocationTrackerProvider): CartUseCase {
+        return CartUseCase.create { CartUseCase(getRepository(), locationTrackerProvider) }
     }
 }
 

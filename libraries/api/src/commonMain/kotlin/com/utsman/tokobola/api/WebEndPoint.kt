@@ -13,6 +13,8 @@ object WebEndPoint {
     const val BANNER = "/v2/product/banner"
     const val BRAND = "/brand"
     const val CATEGORY = "/category"
+
+    const val MAPBOX_GEOCODING = "/geocoding/v5/mapbox.places/{lon},{lat}.json?access_token={mapbox_access_token}"
 }
 
 internal fun String.withParam(key: String, value: Any): String {

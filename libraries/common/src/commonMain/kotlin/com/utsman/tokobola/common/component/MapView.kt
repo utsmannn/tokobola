@@ -11,9 +11,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.utsman.tokobola.core.data.LatLon
+import com.utsman.tokobola.core.utils.getOrNull
 import com.utsman.tokobola.location.LocalLocationTrackerProvider
 import dev.icerock.moko.geo.LatLng
-import kotlinx.serialization.json.Json
 
 @Composable
 expect fun MapView(
@@ -67,7 +67,7 @@ fun rememberMapConfigState(latLon: LatLon? = null): MapConfigState {
 
     val state = if (latLon == null) {
         val trackerProvider = LocalLocationTrackerProvider.current
-        val location = trackerProvider.locationFlow.collectAsState()
+        val location = trackerProvider.locationStateFlow.collectAsState()
         LaunchedEffect(trackerProvider) {
             if (!trackerProvider.isHasStart) {
                 trackerProvider.startTracking()
@@ -75,10 +75,10 @@ fun rememberMapConfigState(latLon: LatLon? = null): MapConfigState {
         }
 
         val newLatLon by derivedStateOf {
-            location.value?.toLatLon() ?: LatLon()
+            location.value.getOrNull()
         }
 
-        MapConfigState(newLatLon)
+        MapConfigState(newLatLon ?: LatLon())
     } else {
         MapConfigState(latLon)
     }

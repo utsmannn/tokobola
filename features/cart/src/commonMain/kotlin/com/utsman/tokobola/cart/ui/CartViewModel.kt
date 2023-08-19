@@ -11,27 +11,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class CartViewModel(private val useCase: CartUseCase, private val trackerProvider: LocationTrackerProvider) : ViewModel() {
+class CartViewModel(private val useCase: CartUseCase) : ViewModel() {
 
     val cartState get() = useCase.cartReducer.dataFlow.asStateFlow()
 
     val cartUiConfig: MutableStateFlow<CartUiConfig> = MutableStateFlow(CartUiConfig())
 
-    val coroutineHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-        throwable.printStackTrace()
-    }
-
-    val location = trackerProvider.locationFlow
-
-    //val lastLocation = trackerProvider.getLastLocation()
-
-    val lastLocation = MutableStateFlow<LatLng?>(null)
-
-    init {
-        viewModelScope.launch {
-            trackerProvider.startTracking()
-        }
-    }
+    val shippingLocationState = useCase.locationShippingReducer.dataFlow
 
     fun listenCart() = viewModelScope.launch {
         useCase.getCart()
@@ -69,12 +55,14 @@ class CartViewModel(private val useCase: CartUseCase, private val trackerProvide
         return newCart
     }
 
-    fun getLastLocation() = viewModelScope.launch {
-        lastLocation.value = trackerProvider.getLastLocation()
+    fun getShippingLocation() = viewModelScope.launch {
+        useCase.getShippingLocation()
     }
 
     override fun onCleared() {
-        trackerProvider.stopTracking()
+        viewModelScope.launch {
+            useCase.stopLocationPlace()
+        }
         viewModelScope.launch {
             useCase.updateCart(cartUiConfig.value.carts)
         }

@@ -5,11 +5,13 @@ import com.utsman.tokobola.core.SynchronizObject
 import com.utsman.tokobola.core.synchroniz
 import com.utsman.tokobola.core.utils.asyncAwait
 import com.utsman.tokobola.database.data.CartProductRealm
+import com.utsman.tokobola.database.data.LocationPlaceRealm
 import com.utsman.tokobola.database.data.RecentlyViewedRealm
 import com.utsman.tokobola.database.data.WishlistRealm
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.UpdatePolicy
+import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.find
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,24 +20,23 @@ import kotlin.native.concurrent.ThreadLocal
 
 class LocalRepository(private val realm: Realm) {
 
-    init {
-        println("create local repository......")
-    }
-
+    /**
+     * Recently Viewed
+     * */
     suspend fun insertRecentlyViewed(recentlyViewedRealm: RecentlyViewedRealm) {
         asyncAwait {
-            val isExist = realm.query(
-                RecentlyViewedRealm::class,
-                "productId == ${recentlyViewedRealm.productId}"
+            val isExist = realm.query<RecentlyViewedRealm>(
+                "productId = $0",
+                recentlyViewedRealm.productId
             )
                 .first()
                 .find() != null
 
             if (isExist) {
                 realm.write {
-                    query(
-                        RecentlyViewedRealm::class,
-                        "productId == ${recentlyViewedRealm.productId}"
+                    query<RecentlyViewedRealm>(
+                        "productId = $0",
+                        recentlyViewedRealm.productId
                     )
                         .find {
                             delete(it.first())
@@ -56,9 +57,13 @@ class LocalRepository(private val realm: Realm) {
         }
     }
 
+
+    /**
+     * Cart
+     * */
     suspend fun insertOrUpdateProductCart(productId: Int, operationQuantity: (Int) -> Int) {
         asyncAwait {
-            val productFound = realm.query(CartProductRealm::class, "productId == $productId")
+            val productFound = realm.query<CartProductRealm>("productId = $0", productId)
                 .first()
                 .find()
 
@@ -67,7 +72,7 @@ class LocalRepository(private val realm: Realm) {
                 val newQuantity = operationQuantity.invoke(currentQuantity)
 
                 realm.write {
-                    query(CartProductRealm::class, "productId == $productId")
+                    query<CartProductRealm>("productId = $0", productId)
                         .find {
                             delete(it.first())
                         }
@@ -90,7 +95,7 @@ class LocalRepository(private val realm: Realm) {
 
     suspend fun getProductCart(productId: Int): Flow<CartProductRealm?> {
         return asyncAwait {
-            realm.query(CartProductRealm::class, "productId == $productId")
+            realm.query<CartProductRealm>("productId = $0", productId)
                 .asFlow().map { it.list.firstOrNull() }
         }
     }
@@ -104,8 +109,8 @@ class LocalRepository(private val realm: Realm) {
                 list
                     .filter { it.quantity > 0 }
                     .forEach {
-                    copyToRealm(it, updatePolicy = UpdatePolicy.ALL)
-                }
+                        copyToRealm(it, updatePolicy = UpdatePolicy.ALL)
+                    }
 
             }
         }
@@ -118,20 +123,23 @@ class LocalRepository(private val realm: Realm) {
         }
     }
 
+    /**
+     * Wishlist
+     * */
     suspend fun toggleWishlist(wishlistRealm: WishlistRealm) {
         asyncAwait {
-            val isExist = realm.query(
-                WishlistRealm::class,
-                "productId == ${wishlistRealm.productId}"
+            val isExist = realm.query<WishlistRealm>(
+                "productId = $0",
+                wishlistRealm.productId
             )
                 .first()
                 .find() != null
 
             if (isExist) {
                 realm.write {
-                    query(
-                        WishlistRealm::class,
-                        "productId == ${wishlistRealm.productId}"
+                    query<WishlistRealm>(
+                        "productId = $0",
+                        wishlistRealm.productId
                     )
                         .find {
                             delete(it.first())
@@ -147,9 +155,8 @@ class LocalRepository(private val realm: Realm) {
 
     suspend fun checkWishlistIsExist(productId: Int): Flow<Boolean> {
         return asyncAwait {
-            realm.query(
-                WishlistRealm::class,
-                "productId == $productId"
+            realm.query<WishlistRealm>(
+                "productId = $0", productId
             )
                 .asFlow()
                 .map { it.list.firstOrNull() != null }
@@ -160,6 +167,38 @@ class LocalRepository(private val realm: Realm) {
         return asyncAwait {
             realm.query(WishlistRealm::class).asFlow()
                 .map { it.list.asReversed() }
+        }
+    }
+
+
+    /**
+     * Location place
+     * */
+    suspend fun insertOrUpdateLocationPlace(locationPlaceRealm: LocationPlaceRealm) {
+        asyncAwait {
+            val isExist = realm.query<LocationPlaceRealm>("key = $0", locationPlaceRealm.key)
+                .first()
+                .find() != null
+
+            if (isExist) {
+                realm.write {
+                    query<LocationPlaceRealm>("key = $0", locationPlaceRealm.key)
+                        .find {
+                            delete(it.first())
+                        }
+                }
+            }
+
+            realm.write {
+                copyToRealm(locationPlaceRealm)
+            }
+        }
+    }
+
+    suspend fun getLocationPlace(key: String): Flow<LocationPlaceRealm?> {
+        return asyncAwait {
+            realm.query<LocationPlaceRealm>("key = $0", key)
+                .asFlow().map { it.list.firstOrNull() }
         }
     }
 
@@ -177,6 +216,7 @@ class LocalRepository(private val realm: Realm) {
                             RecentlyViewedRealm::class,
                             CartProductRealm::class,
                             WishlistRealm::class,
+                            LocationPlaceRealm::class
                             // add others if needed
                         )
                     )

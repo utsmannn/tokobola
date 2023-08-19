@@ -33,6 +33,7 @@ fun App() {
     val screenContainer = remember { ScreenContainerProvider() }
     val navigation = remember { NavigationProvider() }
     val locationProvider = remember { LocationInstanceProvider.providedLocationTrackerProvider() }
+    locationProvider.bindComposable()
 
     val homeUseCase = remember { HomeInstanceProvider.providedUseCase() }
 
@@ -43,9 +44,8 @@ fun App() {
 
     val exploreUseCase = remember { ExploreInstanceProvider.providedExploreUseCase() }
     val searchUseCase = remember { ExploreInstanceProvider.providedSearchUseCase() }
-    val cartUseCase = remember { CartInstanceProvider.providedUseCase() }
+    val cartUseCase = remember { CartInstanceProvider.providedUseCase(locationProvider) }
 
-    locationProvider.bindComposable()
 
     CompositionLocalProvider(
         // core

@@ -1,8 +1,11 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
     id("org.jetbrains.compose")
     kotlin("plugin.serialization") version "1.8.21"
+    id("com.codingfeline.buildkonfig")
 }
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
@@ -46,5 +49,14 @@ android {
     compileSdk = 33
     defaultConfig {
         minSdk = 24
+    }
+}
+
+buildkonfig {
+    packageName = "com.utsman.tokobola.cart"
+
+    // default config is required
+    defaultConfigs {
+        buildConfigField(STRING, "MAPBOX_TOKEN", project.properties.get("mapbox.token").toString())
     }
 }

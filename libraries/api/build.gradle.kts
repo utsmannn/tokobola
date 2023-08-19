@@ -54,5 +54,6 @@ buildkonfig {
     // default config is required
     defaultConfigs {
         buildConfigField(STRING, "BASE_URL", project.properties.get("base.url").toString())
+        buildConfigField(STRING, "MAPBOX_BASE_URL", project.properties.get("mapbox.base.url").toString())
     }
 }

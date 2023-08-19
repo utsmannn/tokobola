@@ -17,6 +17,10 @@ open class ApiReducer<T> {
         dataFlow.value = result
     }
 
+    fun forcePushState(state: State<T>) {
+        dataFlow.value = state
+    }
+
     fun clear() {
         dataFlow.value = State.Idle()
     }
