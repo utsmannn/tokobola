@@ -15,6 +15,7 @@ object WebEndPoint {
     const val CATEGORY = "/category"
 
     const val MAPBOX_GEOCODING = "/geocoding/v5/mapbox.places/{lon},{lat}.json?access_token={mapbox_access_token}"
+    const val MAPBOX_SEARCH = "/geocoding/v5/mapbox.places/{q}.json?access_token={mapbox_access_token}&proximity={proximity}&bbox={bbox}"
 }
 
 internal fun String.withParam(key: String, value: Any): String {

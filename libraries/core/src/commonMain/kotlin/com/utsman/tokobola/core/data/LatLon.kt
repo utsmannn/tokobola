@@ -11,6 +11,10 @@ data class LatLon(
         return "{\"latitude\": \"$latitude\", \"longitude\":\"$longitude\"}"
     }
 
+    fun isBlank(): Boolean {
+        return latitude == 0.0
+    }
+
     companion object {
         fun fromJson(json: String): LatLon {
             val element = Json.parseToJsonElement(json)

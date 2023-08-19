@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -60,14 +59,12 @@ import com.utsman.tokobola.core.utils.onLoadingComposed
 import com.utsman.tokobola.core.utils.onSuccess
 import com.utsman.tokobola.core.utils.onSuccessComposed
 import com.utsman.tokobola.core.utils.rememberNavigationBarHeightDp
-import com.utsman.tokobola.location.LocalLocationTrackerProvider
 import com.utsman.tokobola.resources.SharedRes
 import dev.icerock.moko.resources.compose.painterResource
 
 @Composable
 fun Cart() {
     val useCase = LocalCartUseCase.current
-
     val viewModel = rememberViewModel { CartViewModel(useCase) }
 
     val cartState by viewModel.cartState.collectAsState()
@@ -85,10 +82,7 @@ fun Cart() {
 
     LaunchedEffect(Unit) {
         viewModel.listenCart()
-
-        if (uiConfig.isCartEmpty()) {
-            viewModel.getShippingLocation()
-        }
+        viewModel.getShippingLocation()
     }
 
     val navigationBarHeight = rememberNavigationBarHeightDp()
@@ -163,12 +157,6 @@ fun Cart() {
                 modifier = Modifier
                     .shadow(14.dp)
                     .background(color = Color.White)
-                    /*.padding(
-                        top = 12.dp,
-                        bottom = 12.dp + navigationBarHeight,
-                        end = 12.dp,
-                        start = 12.dp
-                    )*/
             ) {
                 with(placeState) {
                     onLoadingComposed {
@@ -180,7 +168,7 @@ fun Cart() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-
+                                    navigation.goToLocationPicker()
                                 }
                                 .padding(12.dp)
                         ) {

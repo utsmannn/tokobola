@@ -7,6 +7,7 @@ import cafe.adriel.voyager.transitions.SlideTransition
 import com.seiko.imageloader.LocalImageLoader
 import com.utsman.tokobola.cart.CartInstanceProvider
 import com.utsman.tokobola.cart.LocalCartUseCase
+import com.utsman.tokobola.cart.LocalLocationPickerUseCase
 import com.utsman.tokobola.common.theme.CommonTheme
 import com.utsman.tokobola.core.rememberImageLoader
 import com.utsman.tokobola.core.navigation.LocalNavigation
@@ -44,7 +45,8 @@ fun App() {
 
     val exploreUseCase = remember { ExploreInstanceProvider.providedExploreUseCase() }
     val searchUseCase = remember { ExploreInstanceProvider.providedSearchUseCase() }
-    val cartUseCase = remember { CartInstanceProvider.providedUseCase(locationProvider) }
+    val cartUseCase = remember { CartInstanceProvider.providedCartUseCase(locationProvider) }
+    val locationPickerUseCase = remember { CartInstanceProvider.providedLocationPickerUseCase(locationProvider) }
 
 
     CompositionLocalProvider(
@@ -62,7 +64,8 @@ fun App() {
         LocalExploreUseCase provides exploreUseCase,
         LocalSearchUseCase provides searchUseCase,
         LocalWishlistUseCase provides wishlistUseCase,
-        LocalCartUseCase provides cartUseCase
+        LocalCartUseCase provides cartUseCase,
+        LocalLocationPickerUseCase provides locationPickerUseCase
     ) {
 
         CommonTheme {

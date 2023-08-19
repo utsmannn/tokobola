@@ -51,13 +51,13 @@ class LocationTrackerProvider {
     }
 
     suspend fun startTracking() {
-        tracker.startTracking()
-        isHasStart = true
+        if (!isHasStart) {
+            tracker.startTracking()
+            isHasStart = true
+        }
     }
 
     suspend fun stopTracking() {
-        /*tracker.stopTracking()
-        isHasStart = false*/
         locationFlow
             .collect {
             if (it != null) {

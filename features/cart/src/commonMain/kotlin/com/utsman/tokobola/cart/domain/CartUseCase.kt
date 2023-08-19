@@ -49,6 +49,8 @@ class CartUseCase(private val repository: CartRepository, private val locationTr
             }
             .firstOrNull()
 
+        println("asuuu -> $currentLocation")
+
         if (currentLocation == null) {
             val currentLocalLocation = repository.getLocalCurrentLocationPlace()
                 .map {

@@ -14,6 +14,7 @@ import com.utsman.tokobola.core.data.LatLon
 import com.utsman.tokobola.core.utils.getOrNull
 import com.utsman.tokobola.location.LocalLocationTrackerProvider
 import dev.icerock.moko.geo.LatLng
+import kotlinx.coroutines.flow.firstOrNull
 
 @Composable
 expect fun MapView(
@@ -64,14 +65,12 @@ class MapConfigState(currentLatLon: LatLon) {
 
 @Composable
 fun rememberMapConfigState(latLon: LatLon? = null): MapConfigState {
-
-    val state = if (latLon == null) {
+    val state = if (latLon == null || latLon.isBlank()) {
         val trackerProvider = LocalLocationTrackerProvider.current
         val location = trackerProvider.locationStateFlow.collectAsState()
-        LaunchedEffect(trackerProvider) {
-            if (!trackerProvider.isHasStart) {
-                trackerProvider.startTracking()
-            }
+
+        LaunchedEffect(Unit) {
+            trackerProvider.startTracking()
         }
 
         val newLatLon by derivedStateOf {
@@ -82,6 +81,7 @@ fun rememberMapConfigState(latLon: LatLon? = null): MapConfigState {
     } else {
         MapConfigState(latLon)
     }
+
 
     return rememberSaveable(saver = MapConfigState.Saver) { state }
 }
