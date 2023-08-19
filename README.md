@@ -28,6 +28,7 @@ according to their respective needs.
 
 ## Third party library
 
+- [Ktor client](https://ktor.io/docs/getting-started-ktor-client-multiplatform-mobile.html)
 - [moko-resources](https://github.com/icerockdev/moko-resources)
 - [moko-geo](https://github.com/icerockdev/moko-geo)
 - [Voyager](https://voyager.adriel.cafe/)
