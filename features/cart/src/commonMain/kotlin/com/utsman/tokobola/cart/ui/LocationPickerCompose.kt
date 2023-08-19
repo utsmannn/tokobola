@@ -48,6 +48,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -59,11 +60,13 @@ import com.utsman.tokobola.common.component.Dimens
 import com.utsman.tokobola.common.component.MapConfigState
 import com.utsman.tokobola.common.component.MapView
 import com.utsman.tokobola.common.component.Shimmer
+import com.utsman.tokobola.common.component.bottomElevation
 import com.utsman.tokobola.common.component.rememberMapConfigState
 import com.utsman.tokobola.core.State
 import com.utsman.tokobola.core.data.LatLon
 import com.utsman.tokobola.core.navigation.LocalNavigation
 import com.utsman.tokobola.core.rememberViewModel
+import com.utsman.tokobola.core.utils.getOrNull
 import com.utsman.tokobola.core.utils.onLoadingComposed
 import com.utsman.tokobola.core.utils.onSuccess
 import com.utsman.tokobola.core.utils.onSuccessComposed
@@ -83,6 +86,8 @@ fun LocationPicker(latLon: LatLon) {
 
     val locationResultState by viewModel.locationResultState.collectAsState()
     val locationReverseState by viewModel.locationReverseState.collectAsState()
+
+    val focusManager = LocalFocusManager.current
 
     val isReverseLoading by derivedStateOf {
         locationReverseState is State.Loading
@@ -153,7 +158,7 @@ fun LocationPicker(latLon: LatLon) {
                     ) {
                         LazyColumn(
                             Modifier.fillMaxWidth()
-                                .shadow(12.dp)
+                                .bottomElevation()
                                 .background(color = Color.White),
                             contentPadding = PaddingValues(12.dp)
                         ) {
@@ -162,6 +167,7 @@ fun LocationPicker(latLon: LatLon) {
                                     text = it.name,
                                     modifier = Modifier.fillMaxWidth()
                                         .clickable {
+                                            focusManager.clearFocus(true)
                                             viewModel.clearData()
                                             viewModel.updateProximityLatLon(it.latLon)
                                             viewModel.getLocationReverse(it.latLon)
@@ -242,6 +248,9 @@ fun LocationPicker(latLon: LatLon) {
                             .clip(RoundedCornerShape(12.dp))
                             .background(color = MaterialTheme.colors.primary)
                             .clickable {
+                                locationReverseState.getOrNull()?.let {
+                                    viewModel.insertShippingAddress(it)
+                                }
                                 navigation.back()
                             },
                         verticalAlignment = Alignment.CenterVertically,

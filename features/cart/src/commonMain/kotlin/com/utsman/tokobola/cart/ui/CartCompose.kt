@@ -121,7 +121,7 @@ fun Cart() {
             with(cartState) {
                 onLoading {
                     item {
-                        Shimmer()
+                        Shimmer(modifier = Modifier.fillMaxWidth().height(60.dp))
                     }
                 }
                 onSuccess { carts ->

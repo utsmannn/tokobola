@@ -1,6 +1,7 @@
 package com.utsman.tokobola.common.component
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -9,7 +10,6 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapInitOptions
 import com.mapbox.maps.ResourceOptions
-import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.animation.flyTo
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
@@ -24,8 +24,6 @@ private typealias MapBoxView = com.mapbox.maps.MapView
 @Composable
 actual fun MapView(mapConfigState: MapConfigState, modifier: Modifier) {
     val context = LocalContext.current
-
-    //val annotations by mutableStateOf(mutableListOf<MKPointAnnotation>())
 
     val mapboxView = remember {
         val resourcesOptions = ResourceOptions
@@ -99,6 +97,7 @@ actual fun MapView(mapConfigState: MapConfigState, modifier: Modifier) {
     }
 
     AndroidView(
+        modifier = modifier,
         factory = {
             mapboxView
         }

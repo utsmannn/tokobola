@@ -38,8 +38,10 @@ class LocalRepository(private val realm: Realm) {
                         "productId = $0",
                         recentlyViewedRealm.productId
                     )
-                        .find {
-                            delete(it.first())
+                        .find { result ->
+                            result.firstOrNull()?.let {
+                                delete(it)
+                            }
                         }
                 }
             }
@@ -73,8 +75,10 @@ class LocalRepository(private val realm: Realm) {
 
                 realm.write {
                     query<CartProductRealm>("productId = $0", productId)
-                        .find {
-                            delete(it.first())
+                        .find { result ->
+                            result.firstOrNull()?.let {
+                                delete(it)
+                            }
                         }
                 }
 
@@ -141,8 +145,10 @@ class LocalRepository(private val realm: Realm) {
                         "productId = $0",
                         wishlistRealm.productId
                     )
-                        .find {
-                            delete(it.first())
+                        .find { result ->
+                            result.firstOrNull()?.let {
+                                delete(it)
+                            }
                         }
                 }
             } else {
@@ -183,8 +189,10 @@ class LocalRepository(private val realm: Realm) {
             if (isExist) {
                 realm.write {
                     query<LocationPlaceRealm>("key = $0", locationPlaceRealm.key)
-                        .find {
-                            delete(it.first())
+                        .find { result ->
+                            result.firstOrNull()?.let {
+                                delete(it)
+                            }
                         }
                 }
             }

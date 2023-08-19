@@ -1,6 +1,7 @@
 package com.utsman.tokobola.cart.ui
 
 import com.utsman.tokobola.cart.domain.LocationPickerUseCase
+import com.utsman.tokobola.common.entity.LocationPlace
 import com.utsman.tokobola.core.ViewModel
 import com.utsman.tokobola.core.data.LatLon
 import kotlinx.coroutines.flow.collectLatest
@@ -32,6 +33,10 @@ class LocationPickerViewModel(private val useCase: LocationPickerUseCase) : View
 
     fun getLocationReverse(latLon: LatLon) = viewModelScope.launch {
         useCase.getLocationReverse(latLon)
+    }
+
+    fun insertShippingAddress(locationPlace: LocationPlace) = viewModelScope.launch {
+        useCase.saveShippingAddress(locationPlace)
     }
 
     fun clearData() {

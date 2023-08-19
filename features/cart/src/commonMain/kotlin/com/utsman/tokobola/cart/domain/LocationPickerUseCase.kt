@@ -60,6 +60,10 @@ class LocationPickerUseCase(private val repository: CartRepository) {
         )
     }
 
+    suspend fun saveShippingAddress(locationPlace: LocationPlace) {
+        repository.insertShippingLocationPlace(locationPlace)
+    }
+
     fun clearData() {
         locationSearchReducer.clear()
         locationReverseReducer.clear()

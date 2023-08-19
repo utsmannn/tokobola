@@ -10,6 +10,7 @@ import com.utsman.tokobola.location.LocationTrackerProvider
 import com.utsman.tokobola.location.isNear
 import com.utsman.tokobola.network.ApiReducer
 import com.utsman.tokobola.network.StateTransformation
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -46,57 +47,57 @@ class CartUseCase(
     }
 
     suspend fun getShippingLocation() {
-        val currentLocation = repository.getShippingLocationPlace()
+        repository.getShippingLocationPlace()
             .map {
                 it?.toLocationPlace()
             }
-            .firstOrNull()
+            .collect { currentLocation ->
+                if (currentLocation == null) {
+                    val currentLocalLocation = repository.getLocalCurrentLocationPlace()
+                        .map {
+                            it?.toLocationPlace()
+                        }
+                        .firstOrNull() ?: LocationPlace()
 
-        if (currentLocation == null) {
-            val currentLocalLocation = repository.getLocalCurrentLocationPlace()
-                .map {
-                    it?.toLocationPlace()
-                }
-                .firstOrNull() ?: LocationPlace()
-
-            locationTrackerProvider.startTracking()
-            locationTrackerProvider
-                .locationFlow
-                .onStart {
-                    locationShippingReducer.forcePushState(State.Loading())
-                }
-                .filterNotNull()
-                .collect { latLon ->
+                    locationTrackerProvider.startTracking()
+                    locationTrackerProvider
+                        .locationFlow
+                        .onStart {
+                            locationShippingReducer.forcePushState(State.Loading())
+                        }
+                        .filterNotNull()
+                        .collect { latLon ->
+                            locationShippingReducer
+                                .transform(
+                                    transformation = StateTransformation.SimpleTransform(),
+                                    call = {
+                                        if (currentLocalLocation.latLon.isNear(latLon)) {
+                                            currentLocalLocation
+                                        } else {
+                                            repository.getLocationPlace(latLon).toLocationPlace().also { locationPlace ->
+                                                repository.insertLocalCurrentLocationPlace(locationPlace)
+                                                repository.insertShippingLocationPlace(locationPlace)
+                                            }
+                                        }
+                                    },
+                                    mapper = {
+                                        it
+                                    }
+                                )
+                        }
+                } else {
                     locationShippingReducer
                         .transform(
                             transformation = StateTransformation.SimpleTransform(),
                             call = {
-                                if (currentLocalLocation.latLon.isNear(latLon)) {
-                                    currentLocalLocation
-                                } else {
-                                    repository.getLocationPlace(latLon).toLocationPlace().also { locationPlace ->
-                                        repository.insertLocalCurrentLocationPlace(locationPlace)
-                                        repository.insertShippingLocationPlace(locationPlace)
-                                    }
-                                }
+                                currentLocation
                             },
                             mapper = {
                                 it
                             }
                         )
                 }
-        } else {
-            locationShippingReducer
-                .transform(
-                    transformation = StateTransformation.SimpleTransform(),
-                    call = {
-                        currentLocation
-                    },
-                    mapper = {
-                        it
-                    }
-                )
-        }
+            }
     }
 
 
